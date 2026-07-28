@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 // ══════════════════════════════════════════════
 // Icons
@@ -13,7 +14,7 @@ function RepeatIcon() {
   return <svg viewBox="0 0 24 24"><path d="M17 2l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3" /></svg>;
 }
 function ImageTypeIcon() {
-  return <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>;
+  return <Image src="/images/gallery.png" alt="" width={14} height={14} style={{ objectFit: "contain" }} />;
 }
 function LectureIcon() {
   return (

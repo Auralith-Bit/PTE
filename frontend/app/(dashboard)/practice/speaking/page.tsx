@@ -25,8 +25,8 @@ function WaveformIcon() {
 function RepeatIcon() {
   return <svg viewBox="0 0 24 24"><path d="M17 2l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3" /></svg>;
 }
-function ImageTypeIcon() {
-  return <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>;
+function GalleryIcon() {
+  return <Image src="/images/gallery.png" alt="" width={18} height={18} style={{ objectFit: "contain" }} />;
 }
 function LectureIcon() {
   return (
@@ -113,7 +113,7 @@ const aiFeedbackRows = [
 const speakingTypes = [
   ["Read Aloud", "Read the displayed text clearly and naturally to improve pronunciation and fluency.", WaveformIcon, "read-aloud"],
   ["Repeat Sentence", "Listen carefully and repeat the sentence exactly as you hear it to improve memory.", RepeatIcon, "repeat-sentence"],
-  ["Describe Image", "Analyze visual information and deliver a clear, structured response with confidence and accuracy.", ImageTypeIcon, "describe-image"],
+  ["Describe Image", "Analyze visual information and deliver a clear, structured response with confidence and accuracy.", GalleryIcon, "describe-image"],
   ["Retell Lecture", "Listen to a lecture and summarize the main ideas in a well-organized spoken response.", LectureIcon, "retell-lecture"],
   ["Answer Short Question", "Respond quickly and accurately to general knowledge and everyday questions with answers.", ChatIcon, "answer-short-question"],
   ["Summarize Spoken Test", "Listen to an audio recording and write a concise summary of the key information.", HeadphonesIcon, "summarize-spoken-test"],
