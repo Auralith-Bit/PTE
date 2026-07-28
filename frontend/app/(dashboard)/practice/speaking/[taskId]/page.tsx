@@ -58,6 +58,17 @@ function MicIcon() {
 function ClockIcon() {
   return <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" /></svg>;
 }
+function PlayIcon() {
+  return <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" /></svg>;
+}
+function SpeakerIcon() {
+  return (
+    <svg viewBox="0 0 24 24">
+      <path d="M11 5L6 9H2v6h4l5 4V5z" />
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14" />
+    </svg>
+  );
+}
 
 // ══════════════════════════════════════════════
 // Shared task metadata (drives top tab bar + sidebar list)
@@ -399,7 +410,668 @@ function ReadAloudTask() {
 }
 
 // ══════════════════════════════════════════════
-// Placeholder for not-yet-built task types
+// Repeat Sentence task
+// ══════════════════════════════════════════════
+const REPEAT_SENTENCES = [
+  "The professor explained that the experiment yielded unexpected results.",
+  "Students are required to submit their assignments before the deadline.",
+  "The new policy will take effect starting next month.",
+  "Climate change is one of the most significant challenges facing humanity today.",
+  "The company decided to expand its operations into international markets.",
+  "Regular exercise and a balanced diet are essential for maintaining good health.",
+  "The museum houses an impressive collection of modern art from around the world.",
+  "Advances in technology have revolutionized the way we communicate with each other.",
+  "The government announced new measures to reduce carbon emissions by thirty percent.",
+  "Research shows that reading for pleasure improves both vocabulary and comprehension.",
+];
+const REPEAT_TOTAL = REPEAT_SENTENCES.length;
+const REPEAT_TIME_LIMIT = 15;
+
+const repeatSentenceInstructions = [
+  "Listen to the sentence carefully when you click play.",
+  "After listening, click the microphone to repeat the sentence.",
+  "You will have up to 15 seconds to record your response.",
+  "Try to repeat the sentence exactly as you heard it.",
+];
+const repeatSentenceTips = [
+  "Focus on key words and sentence structure.",
+  "Don't panic if you miss a word — keep going.",
+  "Practice note-taking for longer sentences.",
+];
+
+function RepeatSentenceTask() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isRecording, setIsRecording] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [hasRecorded, setHasRecorded] = useState(false);
+  const [recordedSet, setRecordedSet] = useState<Set<number>>(new Set());
+  const [visitedSet, setVisitedSet] = useState<Set<number>>(new Set(new Set([0])));
+  const [isPlaying, setIsPlaying] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (isRecording) {
+      intervalRef.current = setInterval(() => {
+        setElapsedSeconds((prev) => {
+          if (prev + 1 >= REPEAT_TIME_LIMIT) {
+            setIsRecording(false);
+            setHasRecorded(true);
+            setRecordedSet((p) => new Set(p).add(currentIndex));
+            return REPEAT_TIME_LIMIT;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isRecording]);
+
+  function handleMicClick() {
+    if (isRecording) {
+      setIsRecording(false);
+      setHasRecorded(true);
+      setRecordedSet((prev) => new Set(prev).add(currentIndex));
+    } else {
+      setElapsedSeconds(0);
+      setHasRecorded(false);
+      setIsRecording(true);
+    }
+  }
+
+  function handlePlayClick() {
+    if (isPlaying) return;
+    setIsPlaying(true);
+    setTimeout(() => setIsPlaying(false), 2000);
+  }
+
+  function resetForQuestion() {
+    setIsRecording(false);
+    setElapsedSeconds(0);
+    setHasRecorded(false);
+    setIsPlaying(false);
+  }
+
+  function goToPrevious() {
+    const next = Math.max(0, currentIndex - 1);
+    setCurrentIndex(next);
+    setVisitedSet((prev) => new Set(prev).add(next));
+    resetForQuestion();
+  }
+
+  function goToNext() {
+    const next = Math.min(REPEAT_TOTAL - 1, currentIndex + 1);
+    setCurrentIndex(next);
+    setVisitedSet((prev) => new Set(prev).add(next));
+    resetForQuestion();
+  }
+
+  function goToQuestion(index: number) {
+    setVisitedSet((prev) => new Set(prev).add(index));
+    setCurrentIndex(index);
+    resetForQuestion();
+  }
+
+  return (
+    <div className="task-page">
+      <TaskTopBar activeTaskId="repeat-sentence" />
+      <div className="task-layout">
+        <TaskSidebar
+          activeTaskId="repeat-sentence"
+          questionCount={currentIndex + 1}
+          progress={{ current: recordedSet.size, total: REPEAT_TOTAL }}
+        />
+        <section className="task-main">
+          <div className="task-main-header">
+            <span className="task-main-header-icon"><RepeatIcon /></span>
+            <h1>Repeat Sentence</h1>
+          </div>
+          <p className="task-main-sub">
+            Listen to the sentence and repeat it exactly as you hear it.
+          </p>
+
+          <h3 className="task-block-label">Audio Playback</h3>
+          <div className="task-text-box" style={{ display: "flex", alignItems: "center", gap: "1rem", minHeight: "12vh" }}>
+            <button
+              type="button"
+              className={`task-mic-button${isPlaying ? " recording" : ""}`}
+              onClick={handlePlayClick}
+              disabled={isPlaying}
+              style={{ width: "48px", height: "48px", flexShrink: 0 }}
+              aria-label="Play audio"
+            >
+              <PlayIcon />
+            </button>
+            <div>
+              <p style={{ margin: 0, fontWeight: 700, fontSize: "1rem" }}>
+                {isPlaying ? "Playing audio…" : "Click play to listen to the sentence"}
+              </p>
+              <p style={{ margin: "0.25rem 0 0", color: "#55556b", fontSize: "0.9rem" }}>
+                Sentence {currentIndex + 1} of {REPEAT_TOTAL}
+              </p>
+            </div>
+          </div>
+
+          <div className="task-recording-row">
+            <h3 className="task-block-label">Your Recording</h3>
+            <span className={`task-status-pill${hasRecorded ? " recorded" : ""}`}>
+              {hasRecorded ? "Recorded" : "Not Recorded"}
+            </span>
+          </div>
+          <div className="task-recording-box">
+            <button
+              type="button"
+              className={`task-mic-button${isRecording ? " recording" : ""}`}
+              onClick={handleMicClick}
+              aria-label={isRecording ? "Stop recording" : "Start recording"}
+            >
+              <MicIcon />
+            </button>
+            <p className="task-recording-title">
+              {isRecording ? "Recording… click to stop" : hasRecorded ? "Recording complete" : "Click the microphone to start recording"}
+            </p>
+            <p className="task-recording-sub">You will have up to {REPEAT_TIME_LIMIT} seconds to repeat the sentence.</p>
+            <div className="task-timer">
+              <ClockIcon /> {formatTime(elapsedSeconds)} / {formatTime(REPEAT_TIME_LIMIT)}
+            </div>
+          </div>
+          <TaskFooterNav current={currentIndex + 1} total={REPEAT_TOTAL} onPrevious={goToPrevious} onNext={goToNext} />
+        </section>
+        <TaskInfoPanels
+          instructions={repeatSentenceInstructions}
+          tips={repeatSentenceTips}
+          currentIndex={currentIndex}
+          totalQuestions={REPEAT_TOTAL}
+          recordedSet={recordedSet}
+          onNavigate={goToQuestion}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════
+// Describe Image task
+// ══════════════════════════════════════════════
+const DESCRIBE_IMAGES = [
+  { title: "City Skyline at Sunset", description: "A panoramic view of a modern city skyline with tall skyscrapers, bridges, and a river reflecting the orange and pink hues of the setting sun." },
+  { title: "Classroom Environment", description: "A well-lit classroom with desks arranged in rows, a whiteboard at the front, bookshelves along the walls, and students engaged in group work." },
+  { title: "Marketplace Scene", description: "A bustling outdoor marketplace with vendors selling fresh fruits, vegetables, and flowers. Shoppers carry bags while walking through narrow aisles." },
+  { title: "Factory Production Line", description: "An automated factory floor with robotic arms assembling products on a conveyor belt. Workers in safety gear monitor the equipment at various stations." },
+  { title: "Beach Landscape", description: "A tropical beach with white sand, palm trees swaying in the breeze, turquoise water, and a few boats anchored near the shore under a clear blue sky." },
+  { title: "Traffic Intersection", description: "A busy city intersection with cars, buses, and bicycles waiting at a red traffic light. Pedestrians cross the street using a designated crosswalk." },
+  { title: "Library Interior", description: "A spacious modern library with floor-to-ceiling bookshelves, reading tables with lamps, comfortable seating areas, and students studying quietly." },
+  { title: "Agricultural Farm", description: "A large farm field with rows of crops stretching to the horizon. A tractor is visible in the distance, and irrigation channels run between the rows." },
+  { title: "Hospital Ward", description: "A clean hospital ward with beds separated by curtains, medical equipment on stands, nurses at a station, and natural light coming through large windows." },
+  { title: "Technology Office", description: "An open-plan tech office with standing desks, large monitors, bean bags, whiteboards covered in diagrams, and employees collaborating in small groups." },
+];
+const DESCRIBE_TOTAL = DESCRIBE_IMAGES.length;
+const DESCRIBE_TIME_LIMIT = 40;
+
+const describeImageInstructions = [
+  "Look at the image description carefully before recording.",
+  "Describe the image in detail within the time limit.",
+  "Cover the main features, objects, and any activity shown.",
+  "Speak clearly and organize your response logically.",
+];
+const describeImageTips = [
+  "Start with an overview, then describe specific details.",
+  "Use descriptive language and spatial references.",
+  "Practice structuring your response in 40 seconds.",
+];
+
+function DescribeImageTask() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isRecording, setIsRecording] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [hasRecorded, setHasRecorded] = useState(false);
+  const [recordedSet, setRecordedSet] = useState<Set<number>>(new Set());
+  const [visitedSet, setVisitedSet] = useState<Set<number>>(new Set(new Set([0])));
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (isRecording) {
+      intervalRef.current = setInterval(() => {
+        setElapsedSeconds((prev) => {
+          if (prev + 1 >= DESCRIBE_TIME_LIMIT) {
+            setIsRecording(false);
+            setHasRecorded(true);
+            setRecordedSet((p) => new Set(p).add(currentIndex));
+            return DESCRIBE_TIME_LIMIT;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isRecording]);
+
+  function handleMicClick() {
+    if (isRecording) {
+      setIsRecording(false);
+      setHasRecorded(true);
+      setRecordedSet((prev) => new Set(prev).add(currentIndex));
+    } else {
+      setElapsedSeconds(0);
+      setHasRecorded(false);
+      setIsRecording(true);
+    }
+  }
+
+  function resetForQuestion() {
+    setIsRecording(false);
+    setElapsedSeconds(0);
+    setHasRecorded(false);
+  }
+
+  function goToPrevious() {
+    const next = Math.max(0, currentIndex - 1);
+    setCurrentIndex(next);
+    setVisitedSet((prev) => new Set(prev).add(next));
+    resetForQuestion();
+  }
+
+  function goToNext() {
+    const next = Math.min(DESCRIBE_TOTAL - 1, currentIndex + 1);
+    setCurrentIndex(next);
+    setVisitedSet((prev) => new Set(prev).add(next));
+    resetForQuestion();
+  }
+
+  function goToQuestion(index: number) {
+    setVisitedSet((prev) => new Set(prev).add(index));
+    setCurrentIndex(index);
+    resetForQuestion();
+  }
+
+  const currentImage = DESCRIBE_IMAGES[currentIndex];
+
+  return (
+    <div className="task-page">
+      <TaskTopBar activeTaskId="describe-image" />
+      <div className="task-layout">
+        <TaskSidebar
+          activeTaskId="describe-image"
+          questionCount={currentIndex + 1}
+          progress={{ current: recordedSet.size, total: DESCRIBE_TOTAL }}
+        />
+        <section className="task-main">
+          <div className="task-main-header">
+            <span className="task-main-header-icon"><ImageTypeIcon /></span>
+            <h1>Describe Image</h1>
+          </div>
+          <p className="task-main-sub">
+            Study the image description below and describe it in detail.
+          </p>
+
+          <h3 className="task-block-label">Image to Describe</h3>
+          <div className="task-text-box">
+            <p style={{ margin: "0 0 0.75rem", fontWeight: 800, fontSize: "1.05rem" }}>{currentImage.title}</p>
+            <p style={{ margin: 0, lineHeight: 1.7 }}>{currentImage.description}</p>
+          </div>
+
+          <div className="task-recording-row">
+            <h3 className="task-block-label">Your Recording</h3>
+            <span className={`task-status-pill${hasRecorded ? " recorded" : ""}`}>
+              {hasRecorded ? "Recorded" : "Not Recorded"}
+            </span>
+          </div>
+          <div className="task-recording-box">
+            <button
+              type="button"
+              className={`task-mic-button${isRecording ? " recording" : ""}`}
+              onClick={handleMicClick}
+              aria-label={isRecording ? "Stop recording" : "Start recording"}
+            >
+              <MicIcon />
+            </button>
+            <p className="task-recording-title">
+              {isRecording ? "Recording… click to stop" : hasRecorded ? "Recording complete" : "Click the microphone to start recording"}
+            </p>
+            <p className="task-recording-sub">You will have up to {DESCRIBE_TIME_LIMIT} seconds to describe the image.</p>
+            <div className="task-timer">
+              <ClockIcon /> {formatTime(elapsedSeconds)} / {formatTime(DESCRIBE_TIME_LIMIT)}
+            </div>
+          </div>
+          <TaskFooterNav current={currentIndex + 1} total={DESCRIBE_TOTAL} onPrevious={goToPrevious} onNext={goToNext} />
+        </section>
+        <TaskInfoPanels
+          instructions={describeImageInstructions}
+          tips={describeImageTips}
+          currentIndex={currentIndex}
+          totalQuestions={DESCRIBE_TOTAL}
+          recordedSet={recordedSet}
+          onNavigate={goToQuestion}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════
+// Retell Lecture task
+// ══════════════════════════════════════════════
+const RETELL_LECTURES = [
+  { title: "The Water Cycle", notes: "The water cycle describes how water moves through the environment. Evaporation turns water into vapor, which rises and forms clouds. When clouds cool, condensation occurs and precipitation falls back to Earth, replenishing rivers, lakes, and groundwater." },
+  { title: "Photosynthesis", notes: "Plants convert sunlight, carbon dioxide, and water into glucose and oxygen through photosynthesis. This process occurs mainly in leaves using chlorophyll. Photosynthesis is essential for life on Earth as it produces oxygen and forms the base of food chains." },
+  { title: "The Industrial Revolution", notes: "The Industrial Revolution began in Britain in the late 18th century. It marked a shift from manual production to machine manufacturing. New inventions like the steam engine and power loom transformed textiles, transportation, and communication, reshaping society." },
+  { title: "Plate Tectonics", notes: "The Earth's outer shell is divided into several plates that float on the semi-fluid mantle beneath. These plates move very slowly, driven by convection currents. Where plates collide, mountains form; where they pull apart, new crust is created at mid-ocean ridges." },
+  { title: "Supply and Demand", notes: "In economics, supply and demand determine market prices. When demand exceeds supply, prices rise. When supply exceeds demand, prices fall. Producers and consumers interact in markets to reach equilibrium, where the quantity demanded equals the quantity supplied." },
+  { title: "The Human Brain", notes: "The human brain contains approximately 86 billion neurons connected by trillions of synapses. The cerebrum handles thinking and memory, the cerebellum controls movement, and the brainstem regulates basic functions like breathing and heart rate." },
+  { title: "Globalization", notes: "Globalization refers to the increasing interconnectedness of economies, cultures, and populations worldwide. Driven by trade, technology, and migration, it has created economic growth but also raised concerns about inequality, cultural homogenization, and environmental impact." },
+  { title: "Artificial Intelligence", notes: "Artificial intelligence aims to create machines that can perform tasks requiring human intelligence. Machine learning, a subset of AI, allows systems to learn from data. Applications include speech recognition, medical diagnosis, and autonomous vehicles." },
+  { title: "Ocean Currents", notes: "Ocean currents are continuous movements of seawater driven by wind, temperature, and salinity differences. They distribute heat around the globe, affecting weather patterns and marine ecosystems. The Gulf Stream, for example, keeps Western Europe warmer than it would otherwise be." },
+  { title: "Renewable Energy", notes: "Renewable energy comes from naturally replenishing sources like sunlight, wind, and water. Solar panels convert sunlight to electricity, wind turbines harness wind energy, and hydroelectric dams generate power from flowing water. These sources reduce reliance on fossil fuels." },
+];
+const RETELL_TOTAL = RETELL_LECTURES.length;
+const RETELL_TIME_LIMIT = 40;
+
+const retellLectureInstructions = [
+  "Read the lecture notes carefully before recording.",
+  "Summarize the main ideas in your own words.",
+  "You will have up to 40 seconds to retell the lecture.",
+  "Focus on key concepts, not every detail.",
+];
+const retellLectureTips = [
+  "Identify 2-3 main points before you start speaking.",
+  "Use connecting words like 'firstly', 'additionally', 'in conclusion'.",
+  "Keep your response organized and concise.",
+];
+
+function RetellLectureTask() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isRecording, setIsRecording] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [hasRecorded, setHasRecorded] = useState(false);
+  const [recordedSet, setRecordedSet] = useState<Set<number>>(new Set());
+  const [visitedSet, setVisitedSet] = useState<Set<number>>(new Set(new Set([0])));
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (isRecording) {
+      intervalRef.current = setInterval(() => {
+        setElapsedSeconds((prev) => {
+          if (prev + 1 >= RETELL_TIME_LIMIT) {
+            setIsRecording(false);
+            setHasRecorded(true);
+            setRecordedSet((p) => new Set(p).add(currentIndex));
+            return RETELL_TIME_LIMIT;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isRecording]);
+
+  function handleMicClick() {
+    if (isRecording) {
+      setIsRecording(false);
+      setHasRecorded(true);
+      setRecordedSet((prev) => new Set(prev).add(currentIndex));
+    } else {
+      setElapsedSeconds(0);
+      setHasRecorded(false);
+      setIsRecording(true);
+    }
+  }
+
+  function resetForQuestion() {
+    setIsRecording(false);
+    setElapsedSeconds(0);
+    setHasRecorded(false);
+  }
+
+  function goToPrevious() {
+    const next = Math.max(0, currentIndex - 1);
+    setCurrentIndex(next);
+    setVisitedSet((prev) => new Set(prev).add(next));
+    resetForQuestion();
+  }
+
+  function goToNext() {
+    const next = Math.min(RETELL_TOTAL - 1, currentIndex + 1);
+    setCurrentIndex(next);
+    setVisitedSet((prev) => new Set(prev).add(next));
+    resetForQuestion();
+  }
+
+  function goToQuestion(index: number) {
+    setVisitedSet((prev) => new Set(prev).add(index));
+    setCurrentIndex(index);
+    resetForQuestion();
+  }
+
+  const currentLecture = RETELL_LECTURES[currentIndex];
+
+  return (
+    <div className="task-page">
+      <TaskTopBar activeTaskId="retell-lecture" />
+      <div className="task-layout">
+        <TaskSidebar
+          activeTaskId="retell-lecture"
+          questionCount={currentIndex + 1}
+          progress={{ current: recordedSet.size, total: RETELL_TOTAL }}
+        />
+        <section className="task-main">
+          <div className="task-main-header">
+            <span className="task-main-header-icon"><LectureIcon /></span>
+            <h1>Retell Lecture</h1>
+          </div>
+          <p className="task-main-sub">
+            Read the lecture notes and retell the main ideas in your own words.
+          </p>
+
+          <h3 className="task-block-label">Lecture Notes</h3>
+          <div className="task-text-box">
+            <p style={{ margin: "0 0 0.75rem", fontWeight: 800, fontSize: "1.05rem" }}>{currentLecture.title}</p>
+            <p style={{ margin: 0, lineHeight: 1.7 }}>{currentLecture.notes}</p>
+          </div>
+
+          <div className="task-recording-row">
+            <h3 className="task-block-label">Your Recording</h3>
+            <span className={`task-status-pill${hasRecorded ? " recorded" : ""}`}>
+              {hasRecorded ? "Recorded" : "Not Recorded"}
+            </span>
+          </div>
+          <div className="task-recording-box">
+            <button
+              type="button"
+              className={`task-mic-button${isRecording ? " recording" : ""}`}
+              onClick={handleMicClick}
+              aria-label={isRecording ? "Stop recording" : "Start recording"}
+            >
+              <MicIcon />
+            </button>
+            <p className="task-recording-title">
+              {isRecording ? "Recording… click to stop" : hasRecorded ? "Recording complete" : "Click the microphone to start recording"}
+            </p>
+            <p className="task-recording-sub">You will have up to {RETELL_TIME_LIMIT} seconds to retell the lecture.</p>
+            <div className="task-timer">
+              <ClockIcon /> {formatTime(elapsedSeconds)} / {formatTime(RETELL_TIME_LIMIT)}
+            </div>
+          </div>
+          <TaskFooterNav current={currentIndex + 1} total={RETELL_TOTAL} onPrevious={goToPrevious} onNext={goToNext} />
+        </section>
+        <TaskInfoPanels
+          instructions={retellLectureInstructions}
+          tips={retellLectureTips}
+          currentIndex={currentIndex}
+          totalQuestions={RETELL_TOTAL}
+          recordedSet={recordedSet}
+          onNavigate={goToQuestion}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════
+// Answer Short Question task
+// ══════════════════════════════════════════════
+const SHORT_QUESTIONS = [
+  { question: "What is the largest ocean on Earth?", answer: "The Pacific Ocean" },
+  { question: "What gas do plants absorb from the atmosphere?", answer: "Carbon dioxide" },
+  { question: "How many continents are there on Earth?", answer: "Seven" },
+  { question: "What is the chemical symbol for water?", answer: "H2O" },
+  { question: "Which planet is known as the Red Planet?", answer: "Mars" },
+  { question: "What is the main language spoken in Brazil?", answer: "Portuguese" },
+  { question: "What device measures temperature?", answer: "A thermometer" },
+  { question: "What is the boiling point of water in Celsius?", answer: "100 degrees" },
+  { question: "Which organ pumps blood throughout the body?", answer: "The heart" },
+  { question: "What is the capital of Japan?", answer: "Tokyo" },
+];
+const SHORT_TOTAL = SHORT_QUESTIONS.length;
+const SHORT_TIME_LIMIT = 10;
+
+const shortQuestionInstructions = [
+  "Read the question displayed on screen.",
+  "Provide a brief and accurate answer.",
+  "You will have up to 10 seconds to respond.",
+  "Speak clearly and directly.",
+];
+const shortQuestionTips = [
+  "Keep your answer short — one or two words is fine.",
+  "Don't overthink — answer with your first instinct.",
+  "If unsure, give the most reasonable answer.",
+];
+
+function AnswerShortQuestionTask() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isRecording, setIsRecording] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [hasRecorded, setHasRecorded] = useState(false);
+  const [recordedSet, setRecordedSet] = useState<Set<number>>(new Set());
+  const [visitedSet, setVisitedSet] = useState<Set<number>>(new Set(new Set([0])));
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (isRecording) {
+      intervalRef.current = setInterval(() => {
+        setElapsedSeconds((prev) => {
+          if (prev + 1 >= SHORT_TIME_LIMIT) {
+            setIsRecording(false);
+            setHasRecorded(true);
+            setRecordedSet((p) => new Set(p).add(currentIndex));
+            return SHORT_TIME_LIMIT;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isRecording]);
+
+  function handleMicClick() {
+    if (isRecording) {
+      setIsRecording(false);
+      setHasRecorded(true);
+      setRecordedSet((prev) => new Set(prev).add(currentIndex));
+    } else {
+      setElapsedSeconds(0);
+      setHasRecorded(false);
+      setIsRecording(true);
+    }
+  }
+
+  function resetForQuestion() {
+    setIsRecording(false);
+    setElapsedSeconds(0);
+    setHasRecorded(false);
+  }
+
+  function goToPrevious() {
+    const next = Math.max(0, currentIndex - 1);
+    setCurrentIndex(next);
+    setVisitedSet((prev) => new Set(prev).add(next));
+    resetForQuestion();
+  }
+
+  function goToNext() {
+    const next = Math.min(SHORT_TOTAL - 1, currentIndex + 1);
+    setCurrentIndex(next);
+    setVisitedSet((prev) => new Set(prev).add(next));
+    resetForQuestion();
+  }
+
+  function goToQuestion(index: number) {
+    setVisitedSet((prev) => new Set(prev).add(index));
+    setCurrentIndex(index);
+    resetForQuestion();
+  }
+
+  const currentQ = SHORT_QUESTIONS[currentIndex];
+
+  return (
+    <div className="task-page">
+      <TaskTopBar activeTaskId="answer-short-question" />
+      <div className="task-layout">
+        <TaskSidebar
+          activeTaskId="answer-short-question"
+          questionCount={currentIndex + 1}
+          progress={{ current: recordedSet.size, total: SHORT_TOTAL }}
+        />
+        <section className="task-main">
+          <div className="task-main-header">
+            <span className="task-main-header-icon"><ChatIcon /></span>
+            <h1>Answer Short Question</h1>
+          </div>
+          <p className="task-main-sub">
+            Read the question and provide a short, accurate answer.
+          </p>
+
+          <h3 className="task-block-label">Question</h3>
+          <div className="task-text-box" style={{ display: "flex", alignItems: "center", minHeight: "12vh" }}>
+            <p style={{ margin: 0, fontWeight: 800, fontSize: "1.15rem", lineHeight: 1.6 }}>{currentQ.question}</p>
+          </div>
+
+          <div className="task-recording-row">
+            <h3 className="task-block-label">Your Recording</h3>
+            <span className={`task-status-pill${hasRecorded ? " recorded" : ""}`}>
+              {hasRecorded ? "Recorded" : "Not Recorded"}
+            </span>
+          </div>
+          <div className="task-recording-box">
+            <button
+              type="button"
+              className={`task-mic-button${isRecording ? " recording" : ""}`}
+              onClick={handleMicClick}
+              aria-label={isRecording ? "Stop recording" : "Start recording"}
+            >
+              <MicIcon />
+            </button>
+            <p className="task-recording-title">
+              {isRecording ? "Recording… click to stop" : hasRecorded ? "Recording complete" : "Click the microphone to start recording"}
+            </p>
+            <p className="task-recording-sub">You will have up to {SHORT_TIME_LIMIT} seconds to answer.</p>
+            <div className="task-timer">
+              <ClockIcon /> {formatTime(elapsedSeconds)} / {formatTime(SHORT_TIME_LIMIT)}
+            </div>
+          </div>
+          <TaskFooterNav current={currentIndex + 1} total={SHORT_TOTAL} onPrevious={goToPrevious} onNext={goToNext} />
+        </section>
+        <TaskInfoPanels
+          instructions={shortQuestionInstructions}
+          tips={shortQuestionTips}
+          currentIndex={currentIndex}
+          totalQuestions={SHORT_TOTAL}
+          recordedSet={recordedSet}
+          onNavigate={goToQuestion}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════
+// Fallback for unknown task types
 // ══════════════════════════════════════════════
 function ComingSoonTask({ taskId }: { taskId: string }) {
   const task = speakingTasks.find((t) => t.id === taskId);
@@ -420,17 +1092,11 @@ function ComingSoonTask({ taskId }: { taskId: string }) {
 export default function TaskPage({ params }: { params: { taskId: string } }) {
   const { taskId } = params;
 
-  if (taskId === "read-aloud") {
-    return <ReadAloudTask />;
-  }
-
-  // Repeat Sentence, Describe Image, Retell Lecture, Answer Short Question
-  // each get their own component here later, following the same pattern
-  // as ReadAloudTask above, e.g.:
-  // if (taskId === "repeat-sentence") return <RepeatSentenceTask />;
-  // if (taskId === "describe-image") return <DescribeImageTask />;
-  // if (taskId === "retell-lecture") return <RetellLectureTask />;
-  // if (taskId === "answer-short-question") return <AnswerShortQuestionTask />;
+  if (taskId === "read-aloud") return <ReadAloudTask />;
+  if (taskId === "repeat-sentence") return <RepeatSentenceTask />;
+  if (taskId === "describe-image") return <DescribeImageTask />;
+  if (taskId === "retell-lecture") return <RetellLectureTask />;
+  if (taskId === "answer-short-question") return <AnswerShortQuestionTask />;
 
   return <ComingSoonTask taskId={taskId} />;
 }
