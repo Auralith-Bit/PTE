@@ -8,7 +8,7 @@ type LinkItem = { label: string; href?: string; icon?: string };
 
 const footerColumns: Record<string, LinkItem[]> = {
   Platform: [
-    { label: 'Practice', icon: '/images/Group 10.png' },
+    { label: 'Practice', href: '/practice', icon: '/images/Group 10.png' },
     { label: 'Mock Test', icon: '/images/Vector (1).png' },
     { label: 'Study Plan', icon: '/images/Group.png' },
     { label: 'Speaking Practice', href: '/practice/speaking', icon: '/images/Group (1).png' },
