@@ -4,14 +4,14 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-type LinkItem = { label: string; icon?: string };
+type LinkItem = { label: string; href?: string; icon?: string };
 
 const footerColumns: Record<string, LinkItem[]> = {
   Platform: [
     { label: 'Practice', icon: '/images/Group 10.png' },
     { label: 'Mock Test', icon: '/images/Vector (1).png' },
     { label: 'Study Plan', icon: '/images/Group.png' },
-    { label: 'Speaking Practice', icon: '/images/Group (1).png' },
+    { label: 'Speaking Practice', href: '/practice/speaking', icon: '/images/Group (1).png' },
     { label: 'Vocabulary', icon: '/images/Vector (1).png' },
   ],
   Courses: [
@@ -116,7 +116,7 @@ export default function Footer() {
                 {links.map((item) => (
                   <li key={item.label}>
                     <Link
-                      href="#"
+                      href={item.href || '#'}
                       className="text-[15px] text-gray-900 hover:text-indigo-600 transition-colors flex items-center gap-1.5"
                     >
                       {item.icon ? (
