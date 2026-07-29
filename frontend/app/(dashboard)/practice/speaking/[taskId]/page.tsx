@@ -596,16 +596,16 @@ function RepeatSentenceTask() {
 // Describe Image task
 // ══════════════════════════════════════════════
 const DESCRIBE_IMAGES = [
-  { title: "City Skyline at Sunset", description: "A panoramic view of a modern city skyline with tall skyscrapers, bridges, and a river reflecting the orange and pink hues of the setting sun." },
-  { title: "Classroom Environment", description: "A well-lit classroom with desks arranged in rows, a whiteboard at the front, bookshelves along the walls, and students engaged in group work." },
-  { title: "Marketplace Scene", description: "A bustling outdoor marketplace with vendors selling fresh fruits, vegetables, and flowers. Shoppers carry bags while walking through narrow aisles." },
-  { title: "Factory Production Line", description: "An automated factory floor with robotic arms assembling products on a conveyor belt. Workers in safety gear monitor the equipment at various stations." },
-  { title: "Beach Landscape", description: "A tropical beach with white sand, palm trees swaying in the breeze, turquoise water, and a few boats anchored near the shore under a clear blue sky." },
-  { title: "Traffic Intersection", description: "A busy city intersection with cars, buses, and bicycles waiting at a red traffic light. Pedestrians cross the street using a designated crosswalk." },
-  { title: "Library Interior", description: "A spacious modern library with floor-to-ceiling bookshelves, reading tables with lamps, comfortable seating areas, and students studying quietly." },
-  { title: "Agricultural Farm", description: "A large farm field with rows of crops stretching to the horizon. A tractor is visible in the distance, and irrigation channels run between the rows." },
-  { title: "Hospital Ward", description: "A clean hospital ward with beds separated by curtains, medical equipment on stands, nurses at a station, and natural light coming through large windows." },
-  { title: "Technology Office", description: "An open-plan tech office with standing desks, large monitors, bean bags, whiteboards covered in diagrams, and employees collaborating in small groups." },
+  { image: "/images/describeimage1.png" },
+  { image: "/images/describeimage2.png" },
+  { image: "/images/describeimage3.png" },
+  { image: "/images/describeimage4.png" },
+  { image: "/images/describeimage5.png" },
+  { image: "/images/describeimage6.png" },
+  { image: "/images/describeimage7.png" },
+  { image: "/images/describeimage8.png" },
+  { image: "/images/describeimage9.png" },
+  { image: "/images/describeimage10.png" },
 ];
 const DESCRIBE_TOTAL = DESCRIBE_IMAGES.length;
 const DESCRIBE_TIME_LIMIT = 40;
@@ -630,6 +630,11 @@ function DescribeImageTask() {
   const [recordedSet, setRecordedSet] = useState<Set<number>>(new Set());
   const [visitedSet, setVisitedSet] = useState<Set<number>>(new Set(new Set([0])));
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const dragContainerRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const startObjectPosition = useRef(0);
+  const [objectPositionX, setObjectPositionX] = useState(0);
 
   useEffect(() => {
     if (isRecording) {
@@ -666,6 +671,7 @@ function DescribeImageTask() {
     setIsRecording(false);
     setElapsedSeconds(0);
     setHasRecorded(false);
+    setObjectPositionX(0);
   }
 
   function goToPrevious() {
@@ -688,6 +694,38 @@ function DescribeImageTask() {
     resetForQuestion();
   }
 
+  function handleDragStart(e: React.MouseEvent | React.TouchEvent) {
+    const container = dragContainerRef.current;
+    if (!container) return;
+    isDragging.current = true;
+    startX.current = "touches" in e ? e.touches[0].pageX : e.pageX;
+    startObjectPosition.current = objectPositionX;
+
+    function onMove(ev: MouseEvent | TouchEvent) {
+      if (!isDragging.current) return;
+      const x = "touches" in ev ? ev.touches[0].pageX : ev.pageX;
+      const walk = x - startX.current;
+      const containerWidth = container.offsetWidth;
+      const percentPerPx = 100 / (containerWidth * 1.8);
+      const delta = walk * percentPerPx * -1;
+      const clamped = Math.max(0, Math.min(100, startObjectPosition.current + delta));
+      setObjectPositionX(clamped);
+    }
+
+    function onEnd() {
+      isDragging.current = false;
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onEnd);
+      document.removeEventListener("touchmove", onMove);
+      document.removeEventListener("touchend", onEnd);
+    }
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onEnd);
+    document.addEventListener("touchmove", onMove);
+    document.addEventListener("touchend", onEnd);
+  }
+
   const currentImage = DESCRIBE_IMAGES[currentIndex];
 
   return (
@@ -705,13 +743,86 @@ function DescribeImageTask() {
             <h1>Describe Image</h1>
           </div>
           <p className="task-main-sub">
-            Study the image description below and describe it in detail.
+            Study the image below and describe it in detail.
           </p>
 
           <h3 className="task-block-label">Image to Describe</h3>
           <div className="task-text-box">
-            <p style={{ margin: "0 0 0.75rem", fontWeight: 800, fontSize: "1.05rem" }}>{currentImage.title}</p>
-            <p style={{ margin: 0, lineHeight: 1.7 }}>{currentImage.description}</p>
+            {currentImage.image ? (
+              currentIndex === 5 ? (
+                <div
+                  ref={dragContainerRef}
+                  onMouseDown={handleDragStart}
+                  onTouchStart={handleDragStart}
+                  style={{
+                    overflow: "hidden",
+                    borderRadius: 8,
+                    cursor: "grab",
+                    height: 350,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    position: "relative",
+                    userSelect: "none",
+                  }}
+                >
+                  <img
+                    src={currentImage.image}
+                    alt="Image to describe"
+                    style={{
+                      width: "80%",
+                      height: "80%",
+                      objectFit: "cover",
+                      objectPosition: `${objectPositionX}% 50%`,
+                      pointerEvents: "none",
+                    }}
+                  />
+                </div>
+              ) : currentIndex === 4 ? (
+                <div
+                  style={{
+                    overflow: "hidden",
+                    borderRadius: 8,
+                    height: 350,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    position: "relative",
+                  }}
+                >
+                  <img
+                    src={currentImage.image}
+                    alt="Image to describe"
+                    style={{
+                      width: "80%",
+                      height: "80%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </div>
+              ) : (
+                <div
+                  style={{
+                    overflow: "hidden",
+                    borderRadius: 8,
+                    height: 350,
+                    display: "flex",
+                    alignItems: "center",
+                    position: "relative",
+                  }}
+                >
+                  <img
+                    src={currentImage.image}
+                    alt="Image to describe"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </div>
+              )
+            ) : null}
           </div>
 
           <div className="task-recording-row">
