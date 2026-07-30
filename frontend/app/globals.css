@@ -515,7 +515,7 @@
 .task-status-pill.recorded { background: #d9f7e3; color: #1a8a4a; }
 .task-recording-box {
   background: #f4f2fd; border-radius: 14px; padding: 2rem 1.5rem;
-  display: flex; flex-direction: column; align-items: center; text-align: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
   gap: 0.4rem; margin-bottom: 1.5rem;
   min-height: 50vh;
 }
