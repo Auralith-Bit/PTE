@@ -239,7 +239,7 @@ function TaskFooterNav({
 // Read Aloud task (fully implemented)
 // ══════════════════════════════════════════════
 const READ_ALOUD_TEXTS = [
-  "The rapid advancement of technology has transformed the way we live, work and communicate. Artificial intelligence and automation are becoming increasingly integrated in our daily routines, offering both opportunities and challenges. A we embrace these changes, it is essential to adapt and acquire new skills to remain relevant in this ever-evolving world.",
+  "The rapid advancement of technology has transformed the way we live, work and communicate. Artificial intelligence and automation are becoming increasingly integrated in our daily routines, offering both opportunities and challenges. As we embrace these changes, it is essential to adapt and acquire new skills to remain relevant in this ever-evolving world.",
   "Climate change remains one of the most pressing issues of our time, affecting ecosystems, economies, and communities worldwide. Governments and organizations are increasingly investing in renewable energy and sustainable practices to reduce carbon emissions and mitigate long-term environmental damage.",
   "Effective communication is a cornerstone of successful teamwork in any organization. Clear, concise, and respectful dialogue helps prevent misunderstandings and builds trust among colleagues, ultimately leading to higher productivity and a more positive work environment.",
   "The rise of remote work has reshaped traditional office culture, giving employees greater flexibility while also introducing new challenges around collaboration and work-life balance. Companies are experimenting with hybrid models to find an approach that suits both business needs and employee wellbeing.",

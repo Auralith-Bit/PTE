@@ -164,7 +164,7 @@ function TrustSection() {
         <p className="text-center font-bold text-[25px] leading-none">
           Trusted by 50,000+ students worldwide
         </p>
-        <div className="border border-gray-200 rounded-[7px] py-[10px] px-[7px] flex items-center justify-center min-h-[107px]" style={{ boxShadow: '1px 1px 12px 0px rgba(0,0,0,0.25)' }}>
+        <div className="border border-gray-200 rounded-[7px] py-[10px] px-[7px] flex items-center justify-center min-h-[107px] transition-all duration-300 hover:border-[#3008F8] hover:shadow-[0_10px_33px_#3008F8]" style={{ boxShadow: '1px 1px 12px 0px rgba(0,0,0,0.25)' }}>
           <div className="flex items-center justify-evenly w-full">
 
           {/* Pearson PTE */}
