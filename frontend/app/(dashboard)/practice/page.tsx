@@ -23,25 +23,7 @@ function ImageIcon() {
   return <Image src="/images/gallery.png" alt="" width={18} height={18} style={{ objectFit: "contain" }} />;
 }
 function LectureIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor">
-      {/* Head */}
-      <circle cx="5.8" cy="5.2" r="2.1" />
-
-      {/* Body */}
-      <path d="M3.8 8.2a1 1 0 0 1 1-1h2.6a1 1 0 0 1 1 1V18H3.8V8.2z"/>
-
-      {/* Legs */}
-      <rect x="4.1" y="18" width="1.3" height="3" rx=".3"/>
-      <rect x="6.8" y="18" width="1.3" height="3" rx=".3"/>
-
-      {/* Arm pointing */}
-      <rect x="7.2" y="9.3" width="4.5" height="1.4" rx=".7"/>
-
-      {/* Presentation board */}
-      <path d="M11.5 4h7A1.5 1.5 0 0 1 20 5.5v9A1.5 1.5 0 0 1 18.5 16h-7v-2h6V6h-6V4z"/>
-    </svg>
-  );
+  return <Image src="/images/RetellLecture.png" alt="Retell Lecture" className="retell-lecture-icon" width={24} height={24} style={{ objectFit: "contain" }} />;
 }
 function ChatIcon() {
   return (
