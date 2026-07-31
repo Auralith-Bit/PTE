@@ -17,16 +17,7 @@ function ImageTypeIcon() {
   return <Image src="/images/gallery.png" alt="" width={14} height={14} style={{ objectFit: "contain" }} />;
 }
 function LectureIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
-      <circle cx="5.8" cy="5.2" r="2.1" />
-      <path d="M3.8 8.2a1 1 0 0 1 1-1h2.6a1 1 0 0 1 1 1V18H3.8V8.2z" />
-      <rect x="4.1" y="18" width="1.3" height="3" rx=".3" />
-      <rect x="6.8" y="18" width="1.3" height="3" rx=".3" />
-      <rect x="7.2" y="9.3" width="4.5" height="1.4" rx=".7" />
-      <path d="M11.5 4h7A1.5 1.5 0 0 1 20 5.5v9A1.5 1.5 0 0 1 18.5 16h-7v-2h6V6h-6V4z" />
-    </svg>
-  );
+  return <Image src="/images/RetellLecture.png" alt="Retell Lecture" width={24} height={24} style={{ objectFit: "contain" }} />;
 }
 function ChatIcon() {
   return (
@@ -799,6 +790,51 @@ function DescribeImageTask() {
                       objectFit: "cover",
                     }}
                   />
+                </div>
+              ) : currentIndex === 8 || currentIndex === 9 ? (
+                <div
+                  style={{
+                    borderRadius: 8,
+                    height: 350,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    position: "relative",
+                  }}
+                >
+                  <div style={{ fontWeight: 700, fontSize: "1.7rem", margin: "12px 0 4px", textAlign: "center" }}>
+                    {currentIndex === 8 ? "The Process of Starting Business" : "The Food Delivery Process"}
+                  </div>
+                  <div
+                    ref={dragContainerRef}
+                    onMouseDown={handleDragStart}
+                    onTouchStart={handleDragStart}
+                    style={{
+                      flex: 1,
+                      width: "100%",
+                      minHeight: 0,
+                      overflow: "hidden",
+                      borderRadius: 8,
+                      cursor: "grab",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      position: "relative",
+                      userSelect: "none",
+                    }}
+                  >
+                    <img
+                      src={currentImage.image}
+                      alt="Image to describe"
+                      style={{
+                        width: "85%",
+                        height: "85%",
+                        objectFit: "cover",
+                        objectPosition: `${objectPositionX}% 50%`,
+                        pointerEvents: "none",
+                      }}
+                    />
+                  </div>
                 </div>
               ) : (
                 <div
