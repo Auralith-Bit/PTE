@@ -266,6 +266,11 @@
 }
 .card-icon svg { width: 24px; height: 24px; color: var(--brand-blue); }
 .recent-icon svg { width: 20px; height: 20px; color: var(--brand-blue); }
+.card-icon .retell-lecture-icon,
+.speaking-type-icon .retell-lecture-icon { width: 24px; height: 24px; }
+.recent-icon .retell-lecture-icon { width: 20px; height: 20px; }
+.task-type-icon .retell-lecture-icon { width: 18px; height: 18px; }
+.task-main-header-icon .retell-lecture-icon { width: 26px; height: 26px; }
 .daily-icon svg { width: 24px; height: 24px; }
 .great-job span svg { width: 22px; height: 22px; color: var(--brand-blue); }
 

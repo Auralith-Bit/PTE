@@ -17,7 +17,7 @@ function ImageTypeIcon() {
   return <Image src="/images/gallery.png" alt="" width={14} height={14} style={{ objectFit: "contain" }} />;
 }
 function LectureIcon() {
-  return <Image src="/images/RetellLecture.png" alt="Retell Lecture" width={24} height={24} style={{ objectFit: "contain" }} />;
+  return <Image src="/images/RetellLecture.png" alt="Retell Lecture" className="retell-lecture-icon" width={24} height={24} style={{ objectFit: "contain" }} />;
 }
 function ChatIcon() {
   return (
