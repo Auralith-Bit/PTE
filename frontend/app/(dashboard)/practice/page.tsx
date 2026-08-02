@@ -232,17 +232,19 @@ export default function PracticePage() {
         </article>
       </section>
 
-      <section className="daily-banner">
-        <div className="daily-banner-content">
-          <span className="daily-icon"><Image src="/images/dailybannericon.png" alt="Daily practice" width={64} height={64} /></span>
-          <div>
-            <h3>Daily Practice, Better Results</h3>
-            <p>Practice a little every day and see a big improvement in your speaking score.</p>
+      <section className="content-section">
+        <div className="daily-banner">
+          <div className="daily-banner-content">
+            <span className="daily-icon"><Image src="/images/dailybannericon.png" alt="Daily practice" width={64} height={64} /></span>
+            <div>
+              <h3>Daily Practice, Better Results</h3>
+              <p>Practice a little every day and see a big improvement in your speaking score.</p>
+            </div>
           </div>
+          <Link href="/practice" className="practice-button">
+            Start Daily Practice →
+          </Link>
         </div>
-        <Link href="/practice" className="practice-button">
-          Start Daily Practice →
-        </Link>
       </section>
 
       <Footer />

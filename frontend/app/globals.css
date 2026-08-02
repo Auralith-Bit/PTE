@@ -214,10 +214,10 @@
 .performance-bar-track { width: 100%; height: 6px; background: #ece9f7; border-radius: 999px; overflow: hidden; }
 .performance-bar-fill { height: 100%; border-radius: 999px; transition: width 0.6s ease; }
 .great-job { display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: center; margin-top: auto; padding: 0.9rem 1.25rem; background: rgba(110, 80, 255, 0.08); border-radius: 20px; }
-.great-job span { width: 50px; height: 50px; display: grid; place-items: center; border-radius: 16px; background: rgba(110, 80, 255, 0.12); font-size: 1.4rem; }
+.great-job span { width: 50px; height: 50px; display: grid; place-items: center; border-radius: 16px; font-size: 1.4rem; }
 .great-job strong { display: block; margin-bottom: 0.35rem; white-space: nowrap; }
 
-.daily-banner { max-width: 1080px; margin: 2rem auto 4rem; padding: 1.4rem 2.2rem; background: rgba(48, 8, 248, 0.1); border-radius: 20px; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
+.daily-banner { width: 100%; margin: 2rem 0 4rem; padding: 1.4rem 2.2rem; background: rgba(48, 8, 248, 0.1); border-radius: 20px; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
 .daily-banner-content { display: flex; align-items: center; gap: 1rem; }
 .daily-icon { display: grid; place-items: center; flex-shrink: 0; }
 .daily-icon img { width: 64px; height: 64px; object-fit: contain; }
@@ -272,7 +272,7 @@
 .task-type-icon .retell-lecture-icon { width: 18px; height: 18px; }
 .task-main-header-icon .retell-lecture-icon { width: 26px; height: 26px; }
 .daily-icon svg { width: 24px; height: 24px; }
-.great-job span svg { width: 22px; height: 22px; color: var(--brand-blue); }
+.great-job span svg { width: 42px; height: 42px; color: var(--brand-blue); }
 
 /* "View Performance" pill button */
 .outline-link {
