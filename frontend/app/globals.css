@@ -158,14 +158,14 @@
   object-fit: cover;
 }
 
-.stats-card { width: 700px; height: 82px; min-height: 0; background: #fff; border: 1.5px solid #e6e6ee; border-radius: 10px; box-shadow: 0 8px 24px rgba(33,25,138,0.06); display: flex; align-items: center; padding: 5px; gap: 20px; }
+.stats-card { width: 700px; height: 66px; min-height: 0; background: #fff; border: 1.5px solid #e6e6ee; border-radius: 10px; box-shadow: 0 8px 24px rgba(33,25,138,0.06); display: flex; align-items: center; padding: 5px; gap: 20px; }
 .stat { min-width: 0; flex: 1; display: flex; align-items: center; gap: 10px; padding: 0 12px; }
 .stat + .stat { border-left: 1px solid #909090; }
-.stat-icon { width: 42px; height: 42px; background: #e4e0ff; border-radius: 50%; display: grid; place-items: center; flex: 0 0 auto; }
-.stat-icon svg { width: 24px; height: 24px; fill: none; stroke: var(--brand-blue); stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; }
+.stat-icon { width: 34px; height: 34px; background: #e4e0ff; border-radius: 50%; display: grid; place-items: center; flex: 0 0 auto; }
+.stat-icon svg { width: 19px; height: 19px; fill: none; stroke: var(--brand-blue); stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; }
 .stat strong, .stat small { display: block; }
-.stat strong { font-size: 18px; line-height: 20px; }
-.stat small { color: #414141; font-size: 13px; line-height: 16px; }
+.stat strong { font-size: 15px; line-height: 17px; }
+.stat small { color: #414141; font-size: 11px; line-height: 14px; }
 
 .content-section { max-width: 1320px; margin: 0 auto; padding: 2.5rem 4rem; }
 .outline-link, .text-link { color: var(--brand-blue); font-weight: 700; background: transparent; border: none; cursor: pointer; }
