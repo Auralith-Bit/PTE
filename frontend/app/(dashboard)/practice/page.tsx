@@ -103,7 +103,7 @@ export default function PracticePage() {
             <div className="breadcrumbs">
               <Link href="/">Home</Link><Chevron /><span>Practice</span><Chevron />
             </div>
-            <h1>Practice <em>Smarter</em> and<br /><em>Achieve</em> Higher Scores</h1>
+            <h1>Practice <em>Smarter</em><br />and <em>Achieve</em><br />Higher Scores</h1>
             <p>Build confidence, improve accuracy, and master every PTE<br /> question type through targeted practice.</p>
             <div className="stats-card">
               {stats.map(({ value, label, Icon }) => (
