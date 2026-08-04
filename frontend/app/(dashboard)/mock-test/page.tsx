@@ -6,11 +6,11 @@ export default function MockTestPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Top Hero Section */}
-      <section className="bg-[#F5F3FF]">
+      <section className="bg-[#F5F3FF] overflow-hidden">
         <div className="pl-[110px] pr-[10px] pt-[12px]">
           <div className="flex items-center min-h-[486px]">
             {/* Left Content */}
-            <div className="w-[50%] py-[101px] pr-6 flex-shrink-0">
+            <div className="w-[44%] py-14 pr-6 flex-shrink-0">
               <h1 className="text-[35px] font-extrabold text-gray-900 leading-[1.18] mb-5">
                 Master the Mock <span className="text-indigo-600">Test Experience</span>
                 <br />
@@ -22,7 +22,7 @@ export default function MockTestPage() {
               </p>
 
               {/* Stats Row */}
-              <div className="w-[612px] h-[69px] flex items-center gap-[17px] rounded-[7px] border-[1.5px] border-gray-200 p-[7px] bg-white" style={{ boxShadow: '0px 4px 20px rgba(0,0,0,0.1)' }}>
+              <div className="w-full max-w-[612px] h-[69px] flex items-center gap-[17px] rounded-[7px] border-[1.5px] border-gray-200 p-[7px] bg-white" style={{ boxShadow: '0px 4px 20px rgba(0,0,0,0.1)' }}>
                 {/* Stat 1 */}
                 <div className="flex items-center gap-2 flex-1">
                   <div className="w-9 h-9 rounded-full bg-[#EEF2FF] flex items-center justify-center flex-shrink-0">
@@ -84,7 +84,7 @@ export default function MockTestPage() {
             </div>
 
             {/* Right Content - Hero Image */}
-            <div className="w-[590px] relative h-[321px] flex-shrink-0 overflow-visible ml-[50px]">
+            <div className="w-[684px] relative h-[316px] flex-shrink-0 overflow-visible">
               <div className="relative w-full h-full rounded-2xl overflow-hidden bg-[#e0e5f2] border border-gray-200">
                  <Image src="/images/ChatGPT Image Jun 10, 2026, 12_20_03 PM 1.png" alt="Student with headphones" fill className="object-contain" />
               </div>
