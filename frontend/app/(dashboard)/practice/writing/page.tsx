@@ -100,9 +100,9 @@ export default function WritingPracticePage() {
             <h1>Writing Practice</h1>
             <p>
               Improve your writing skills with AI-powered evaluation, detailed
-              feedback, and real PTE exam-style tasks. Practice Summarize
-              Written Text and Essay to build grammar, vocabulary, coherence,
-              and confidence for a higher PTE score.
+              feedback, and real exam-style tasks. Practice Summarize Written
+              Text and Essay to build grammar, vocabulary, and confidence for
+              a higher PTE score.
             </p>
             <div className="speaking-stats">
               {heroStats.map(({ value, label, Icon }) => (

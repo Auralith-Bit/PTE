@@ -116,11 +116,10 @@ export default function ListeningPracticePage() {
             </div>
             <h1>Listening Practice</h1>
             <p>
-              Improve your listening skills with real PTE exam-style audio. 
-              Practice regularly with AI-powered feedback to strengthen 
-              your comprehension, note-taking, and overall listening 
-              performance. Build confidence, improve accuracy, and 
-              achieve your target PTE score with consistent practice.
+              Improve your listening skills with real PTE exam-style audio,
+              AI-powered feedback, and regular practice to strengthen your
+              comprehension, note-taking, and overall performance. Build
+              confidence to achieve your target PTE score.
             </p>
             <div className="speaking-stats">
               {heroStats.map(({ value, label, Icon }) => (
