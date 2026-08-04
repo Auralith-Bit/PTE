@@ -363,11 +363,11 @@
 .ai-feedback-card {
   position: absolute; left: -4%; top: 42%; z-index: 3;
   background: #fff; border-radius: 14px; box-shadow: 0 16px 32px rgba(33,25,138,0.14);
-  padding: 16px 20px; min-width: 190px;
+  padding: 12px 14px; min-width: 160px;
 }
-.ai-feedback-card h4 { margin: 0 0 10px; font-size: 0.95rem; font-weight: 800; }
-.ai-feedback-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 4px 0; font-size: 0.9rem; color: #333; font-weight: 600; }
-.tag-good { background: #d9f7e3; color: #1a8a4a; font-size: 0.78rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; }
+.ai-feedback-card h4 { margin: 0 0 6px; font-size: 0.82rem; font-weight: 800; padding-bottom: 6px; border-bottom: 1px solid #eee; }
+.ai-feedback-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 3px 0; font-size: 0.8rem; color: #333; font-weight: 600; }
+.tag-good { background: #d9f7e3; color: #1a8a4a; font-size: 0.7rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; }
 
 .audio-bar {
   position: absolute; bottom: 2%; left: 58%; transform: translateX(-50%);
@@ -614,9 +614,9 @@
 .writing-breadcrumbs .current-crumb { color: var(--brand-blue); font-weight: 800; }
 
 .practice-hero-visual { display: flex; }
-.practice-feedback-card { min-width: 210px; padding: 18px 24px; top: 37%; left: -2%; }
-.practice-feedback-card h4 { padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
-.practice-feedback-card .ai-feedback-row { font-size: 0.82rem; padding: 3px 0; gap: 10px; }
+.practice-feedback-card { min-width: 160px; padding: 12px 14px; top: 37%; left: -2%; }
+.practice-feedback-card h4 { padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px solid #eee; font-size: 0.82rem; }
+.practice-feedback-card .ai-feedback-row { font-size: 0.8rem; padding: 3px 0; gap: 12px; }
 
 /* ── Writing task cards (Summarize Written Text / Essay) ── */
 .writing-tasks-section { padding-top: 5rem; padding-bottom: 0; }
