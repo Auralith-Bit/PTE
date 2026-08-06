@@ -61,6 +61,14 @@ function SpeakerIcon() {
     </svg>
   );
 }
+function EyeIcon() {
+  return (
+    <svg viewBox="0 0 24 24">
+      <path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
 
 // ══════════════════════════════════════════════
 // Shared task metadata (drives top tab bar + sidebar list)
@@ -915,13 +923,13 @@ const RETELL_LECTURES = [
   { title: "Renewable Energy", notes: "Renewable energy comes from naturally replenishing sources like sunlight, wind, and water. Solar panels convert sunlight to electricity, wind turbines harness wind energy, and hydroelectric dams generate power from flowing water. These sources reduce reliance on fossil fuels." },
 ];
 const RETELL_TOTAL = RETELL_LECTURES.length;
-const RETELL_TIME_LIMIT = 40;
+const RETELL_TIME_LIMIT = 60;
 
 const retellLectureInstructions = [
-  "Read the lecture notes carefully before recording.",
-  "Summarize the main ideas in your own words.",
-  "You will have up to 40 seconds to retell the lecture.",
-  "Focus on key concepts, not every detail.",
+  "You will hear the lecture once.",
+  "You will have 10 seconds to prepare.",
+  "You will have up to 60 seconds to retell the lecture.",
+  "Retell the lecture in as much detail as you can.",
 ];
 const retellLectureTips = [
   "Identify 2-3 main points before you start speaking.",
@@ -936,6 +944,8 @@ function RetellLectureTask() {
   const [hasRecorded, setHasRecorded] = useState(false);
   const [recordedSet, setRecordedSet] = useState<Set<number>>(new Set());
   const [visitedSet, setVisitedSet] = useState<Set<number>>(new Set(new Set([0])));
+  const [showQuestion, setShowQuestion] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -969,10 +979,18 @@ function RetellLectureTask() {
     }
   }
 
+  function handlePlayClick() {
+    if (isPlaying) return;
+    setIsPlaying(true);
+    setTimeout(() => setIsPlaying(false), 2000);
+  }
+
   function resetForQuestion() {
     setIsRecording(false);
     setElapsedSeconds(0);
     setHasRecorded(false);
+    setShowQuestion(false);
+    setIsPlaying(false);
   }
 
   function goToPrevious() {
@@ -1012,14 +1030,50 @@ function RetellLectureTask() {
             <h1>Retell Lecture</h1>
           </div>
           <p className="task-main-sub">
-            Read the lecture notes and retell the main ideas in your own words.
+            You will hear a lecture. Listen carefully and then, in your own words, retell the lecture in as much detail as you can.
           </p>
 
-          <h3 className="task-block-label">Lecture Notes</h3>
-          <div className="task-text-box">
-            <p style={{ margin: "0 0 0.75rem", fontWeight: 800, fontSize: "1.05rem" }}>{currentLecture.title}</p>
-            <p style={{ margin: 0, lineHeight: 1.7 }}>{currentLecture.notes}</p>
+          <h3 className="task-block-label">Steps</h3>
+          <div className="task-steps-box">
+            <ul className="task-steps">
+              <li><span className="task-step-number">1</span> You will hear the lecture once.</li>
+              <li><span className="task-step-number">2</span> You will have 10 seconds to prepare.</li>
+              <li><span className="task-step-number">3</span> You will have up to {RETELL_TIME_LIMIT} seconds to retell the lecture.</li>
+            </ul>
           </div>
+
+          <div className="task-audio-header">
+            <h3 className="task-block-label">Lecture Audio</h3>
+            <button
+              type="button"
+              className="task-show-hide-btn"
+              onClick={() => setShowQuestion((v) => !v)}
+              aria-label={showQuestion ? "Hide Question" : "Show Question"}
+            >
+              <EyeIcon />
+              {showQuestion ? "Hide Question" : "Show Question"}
+            </button>
+          </div>
+          <div className="task-audio-box">
+            <button
+              type="button"
+              className={`task-mic-button${isPlaying ? " recording" : ""}`}
+              onClick={handlePlayClick}
+              disabled={isPlaying}
+              aria-label="Play lecture audio"
+            >
+              <SpeakerIcon />
+            </button>
+            <p className="task-recording-title">
+              {isPlaying ? "Playing lecture…" : "Click play to listen to the lecture."}
+            </p>
+          </div>
+          {showQuestion && (
+            <div className="task-question-box">
+              <p style={{ margin: "0 0 0.75rem", fontWeight: 800, fontSize: "1.05rem" }}>{currentLecture.title}</p>
+              <p style={{ margin: 0, lineHeight: 1.7 }}>{currentLecture.notes}</p>
+            </div>
+          )}
 
           <div className="task-recording-row">
             <h3 className="task-block-label">Your Recording</h3>
