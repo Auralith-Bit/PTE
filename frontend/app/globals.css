@@ -160,7 +160,7 @@
   margin-top: 14px;
 }
 
-.stats-card { width: 700px; height: 66px; min-height: 0; background: #fff; border: 1.5px solid #e6e6ee; border-radius: 10px; box-shadow: 0 8px 24px rgba(33,25,138,0.06); display: flex; align-items: center; padding: 5px; gap: 20px; }
+.stats-card { width: 620px; height: 66px; min-height: 0; background: #fff; border: 1.5px solid #e6e6ee; border-radius: 10px; box-shadow: 0 8px 24px rgba(33,25,138,0.06); display: flex; align-items: center; padding: 5px; gap: 20px; }
 .stat { min-width: 0; flex: 1; display: flex; align-items: center; gap: 10px; padding: 0 12px; }
 .stat + .stat { border-left: 1px solid #909090; }
 .stat-icon { width: 34px; height: 34px; background: #e4e0ff; border-radius: 50%; display: grid; place-items: center; flex: 0 0 auto; }
