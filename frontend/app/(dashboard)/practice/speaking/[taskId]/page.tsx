@@ -250,11 +250,11 @@ const READ_ALOUD_TEXTS = [
   "Travel broadens perspective by exposing individuals to different cultures, languages, and ways of life. Even short trips to unfamiliar places can challenge assumptions and foster a greater appreciation for the diversity of human experience.",
 ];
 const TOTAL_QUESTIONS = READ_ALOUD_TEXTS.length;
-const RECORD_LIMIT_SECONDS = 40;
+const RECORD_LIMIT_SECONDS = 60;
 
 const readAloudInstructions = [
   "Read the text aloud clearly and naturally.",
-  "You will have up to 40 seconds to record.",
+  "You will have up to 60 seconds to record.",
   "You can't re-record once you submit.",
   "Make sure to speak in a quiet environment.",
 ];
@@ -382,7 +382,7 @@ function ReadAloudTask() {
                 ? "Recording complete"
                 : "Click the microphone to start recording"}
             </p>
-            <p className="task-recording-sub">You will have up to 40 seconds to read aloud.</p>
+            <p className="task-recording-sub">You will have up to {RECORD_LIMIT_SECONDS} seconds to read aloud.</p>
             <div className="task-timer">
               <ClockIcon /> {formatTime(elapsedSeconds)} / {formatTime(RECORD_LIMIT_SECONDS)}
             </div>
@@ -607,7 +607,7 @@ const DESCRIBE_IMAGES = [
   { image: "/images/describeimage10.png" },
 ];
 const DESCRIBE_TOTAL = DESCRIBE_IMAGES.length;
-const DESCRIBE_TIME_LIMIT = 40;
+const DESCRIBE_TIME_LIMIT = 60;
 
 const describeImageInstructions = [
   "Look at the image description carefully before recording.",
@@ -618,7 +618,7 @@ const describeImageInstructions = [
 const describeImageTips = [
   "Start with an overview, then describe specific details.",
   "Use descriptive language and spatial references.",
-  "Practice structuring your response in 40 seconds.",
+  "Practice structuring your response in 60 seconds.",
 ];
 
 function DescribeImageTask() {
