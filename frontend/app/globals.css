@@ -323,7 +323,7 @@
 .speaking-hero { background: rgba(246, 244, 253, 1); padding: 28px 90px 32px; min-height: calc(100vh - 65px); }
 .speaking-hero-grid {
   display: grid;
-  grid-template-columns: 1fr 1.1fr;
+  grid-template-columns: 1.2fr 0.9fr;
   gap: 12px;
   align-items: stretch;
   height: 356px;
@@ -350,16 +350,16 @@
 .speaking-stat strong { font-size: 0.92rem; font-weight: 800; }
 .speaking-stat span { font-size: 0.74rem; color: #4a4a5e; font-weight: 600; }
 
-.speaking-hero-visual { position: relative; display: flex; justify-content: center; }
-.speaking-hero-image { width: 95%; max-width: 500px; height: auto; object-fit: contain; border-radius: 18px; }
+.speaking-hero-visual { position: relative; display: flex; justify-content: center; align-items: flex-end; }
+.speaking-hero-image { width: 100%; max-width: 540px; height: auto; object-fit: contain; border-radius: 18px; }
 .speaking-floating-chat {
-  position: absolute; top: 4%; left: 36%; z-index: 3;
+  position: absolute; top: 22%; left: 36%; z-index: 3;
   color: var(--brand-blue);
 }
 .speaking-floating-chat svg { width: 48px; height: 48px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 
 .ai-feedback-card {
-  position: absolute; left: -4%; top: 42%; z-index: 3;
+  position: absolute; left: -16%; top: 40%; z-index: 3;
   background: #fff; border-radius: 14px; box-shadow: 0 16px 32px rgba(33,25,138,0.14);
   padding: 12px 14px; min-width: 160px;
 }
@@ -641,9 +641,11 @@
 .writing-breadcrumbs .current-crumb { color: var(--brand-blue); font-weight: 800; }
 
 .practice-hero-visual { display: flex; }
-.practice-feedback-card { min-width: 160px; padding: 12px 14px; top: 37%; left: -2%; }
+.practice-feedback-card { min-width: 160px; padding: 12px 14px; top: 35%; left: -19%; }
+.listening-hero-visual .practice-feedback-card { top: 43%; left: -19%; }
 .practice-feedback-card h4 { padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px solid #eee; font-size: 0.82rem; }
 .practice-feedback-card .ai-feedback-row { font-size: 0.8rem; padding: 3px 0; gap: 12px; }
+.listening-hero-visual .speaking-hero-image { transform: translateY(10px); }
 
 /* ── Writing task cards (Summarize Written Text / Essay) ── */
 .writing-tasks-section { padding-top: 5rem; padding-bottom: 0; }
@@ -717,8 +719,8 @@
    ══════════════════════════════════════════════ */
 
 .reading-hero { background: rgba(246, 244, 253, 1); }
-.reading-hero-visual { background: #f2effc; border-radius: 20px; padding: 24px 0; overflow: visible; }
-.reading-hero .speaking-hero-image { width: 85%; max-width: 440px; }
+.reading-hero-visual { background: #f2effc; border-radius: 20px; padding: 24px 0; overflow: visible; align-items: stretch; }
+.reading-hero .speaking-hero-image { width: 86%; max-width: 430px; }
 
 .reading-floating-doc {
   top: 8%; left: 8%; width: 44px; height: 44px; border-radius: 12px;
@@ -727,7 +729,7 @@
 }
 .reading-floating-doc svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-.reading-feedback-card { top: 42%; left: -4%; min-width: 160px; padding: 12px 14px; font-size: 0.8rem; }
+.reading-feedback-card { top: 40%; left: -19%; min-width: 160px; padding: 12px 14px; font-size: 0.8rem; }
 .reading-feedback-card h4 {
   display: flex; align-items: center; gap: 6px; font-size: 0.82rem;
   padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px solid #eee;

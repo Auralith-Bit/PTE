@@ -134,7 +134,7 @@ export default function ListeningPracticePage() {
             </div>
           </div>
 
-          <div className="speaking-hero-visual practice-hero-visual">
+          <div className="speaking-hero-visual practice-hero-visual listening-hero-visual">
             <Image
               src="/images/girlpiclistening.png"
               alt="Student wearing headphones during PTE listening practice"
