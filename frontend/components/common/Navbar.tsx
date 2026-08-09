@@ -9,6 +9,11 @@ export default function Navbar() {
   const pathname = usePathname();
   const [practiceOpen, setPracticeOpen] = useState(false);
 
+  // Hide Navbar on auth pages — they have their own headers
+  const authRoutes = ['/signup', '/login'];
+  const isAuthPage = authRoutes.some(r => pathname === r || pathname.startsWith(r + '/'));
+  if (isAuthPage) return null;
+
   const navLinks = [
     { name: 'Mock Test', href: '/mock-test' },
     { name: 'Courses', href: '/courses' },
