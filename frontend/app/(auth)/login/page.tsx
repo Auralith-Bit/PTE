@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 /* ─── SVG Icons ──────────────────────────────────────────────────── */
@@ -124,16 +125,14 @@ export default function LoginPage() {
     <div className="min-h-screen bg-[#EEEAF8] flex flex-col">
       {/* ── Top Bar ── */}
       <header className="flex items-center justify-between px-8 py-4">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-lg bg-brand flex items-center justify-center shadow-sm">
-            <span className="text-white font-bold text-xs">PTE</span>
-          </div>
+        <Link href="/" className="flex items-center gap-2 group">
+          <Image src="/images/PTElogo.png" alt="PTE Prep" width={50} height={50} className="rounded-full bg-[rgba(74,45,219,0.2)]" />
           <div>
-            <div className="flex items-baseline">
-              <span className="font-bold text-brand text-lg leading-tight">PTE.</span>
-              <span className="font-bold text-gray-800 text-lg leading-tight">Prep</span>
-            </div>
-            <p className="text-[10px] text-gray-500 -mt-0.5">Practice Smarter. Score Higher,</p>
+            <span className="text-[22px] font-[800] tracking-tight">
+              <span className="text-indigo-600">PTE.</span>
+              <span className="text-indigo-600">Prep</span>
+            </span>
+            <p className="text-xs text-gray-500 -mt-0.5">Practice Smarter. Score Higher</p>
           </div>
         </Link>
         <p className="text-sm text-gray-600">
