@@ -147,24 +147,24 @@ export default function LoginPage() {
       <main className="flex flex-1 items-center justify-between max-w-7xl mx-auto w-full px-8 pb-10 gap-8">
         {/* Left: Hero */}
         <div className="flex-1 max-w-lg">
-          <h1 className="text-4xl font-bold text-gray-900 leading-tight mb-4">
+          <h1 className="text-[32px] font-bold text-gray-900 leading-tight mb-4">
             Welcome Back to<br />
             <span className="text-brand">PTE Success</span><br />
             Journey
           </h1>
-          <p className="text-gray-600 text-base mb-10 max-w-sm">
+          <p className="text-gray-600 text-[15px] mb-8 max-w-sm">
             Log in to continue your AI-powered PTE preparation, access your mock tests, and track your progress.
           </p>
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-5">
             {features.map((f, i) => (
-              <div key={i} className="flex items-start gap-4">
-                <div className="w-11 h-11 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0">
+              <div key={i} className="flex items-start gap-3.5">
+                <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0">
                   {f.icon}
                 </div>
                 <div>
                   <h3 className="font-semibold text-brand text-sm">{f.title}</h3>
-                  <p className="text-gray-600 text-sm">{f.desc}</p>
+                  <p className="text-gray-600 text-[13px]">{f.desc}</p>
                 </div>
               </div>
             ))}
@@ -172,18 +172,18 @@ export default function LoginPage() {
         </div>
 
         {/* Right: Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md shrink-0">
-          <h2 className="text-2xl font-bold text-gray-900 mb-1">Log In</h2>
-          <p className="text-gray-500 text-sm mb-6">
+        <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md shrink-0">
+          <h2 className="text-[22px] font-bold text-gray-900 mb-1">Log In</h2>
+          <p className="text-gray-500 text-[13px] mb-5">
             Welcome back! Please enter your details.
           </p>
 
           {/* OAuth Buttons */}
-          <div className="flex flex-col gap-3 mb-5">
+          <div className="flex flex-col gap-2.5 mb-4">
             <Link
               href="/signup/google"
               id="login-google-btn"
-              className="flex items-center justify-center gap-3 w-full border border-gray-200 rounded-xl py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 hover:shadow-sm"
+              className="flex items-center justify-center gap-3 w-full border border-gray-200 rounded-xl py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 hover:shadow-sm"
             >
               <GoogleIcon />
               Continue with Google
@@ -191,7 +191,7 @@ export default function LoginPage() {
             <Link
               href="/signup/facebook"
               id="login-facebook-btn"
-              className="flex items-center justify-center gap-3 w-full border border-gray-200 rounded-xl py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 hover:shadow-sm"
+              className="flex items-center justify-center gap-3 w-full border border-gray-200 rounded-xl py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 hover:shadow-sm"
             >
               <FacebookIcon />
               Continue with Facebook
@@ -199,9 +199,9 @@ export default function LoginPage() {
           </div>
 
           {/* Divider */}
-          <div className="flex items-center gap-3 mb-5">
+          <div className="flex items-center gap-3 mb-4">
             <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs text-gray-400 font-medium">or</span>
+            <span className="text-[11px] text-gray-400 font-medium">or</span>
             <div className="flex-1 h-px bg-gray-200" />
           </div>
 
@@ -273,7 +273,7 @@ export default function LoginPage() {
               id="login-submit-btn"
               type="submit"
               disabled={loading}
-              className="w-full bg-brand hover:bg-brand-dark text-white font-bold py-3.5 rounded-xl transition-all duration-200 text-sm mt-2 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md hover:-translate-y-0.5"
+              className="w-full bg-brand hover:bg-brand-dark text-white font-bold py-3 rounded-xl transition-all duration-200 text-[13px] mt-2 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md hover:-translate-y-0.5"
             >
               {loading ? (
                 <>
@@ -287,15 +287,15 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="text-xs text-gray-500 text-center mt-5">
+          <p className="text-xs text-gray-500 text-center mt-4">
             Don&apos;t have an account?{' '}
             <Link href="/signup" className="text-brand font-semibold hover:underline">
               Sign up for free
             </Link>
           </p>
 
-          <div className="border-t border-gray-100 mt-6 pt-5">
-            <Link href="/" className="flex items-center justify-center gap-2 text-sm font-semibold text-gray-700 hover:text-brand transition-colors">
+          <div className="border-t border-gray-100 mt-5 pt-4">
+            <Link href="/" className="flex items-center justify-center gap-2 text-[13px] font-semibold text-gray-700 hover:text-brand transition-colors">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M19 12H5M12 5l-7 7 7 7"/>
               </svg>
