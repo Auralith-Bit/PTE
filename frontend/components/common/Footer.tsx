@@ -43,7 +43,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#F5F3FF]">
       {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-6 pt-12 pb-6">
+      <div className="page-container pt-12 pb-6">
         <div className="grid grid-cols-5 gap-8 mb-8">
 
           {/* Brand Column */}

@@ -7,7 +7,7 @@ export default function MockTestPage() {
     <div className="min-h-screen bg-white">
       {/* Top Hero Section */}
       <section className="bg-[#F5F3FF] overflow-hidden">
-        <div className="pl-[110px] pr-[10px] pt-[12px]">
+        <div className="page-container pt-[12px]">
           <div className="flex items-center min-h-[486px]">
             {/* Left Content */}
             <div className="w-[44%] py-14 pr-6 flex-shrink-0">
@@ -123,7 +123,8 @@ export default function MockTestPage() {
       </section>
 
       {/* Main Content Area */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 py-12">
+      <section className="py-12">
+        <div className="page-container">
         {/* Mock Test Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {[1, 2, 1, 1].map((item, idx) => (
@@ -254,6 +255,7 @@ export default function MockTestPage() {
               </tbody>
             </table>
           </div>
+        </div>
         </div>
       </section>
       <Footer />

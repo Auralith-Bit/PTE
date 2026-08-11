@@ -7,7 +7,7 @@ export default function CoursesPage() {
     <div className="min-h-screen bg-white font-sans">
       {/* 1. Hero Section */}
       <section className="bg-[#F5F3FF] overflow-hidden">
-        <div className="pl-[110px] pr-[10px] pt-[12px]">
+        <div className="page-container pt-[12px]">
           <div className="flex items-center min-h-[486px]">
 
           {/* Left Content */}
@@ -75,7 +75,8 @@ export default function CoursesPage() {
       </section>
 
       {/* 2. Choose Your Learning Path */}
-      <section className="pl-[110px] pr-[110px] py-20">
+      <section className="py-20">
+        <div className="page-container">
         <h2 className="text-[2rem] font-extrabold text-gray-900 mb-12">Choose Your Learning Path</h2>
         
         <div className="flex justify-between gap-[33px]">
@@ -196,11 +197,12 @@ export default function CoursesPage() {
             </div>
           </div>
         </div>
+        </div>
       </section>
 
       {/* 3. Skill-Based Courses */}
       <section className="bg-white py-20">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16">
+        <div className="page-container">
           <div className="flex items-center justify-between mb-10">
             <h2 className="text-3xl font-extrabold text-gray-900">Skill-Based Courses</h2>
             <Link href="#" className="text-[#3B28CC] font-bold flex items-center hover:underline">
@@ -252,7 +254,8 @@ export default function CoursesPage() {
       </section>
 
       {/* 4. Comparison Table */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 py-20">
+      <section className="py-20">
+        <div className="page-container">
         <div className="bg-white rounded-2xl border border-[#000000] overflow-hidden shadow-sm">
           <table className="w-full text-center border-collapse">
             <thead>
@@ -293,10 +296,12 @@ export default function CoursesPage() {
             </tbody>
           </table>
         </div>
+        </div>
       </section>
 
       {/* 5. Journey & Testimonials */}
       <section className="bg-white py-20 w-full">
+        <div className="page-container">
         <div className="grid grid-cols-2 gap-[20px]">
            {/* Left: Journey */}
             <div className="bg-white rounded-2xl px-8 py-8 flex flex-col items-center justify-center min-h-[400px]">
@@ -417,12 +422,14 @@ export default function CoursesPage() {
                     ))}
                  </div>
               </div>
-           </div>
+            </div>
+         </div>
         </div>
       </section>
 
       {/* 6. Why Choose Our Courses */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 py-[30px]">
+      <section className="py-[30px]">
+        <div className="page-container">
         <h2 className="text-3xl font-extrabold text-gray-900 mb-10">Why Choose Our Courses?</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
            {[
@@ -440,13 +447,15 @@ export default function CoursesPage() {
                   </div>
                   <h3 className="font-bold text-gray-900 text-center mb-3 text-[16px]">{feature.title}</h3>
                  <p className="text-xs text-gray-500 text-center leading-relaxed flex-1">{feature.desc}</p>
-              </div>
-           ))}
+           </div>
+            ))}
+        </div>
         </div>
       </section>
 
       {/* 7. CTA Banner */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 pb-24">
+      <section className="pb-24">
+        <div className="page-container">
          <div className="bg-[#E0DAFE] rounded-3xl p-[7px] md:p-[23px] flex flex-col md:flex-row items-center justify-between relative overflow-hidden">
             {/* Background decorative elements */}
             <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#C7D2FE] rounded-full opacity-50 blur-3xl"></div>
@@ -467,6 +476,7 @@ export default function CoursesPage() {
                <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
             </button>
          </div>
+        </div>
       </section>
 
       <Footer />

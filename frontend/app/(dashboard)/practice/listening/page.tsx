@@ -109,6 +109,7 @@ export default function ListeningPracticePage() {
   return (
     <main className="practice-page">
       <section className="speaking-hero practice-hero">
+        <div className="page-container">
         <div className="speaking-hero-grid">
           <div className="speaking-hero-copy">
             <div className="breadcrumbs">
@@ -154,9 +155,11 @@ export default function ListeningPracticePage() {
             </div>
           </div>
         </div>
+        </div>
       </section>
 
       <section className="content-section listening-tasks-section">
+        <div className="page-container">
         <h2 className="section-title-center">Listening Question Types</h2>
         <div className="listening-tasks-grid">
           {listeningTasks.map(({ title, description, time, Icon, slug }) => (
@@ -186,10 +189,12 @@ export default function ListeningPracticePage() {
             ))}
           </div>
         </div>
+        </div>
       </section>
 
       <section className="content-section">
-        <div className="practice-cta-banner">
+        <div className="page-container">
+          <div className="practice-cta-banner">
           <div className="practice-cta-robot-wrap">
             <Image src="/images/writingrobot.png" alt="AI robot mascot" width={140} height={140} />
           </div>
@@ -202,6 +207,7 @@ export default function ListeningPracticePage() {
           </Link>
           <div className="practice-cta-illustration">
             <Image src="/images/writingfeedback.png" alt="Checklist illustration" width={140} height={140} />
+          </div>
           </div>
         </div>
       </section>

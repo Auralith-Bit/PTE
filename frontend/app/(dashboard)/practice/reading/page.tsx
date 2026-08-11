@@ -97,6 +97,7 @@ export default function ReadingPracticePage() {
   return (
     <main className="practice-page">
       <section className="speaking-hero reading-hero">
+        <div className="page-container">
         <div className="speaking-hero-grid">
           <div className="speaking-hero-copy">
             <div className="breadcrumbs">
@@ -144,9 +145,11 @@ export default function ReadingPracticePage() {
 
           </div>
         </div>
+        </div>
       </section>
 
       <section className="content-section speaking-types-section">
+        <div className="page-container">
         <h2 className="section-title-center">Reading Question Types</h2>
         <div className="speaking-types-layout">
           <div className="speaking-types-grid">
@@ -194,10 +197,12 @@ export default function ReadingPracticePage() {
             </Link>
           </aside>
         </div>
+        </div>
       </section>
 
       <section className="content-section">
-        <div className="ai-cta-banner">
+        <div className="page-container">
+          <div className="ai-cta-banner">
           <div className="ai-cta-copy">
             <h3>Get AI Feedback On Your Reading</h3>
             <p>
@@ -211,6 +216,7 @@ export default function ReadingPracticePage() {
           <div className="ai-cta-visual">
             <Image src="/images/Aifeedback.png" alt="AI Feedback" width={380} height={380} style={{ objectFit: "contain" }} />
           </div>
+        </div>
         </div>
       </section>
 

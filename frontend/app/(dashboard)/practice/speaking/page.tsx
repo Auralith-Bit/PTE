@@ -123,6 +123,7 @@ export default function SpeakingPracticePage() {
   return (
     <main className="practice-page">
       <section className="speaking-hero">
+        <div className="page-container">
         <div className="speaking-hero-grid">
           <div className="speaking-hero-copy">
             <div className="breadcrumbs">
@@ -181,9 +182,11 @@ export default function SpeakingPracticePage() {
             </div>
           </div>
         </div>
+        </div>
       </section>
 
       <section className="content-section speaking-types-section">
+        <div className="page-container">
         <h2 className="section-title-center">Speaking Question Types</h2>
         <div className="speaking-types-layout">
           <div className="speaking-types-grid">
@@ -231,10 +234,12 @@ export default function SpeakingPracticePage() {
             </Link>
           </aside>
         </div>
+        </div>
       </section>
 
       <section className="content-section">
-        <div className="ai-cta-banner">
+        <div className="page-container">
+          <div className="ai-cta-banner">
           <div className="ai-cta-copy">
             <h3>Get AI Feedback On Your Speaking</h3>
             <p>Receive instant AI-powered feedback to improve your speaking score.</p>
@@ -245,6 +250,7 @@ export default function SpeakingPracticePage() {
           <div className="ai-cta-visual">
             <Image src="/images/Aifeedback.png" alt="AI Feedback" width={380} height={380} style={{ objectFit: "contain" }} />
           </div>
+        </div>
         </div>
       </section>
 

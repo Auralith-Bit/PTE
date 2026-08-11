@@ -7,7 +7,7 @@ export default function ResourcesPage() {
     <div className="min-h-screen bg-white font-sans">
       {/* 1. Hero Section */}
       <section className="bg-[#F5F3FF] overflow-hidden">
-        <div className="pl-[110px] pr-[10px] pt-[12px]">
+        <div className="page-container pt-[12px]">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12 min-h-[486px]">
           {/* Left Content */}
           <div className="flex-1 max-w-2xl z-10">
@@ -60,7 +60,8 @@ export default function ResourcesPage() {
       </section>
 
       {/* 2. Category Cards (Horizontal scrolling list or grid) */}
-      <section className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-16 py-20 mt-[30px] overflow-hidden">
+      <section className="py-20 mt-[30px] overflow-hidden">
+        <div className="page-container">
         <div className="relative overflow-hidden">
           <div className="flex gap-6 animate-scroll-infinite w-max">
             {[
@@ -115,10 +116,12 @@ export default function ResourcesPage() {
             ))}
           </div>
         </div>
+        </div>
       </section>
 
       {/* 3. Popular Resources */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 py-12 mb-20">
+      <section className="py-12 mb-20">
+        <div className="page-container">
         <div className="flex items-center justify-between mb-10">
           <h2 className="text-3xl font-extrabold text-black">Popular Resources</h2>
           <Link href="#" className="border border-gray-200 text-[#3B28CC] font-bold py-2.5 px-6 rounded-lg flex items-center hover:bg-gray-50 transition-colors shadow-sm text-sm">
@@ -153,9 +156,10 @@ export default function ResourcesPage() {
                   <button className="border border-gray-200 text-[#3B28CC] font-bold py-1.5 px-4 rounded-lg hover:bg-gray-50 transition-colors text-sm">
                      {item.btn}
                   </button>
-               </div>
-            </div>
+                </div>
+             </div>
           ))}
+        </div>
         </div>
       </section>
 

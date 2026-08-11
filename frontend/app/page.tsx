@@ -7,7 +7,7 @@ import Footer from '@/components/common/Footer';
 function HeroSection() {
   return (
     <section className="bg-[#F5F3FF] overflow-hidden">
-      <div className="pl-[110px] pr-[10px] pt-[12px]">
+      <div className="page-container pt-[12px]">
         <div className="flex items-center min-h-[486px]">
 
           {/* ── Left Content ── */}
@@ -160,7 +160,7 @@ function HeroSection() {
 function TrustSection() {
   return (
     <section className="bg-white mt-[80px]">
-      <div className="px-[110px] min-h-[154px] flex flex-col justify-center gap-[27px]">
+      <div className="page-container min-h-[154px] flex flex-col justify-center gap-[27px]">
         <p className="text-center font-bold text-[25px] leading-none">
           Trusted by 50,000+ students worldwide
         </p>
@@ -293,7 +293,7 @@ const features = [
 function FeaturesSection() {
   return (
     <section className="py-14 bg-white mt-[40px]">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="page-container">
         <h2 className="text-center text-2xl font-bold text-black mb-10">
           Everything You Need To Achieve Your{' '}
           <span className="text-[#3008F8]">Target Score</span>
@@ -338,8 +338,9 @@ const WAVE_HEIGHTS = [4, 8, 14, 20, 28, 32, 28, 22, 16, 24, 32, 28, 20, 12, 18, 
 
 function MockTestSection() {
   return (
-    <section className="bg-white pl-[110px] pr-[60px] py-[25px]">
-      <div className="w-full rounded-2xl overflow-hidden" style={{ boxShadow: '1px 1px 12px 0px #3008F833' }}>
+    <section className="bg-white py-[25px]">
+      <div className="page-container">
+        <div className="w-full rounded-2xl overflow-hidden" style={{ boxShadow: '1px 1px 12px 0px #3008F833' }}>
         <div className="flex h-[301px] gap-[3px]">
 
           {/* ── Left Panel: Dark Indigo ── */}
@@ -472,6 +473,7 @@ function MockTestSection() {
           </div>
         </div>
       </div>
+    </div>
     </section>
   );
 }
@@ -557,7 +559,7 @@ const testimonials = [
 function TestimonialsSection() {
   return (
     <section className="py-14 bg-white">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="page-container">
         <h2 className="text-center text-2xl font-bold text-gray-900 mb-10">
           Student Success Stories
         </h2>

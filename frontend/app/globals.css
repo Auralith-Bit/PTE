@@ -3,7 +3,23 @@
 @tailwind utilities;
 
 :root {
+  /* Brand */
   --brand-blue: rgba(48, 8, 248, 1);
+
+  /* Global layout system
+     Use these values for every normal page so the left/right content edge stays consistent. */
+  --container-max-width: 1440px;
+  --page-gutter: clamp(24px, 5vw, 90px);
+
+  /* Shared spacing */
+  --section-space: 64px;
+  --hero-space: 32px;
+
+  /* Shared radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
 }
 
 @layer base {
@@ -19,6 +35,41 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+}
+
+/* ==========================================================
+   GLOBAL LAYOUT SYSTEM
+   ----------------------------------------------------------
+   Keep full-width backgrounds on the section itself and put
+   the actual content inside .page-container / .container.
+   This gives Home, Practice, Courses, Mock Test, Resources,
+   and other normal pages the same left/right content boundary.
+   ========================================================== */
+.page-container,
+.container {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+/* Full-width section helper. */
+.full-width {
+  width: 100%;
+}
+
+/* Use this when a section needs a full-width background but
+   its content should still follow the global page boundary. */
+.section-inner {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+/* Prevent accidental horizontal overflow from decorative UI. */
+body {
+  overflow-x: hidden;
 }
 
 @keyframes waveBar {
@@ -123,7 +174,7 @@
 /* ── Hero: rebuilt sizing so it fits one viewport like the Figma design ── */
 .practice-hero {
   background: rgba(246, 244, 253, 1);
-  padding: 28px 90px 32px;
+  padding: 28px 0 32px;
   min-height: calc(100vh - 65px);
 }
 .practice-hero .hero-grid {
@@ -169,7 +220,7 @@
 .stat strong { font-size: 15px; line-height: 17px; }
 .stat small { color: #414141; font-size: 11px; line-height: 14px; }
 
-.content-section { padding: 2.5rem 90px; }
+.content-section { padding: 2.5rem 0; }
 .outline-link, .text-link { color: var(--brand-blue); font-weight: 700; background: transparent; border: none; cursor: pointer; }
 
 /* ── Practice by Question Type: rebuilt to match Figma (compact cards, auto-width button) ── */
@@ -191,7 +242,7 @@
 .mode-icon img { width: 90%; height: 90%; object-fit: contain; border-radius: 50%;background: rgba(235, 231, 255, 1); }
 .mode-card h3 { margin: 0 0 5px; font-size: 16px; font-weight: 700; line-height: 1.2; }
 .mode-card p { margin: 0 0 8px; color: #4f4f4f; font-size: 13px; line-height: 1.3; }
-.mode-card text-link { font-size: 14px; font-weight: 700; color: var(--brand-blue); text-decoration: none; }
+.mode-card .text-link { font-size: 14px; font-weight: 700; color: var(--brand-blue); text-decoration: none; }
 @media (max-width: 992px) {
   .mode-grid {
     grid-template-columns: 1fr;
@@ -235,7 +286,7 @@
 }
 @media (max-width: 800px) {
   .practice-hero { padding: 32px 0; }
-  .practice-hero .hero-grid { width: min(100% - 32px, 600px); display: block; margin: 0 auto; }
+  .practice-hero .hero-grid { width: 100%; display: block; margin: 0; }
   .practice-hero h1 { margin: 20px 0 16px; font-size: 30px; line-height: 1.35; }
   .hero-copy p { font-size: 16px; line-height: 1.6; }
   .hero-image-wrap { margin-top: 28px; border-radius: 19px; max-height: 320px; justify-content: center; }
@@ -320,7 +371,7 @@
    ══════════════════════════════════════════════ */
 
 /* ── Hero ── */
-.speaking-hero { background: rgba(246, 244, 253, 1); padding: 28px 90px 32px; min-height: calc(100vh - 65px); }
+.speaking-hero { background: rgba(246, 244, 253, 1); padding: 28px 0 32px; min-height: calc(100vh - 65px); }
 .speaking-hero-grid {
   display: grid;
   grid-template-columns: 1.2fr 0.9fr;
@@ -475,7 +526,7 @@
 
 /* ── 3-column layout ── */
 .task-layout {
-  max-width: 1400px; margin: 0 auto; padding: 1.5rem 2rem 3rem;
+  max-width: var(--container-max-width); margin: 0 auto; padding: 1.5rem var(--page-gutter) 3rem;
   display: grid; grid-template-columns: 280px 1fr 280px; gap: 1.5rem; align-items: stretch;
 }
 

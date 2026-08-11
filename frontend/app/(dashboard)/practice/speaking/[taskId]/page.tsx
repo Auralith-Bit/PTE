@@ -702,6 +702,7 @@ function DescribeImageTask() {
 
     function onMove(ev: MouseEvent | TouchEvent) {
       if (!isDragging.current) return;
+      if (!container) return;
       const x = "touches" in ev ? ev.touches[0].pageX : ev.pageX;
       const walk = x - startX.current;
       const containerWidth = container.offsetWidth;

@@ -98,8 +98,9 @@ export default function PracticePage() {
   return (
     <main className="practice-page">
       <section className="practice-hero">
-        <div className="hero-grid">
-          <div className="hero-copy">
+        <div className="page-container">
+          <div className="hero-grid">
+            <div className="hero-copy">
             <div className="breadcrumbs">
               <Link href="/">Home</Link><Chevron /><span>Practice</span><Chevron />
             </div>
@@ -117,10 +118,12 @@ export default function PracticePage() {
           <div className="hero-image-wrap">
             <Image src="/images/girlPic.png" alt="Student wearing headphones and practising speaking" width={800} height={600} priority />
           </div>
+          </div>
         </div>
       </section>
 
       <section className="content-section question-section">
+        <div className="page-container">
         <div className="section-heading">
           <h2>Practice by Question Type</h2>
           <button className="outline-link"><InsightIcon /> View Performance</button>
@@ -137,10 +140,12 @@ export default function PracticePage() {
               <small className="card-meta"><DocIcon /> 10 Questions</small>
             </article>
           ))}
+          </div>
         </div>
       </section>
 
       <section className="content-section mode-section">
+        <div className="page-container">
         <div className="section-heading">
           <h2>Practice Options</h2>
           <Link className="practice-button" href="/practice">
@@ -167,9 +172,11 @@ export default function PracticePage() {
             </article>
           ))}
         </div>
+        </div>
       </section>
 
-      <section className="content-section dashboard-grid">
+      <section className="content-section">
+        <div className="page-container dashboard-grid">
         <article className="dashboard-card recent-card">
           <div className="card-heading">
             <h2>Your Recent Practice</h2>
@@ -230,20 +237,23 @@ export default function PracticePage() {
             </div>
           </div>
         </article>
+        </div>
       </section>
 
       <section className="content-section">
-        <div className="daily-banner">
-          <div className="daily-banner-content">
-            <span className="daily-icon"><Image src="/images/dailybannericon.png" alt="Daily practice" width={64} height={64} /></span>
-            <div>
-              <h3>Daily Practice, Better Results</h3>
-              <p>Practice a little every day and see a big improvement in your speaking score.</p>
+        <div className="page-container">
+          <div className="daily-banner">
+            <div className="daily-banner-content">
+              <span className="daily-icon"><Image src="/images/dailybannericon.png" alt="Daily practice" width={64} height={64} /></span>
+              <div>
+                <h3>Daily Practice, Better Results</h3>
+                <p>Practice a little every day and see a big improvement in your speaking score.</p>
+              </div>
             </div>
+            <Link href="/practice" className="practice-button">
+              Start Daily Practice →
+            </Link>
           </div>
-          <Link href="/practice" className="practice-button">
-            Start Daily Practice →
-          </Link>
         </div>
       </section>
 
