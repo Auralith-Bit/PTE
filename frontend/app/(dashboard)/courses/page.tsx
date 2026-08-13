@@ -9,14 +9,14 @@ export default function CoursesPage() {
     <div className="min-h-screen bg-white font-sans">
       {/* 1. Hero Section */}
       <section className="bg-[#F5F3FF] overflow-hidden">
-        <div className="page-container pt-[12px]">
-          <div className="breadcrumbs w-[44%] pt-6">
+        <div className="page-container">
+          <div className="breadcrumbs w-[44%] pt-7">
             <Link href="/">Home</Link><Chevron /><span>Courses</span><Chevron />
           </div>
-          <div className="flex items-center min-h-[486px]">
+          <div className="flex items-start min-h-[486px]">
 
           {/* Left Content */}
-          <div className="w-[44%] py-14 pr-6 flex-shrink-0">
+          <div className="w-[44%] pt-8 pb-14 pr-6 flex-shrink-0">
             <h1 className="text-[2rem] font-extrabold text-gray-900 leading-[1.18] mb-5">
               Master PTE with{' '}
               <span className="text-indigo-600">Structured Learning Paths</span>

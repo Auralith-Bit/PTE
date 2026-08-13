@@ -9,13 +9,13 @@ export default function ResourcesPage() {
     <div className="min-h-screen bg-white font-sans">
       {/* 1. Hero Section */}
       <section className="bg-[#F5F3FF] overflow-hidden">
-        <div className="page-container pt-[12px]">
-          <div className="breadcrumbs max-w-2xl pt-6">
+        <div className="page-container">
+          <div className="breadcrumbs max-w-2xl pt-7">
             <Link href="/">Home</Link><Chevron /><span>Resources</span><Chevron />
           </div>
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 min-h-[486px]">
+          <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-12 min-h-[486px]">
           {/* Left Content */}
-          <div className="flex-1 max-w-2xl z-10">
+          <div className="flex-1 max-w-2xl z-10 pt-8">
             <h1 className="text-[33px] font-extrabold text-black leading-[1.15] tracking-tight mb-6">
               PTE Resources
             </h1>
