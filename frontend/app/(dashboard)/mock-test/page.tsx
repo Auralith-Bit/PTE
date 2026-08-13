@@ -15,7 +15,7 @@ export default function MockTestPage() {
           </div>
           <div className="flex items-start min-h-[486px]">
             {/* Left Content */}
-            <div className="w-[44%] pt-8 pb-14 pr-6 flex-shrink-0">
+            <div className="w-[44%] pt-9 pb-14 pr-6 flex-shrink-0">
               <h1 className="text-[35px] font-extrabold text-gray-900 leading-[1.18] mb-5">
                 Master the Mock <span className="text-indigo-600">Test Experience</span>
                 <br />

@@ -15,7 +15,7 @@ export default function ResourcesPage() {
           </div>
           <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-12 min-h-[486px]">
           {/* Left Content */}
-          <div className="flex-1 max-w-2xl z-10 pt-8">
+          <div className="flex-1 max-w-2xl z-10 pt-9">
             <h1 className="text-[33px] font-extrabold text-black leading-[1.15] tracking-tight mb-6">
               PTE Resources
             </h1>

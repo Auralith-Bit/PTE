@@ -16,7 +16,7 @@ export default function CoursesPage() {
           <div className="flex items-start min-h-[486px]">
 
           {/* Left Content */}
-          <div className="w-[44%] pt-8 pb-14 pr-6 flex-shrink-0">
+          <div className="w-[44%] pt-9 pb-14 pr-6 flex-shrink-0">
             <h1 className="text-[2rem] font-extrabold text-gray-900 leading-[1.18] mb-5">
               Master PTE with{' '}
               <span className="text-indigo-600">Structured Learning Paths</span>
