@@ -2,12 +2,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Footer from '@/components/common/Footer';
 
+const Chevron = () => <span className="chevron" aria-hidden="true">›</span>;
+
 export default function ResourcesPage() {
   return (
     <div className="min-h-screen bg-white font-sans">
       {/* 1. Hero Section */}
       <section className="bg-[#F5F3FF] overflow-hidden">
         <div className="page-container pt-[12px]">
+          <div className="breadcrumbs max-w-2xl pt-6">
+            <Link href="/">Home</Link><Chevron /><span>Resources</span><Chevron />
+          </div>
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12 min-h-[486px]">
           {/* Left Content */}
           <div className="flex-1 max-w-2xl z-10">

@@ -2,12 +2,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Footer from '@/components/common/Footer';
 
+const Chevron = () => <span className="chevron" aria-hidden="true">›</span>;
+
 export default function MockTestPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Top Hero Section */}
       <section className="bg-[#F5F3FF] overflow-hidden">
         <div className="page-container pt-[12px]">
+          <div className="breadcrumbs w-[44%] pt-6">
+            <Link href="/">Home</Link><Chevron /><span>Mock Test</span><Chevron />
+          </div>
           <div className="flex items-center min-h-[486px]">
             {/* Left Content */}
             <div className="w-[44%] py-14 pr-6 flex-shrink-0">
