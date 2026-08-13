@@ -89,7 +89,7 @@ export default function MockTestPage() {
             </div>
 
             {/* Right Content - Hero Image */}
-            <div className="w-[684px] relative h-[316px] flex-shrink-0 overflow-visible">
+            <div className="w-[684px] relative h-[316px] mt-10 flex-shrink-0 overflow-visible">
               <div className="relative w-full h-full rounded-2xl overflow-hidden bg-[#e0e5f2] border border-gray-200">
                  <Image src="/images/ChatGPT Image Jun 10, 2026, 12_20_03 PM 1.png" alt="Student with headphones" fill className="object-contain" />
               </div>
