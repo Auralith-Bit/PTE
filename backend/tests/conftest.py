@@ -1,6 +1,29 @@
 import os
+from pathlib import Path
 
-os.environ["DATABASE_URL"] = "postgresql+psycopg2://postgres:123456@localhost:5432/PTE_AI_test"
+BACKEND_DIR = Path(__file__).resolve().parents[1]
+
+
+def _read_test_database_url() -> str:
+    value = os.environ.get("TEST_DATABASE_URL")
+    if value:
+        return value
+    env_path = BACKEND_DIR / ".env"
+    if env_path.exists():
+        for line in env_path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, raw = line.partition("=")
+            if key.strip() == "TEST_DATABASE_URL":
+                return raw.strip().strip('"').strip("'")
+    raise RuntimeError(
+        "TEST_DATABASE_URL is not set. Add TEST_DATABASE_URL=postgresql+psycopg2://... to backend/.env. "
+        "The test suite drops and recreates every table in that database."
+    )
+
+
+os.environ["DATABASE_URL"] = _read_test_database_url()
 
 import pytest
 from fastapi.testclient import TestClient
