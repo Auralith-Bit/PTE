@@ -372,7 +372,7 @@ export default function CoursesPage() {
                       { name: 'Bibek Bhattarai', location: 'Nepal', image: '/images/image 29.png', text: 'Excellent speaking practice features. The platform is profoundly designed and helped me significantly improve my PTE score.', score: '88%', rating: '5.0', color: '#FF151526', fullColor: '#FF1515' },
                     ].map((t, idx) => (
                        <div key={idx} className="bg-white rounded-[16px] border border-[#D9D9D9] px-[17px] py-[20px] flex flex-col shrink-0 w-[320px]" style={{ boxShadow: '1px 1px 10px 0px #00000033' }}>
-                          <div className="text-[37px] font-bold leading-none mb-0 font-serif" style={{ color: t.fullColor }}>"</div>
+                          <div className="text-[37px] font-bold leading-none mb-0 font-serif" style={{ color: t.fullColor }}>&#34;</div>
                           <div className="flex items-center gap-[7px] mb-[7px]">
                              <Image src={t.image} alt={t.name} width={36} height={36} className="w-[36px] h-[36px] rounded-full object-cover flex-shrink-0 border-2 border-indigo-100" />
                              <div>
@@ -402,7 +402,7 @@ export default function CoursesPage() {
                       { name: 'Ryan Ghimire', location: 'Nepal', image: '/images/image 25.png', text: 'The AI speaking feedback helped me improve my fluency and overall spoken communication significantly. I achieved a PTE score of 88.', score: '88%', rating: '5.0', color: '#1CE7DD26', fullColor: '#1CE7DD' },
                     ].map((t, idx) => (
                        <div key={`dup-${idx}`} className="bg-white rounded-[16px] border border-[#D9D9D9] px-[17px] py-[20px] flex flex-col shrink-0 w-[320px]" style={{ boxShadow: '1px 1px 10px 0px #00000033' }}>
-                          <div className="text-[37px] font-bold leading-none mb-0 font-serif" style={{ color: t.fullColor }}>"</div>
+                          <div className="text-[37px] font-bold leading-none mb-0 font-serif" style={{ color: t.fullColor }}>&#34;</div>
                           <div className="flex items-center gap-[7px] mb-[7px]">
                              <Image src={t.image} alt={t.name} width={36} height={36} className="w-[36px] h-[36px] rounded-full object-cover flex-shrink-0 border-2 border-indigo-100" />
                              <div>

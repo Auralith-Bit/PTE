@@ -573,7 +573,7 @@ function TestimonialsSection() {
               style={{ boxShadow: '1px 1px 10px 0px #00000033' }}
             >
               {/* Quote Mark */}
-              <div className="text-[37px] font-bold leading-none mb-0 font-serif" style={{ color: t.color.replace('26', 'FF') }}>"</div>
+              <div className="text-[37px] font-bold leading-none mb-0 font-serif" style={{ color: t.color.replace('26', 'FF') }}>&#34;</div>
 
               {/* Avatar + Name */}
               <div className="flex items-center gap-[7px] mb-[7px]">
