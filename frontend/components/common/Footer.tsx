@@ -205,7 +205,7 @@ export default function Footer() {
 
         {/* Copyright Bar */}
         <div className="w-full h-[53px] rounded-[10px] bg-[#3008F826] pt-[10px] pb-[10px] pl-[27px] pr-[27px] flex items-center justify-between mt-[10px]">
-          <p className="text-[14px] text-gray-900">© 2026 PTE Prep. All right reserved.</p>
+          <p className="text-[14px] text-gray-900">© 2026 PTE Prep. All rights reserved.</p>
           <p className="text-[14px] text-gray-900">Made with passion for your success</p>
         </div>
       </div>

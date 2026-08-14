@@ -601,7 +601,7 @@ const DESCRIBE_IMAGES = [
   { image: "/images/describeimage4.png" },
   { image: "/images/describeimage5.png" },
   { image: "/images/describeimage6.png" },
-  { image: "/images/describeimage7.png" },
+  { image: "/images/describeimage6.png" },
   { image: "/images/describeimage8.png" },
   { image: "/images/describeimage9.png" },
   { image: "/images/describeimage10.png" },

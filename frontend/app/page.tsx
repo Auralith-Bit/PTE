@@ -14,9 +14,9 @@ function HeroSection() {
           <div className="w-[44%] py-14 pr-6 flex-shrink-0">
             <h1 className="text-[2rem] font-extrabold text-gray-900 leading-[1.18] mb-5">
               Achieve Your Dream{' '}
-              <span className="text-indigo-600">PTE Score</span>
+              <span className="text-[#3008F8]">PTE Score</span>
               <br />
-              <span className="text-indigo-600">Unlock</span> Global Opportunities
+              <span className="text-[#3008F8]">Unlock</span> Global Opportunities
             </h1>
             <p className="text-gray-500 text-[15px] leading-relaxed mb-8 max-w-[420px] font-medium">
               Master every section with AI-powered feedback, realistic mock tests, and personalized
@@ -27,7 +27,7 @@ function HeroSection() {
             <div className="flex items-center gap-4 mb-10">
               <button
                 id="hero-start-practice"
-                className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold text-sm hover:bg-indigo-700 transition-all duration-200 shadow-md hover:shadow-indigo-200"
+                className="flex items-center gap-2 bg-[#3008F8] text-white px-6 py-3 rounded-lg font-semibold text-sm hover:bg-[#2506c4] transition-all duration-200 shadow-md hover:shadow-indigo-200"
               >
                 Start Free Practice
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,7 +36,7 @@ function HeroSection() {
               </button>
               <button
                 id="hero-explore-courses"
-                className="px-6 py-3 text-sm font-semibold text-gray-800 bg-white border border-gray-300 rounded-lg hover:border-indigo-400 hover:text-indigo-600 transition-all duration-200"
+                className="px-6 py-3 text-sm font-semibold text-gray-800 bg-white border border-gray-300 rounded-lg hover:border-[#3008F8] hover:text-[#3008F8] transition-all duration-200"
               >
                 Explore Courses
               </button>
@@ -77,7 +77,7 @@ function HeroSection() {
             {/* Floating Card: Speaking Practice */}
             <div className="absolute top-0 left-0 z-20 bg-white rounded-xl shadow-lg px-3 py-2.5 flex items-center gap-2.5 border border-gray-100 w-[162px]">
               <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                <svg className="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 text-[#3008F8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                     d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                 </svg>
@@ -91,7 +91,7 @@ function HeroSection() {
             {/* Floating Card: Mock Test (top right) */}
             <div className="absolute top-0 right-0 z-20 bg-white rounded-xl shadow-lg px-3 py-2.5 border border-gray-100 w-[162px]">
               <div className="flex items-center gap-1.5 mb-1">
-                <svg className="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 text-[#3008F8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                     d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
@@ -103,7 +103,7 @@ function HeroSection() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p className="text-[10px] text-indigo-600 font-semibold">5:00</p>
+                <p className="text-[10px] text-[#3008F8] font-semibold">5:00</p>
               </div>
             </div>
 
@@ -121,7 +121,7 @@ function HeroSection() {
             {/* Floating Card: Writing Evaluation (middle left) */}
             <div className="absolute top-[44%] left-2 z-20 bg-white rounded-xl shadow-lg px-3 py-2.5 border border-gray-100">
               <div className="flex items-center gap-1.5 mb-1">
-                <svg className="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 text-[#3008F8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                     d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
@@ -133,7 +133,7 @@ function HeroSection() {
             {/* Floating Card: Study Plan (bottom right) */}
             <div className="absolute bottom-20 right-4 z-20 bg-white rounded-xl shadow-lg px-3 py-2.5 border border-gray-100">
               <div className="flex items-center gap-1.5 mb-1">
-                <svg className="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 text-[#3008F8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
@@ -313,7 +313,7 @@ function FeaturesSection() {
                 className="border border-gray-200 rounded-[10px] p-[10px] hover:border-indigo-200 transition-all duration-200 cursor-pointer w-[237px] h-[180px] flex-shrink-0 flex flex-col"
                 style={{ boxShadow: '0px 4px 12px 2px rgba(0,0,0,0.25)' }}
               >
-                <div className="mt-[2px] w-[50px] h-[50px] rounded-lg flex items-center justify-center text-indigo-600 mb-[17px]" style={{ backgroundColor: '#3008F826' }}>
+                <div className="mt-[2px] w-[50px] h-[50px] rounded-lg flex items-center justify-center text-[#3008F8] mb-[17px]" style={{ backgroundColor: '#3008F826' }}>
                   {feature.icon}
                 </div>
                 <h3 className="font-semibold text-black text-[17px] leading-none mb-[10px]">{feature.title}</h3>
@@ -358,7 +358,7 @@ function MockTestSection() {
                   'Improving Weakness',
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-[8px] text-white text-[18px] font-medium leading-none">
-                    <div className="w-[13px] h-[13px] rounded-full bg-indigo-600 flex items-center justify-center flex-shrink-0">
+                    <div className="w-[13px] h-[13px] rounded-full bg-[#3008F8] flex items-center justify-center flex-shrink-0">
                       <svg className="w-[9px] h-[9px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                       </svg>
@@ -383,7 +383,7 @@ function MockTestSection() {
               {/* Test Header */}
               <div className="flex items-center pb-[7px]">
                 <div className="flex items-center gap-[7px]">
-                  <svg className="w-[20px] h-[20px] text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-[20px] h-[20px] text-[#3008F8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                       d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
@@ -426,7 +426,7 @@ function MockTestSection() {
                       }}
                       className={`flex-1 rounded-full ${
                         i < 22
-                          ? 'bg-indigo-500'
+                          ? 'bg-[#3008F8]'
                           : 'bg-gray-300 wave-bar'
                       }`}
                     />
@@ -464,7 +464,7 @@ function MockTestSection() {
               <div className="flex justify-end mt-[7px]">
                 <button
                   id="mock-test-next"
-                  className="bg-indigo-600 text-white px-[32px] py-[5px] rounded-[5px] text-[15px] font-semibold hover:bg-indigo-700 transition-colors"
+                  className="bg-[#3008F8] text-white px-[32px] py-[5px] rounded-[5px] text-[15px] font-semibold hover:bg-[#2506c4] transition-colors"
                 >
                   Next
                 </button>

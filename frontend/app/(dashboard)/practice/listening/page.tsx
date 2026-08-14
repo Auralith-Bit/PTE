@@ -200,7 +200,7 @@ export default function ListeningPracticePage() {
           </div>
           <div className="practice-cta-copy">
             <h3>Get AI Feedback On Your Listening</h3>
-            <p>Get instant AI feedback on your performance and identify your week areas to improve faster.</p>
+            <p>Get instant AI feedback on your performance and identify your weak areas to improve faster.</p>
           </div>
           <Link href="/practice/listening" className="practice-button practice-cta-button">
             Start Free Practicing Test <span aria-hidden="true">→</span>

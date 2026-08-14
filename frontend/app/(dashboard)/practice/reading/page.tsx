@@ -72,7 +72,7 @@ const aiFeedbackRows = [
   { label: "Accuracy", tag: "Good" },
   { label: "Vocabulary", tag: "Good" },
   { label: "Speed", tag: "Good" },
-  { label: "Conherence", tag: "Good" },
+  { label: "Coherence", tag: "Good" },
 ];
 
 const readingTypes = [
@@ -207,7 +207,7 @@ export default function ReadingPracticePage() {
             <h3>Get AI Feedback On Your Reading</h3>
             <p>
               Receive instant AI-powered feedback to improve your reading score,
-              comprehension, vocabulary, and overall exam perfermance.
+              comprehension, vocabulary, and overall exam performance.
             </p>
             <Link href="/practice/reading" className="practice-button">
               Start Free Practicing Test <span aria-hidden="true">→</span>
