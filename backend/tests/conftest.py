@@ -1,13 +1,19 @@
 import os
 
-os.environ["DATABASE_URL"] = "postgresql+psycopg2://postgres:123456@localhost:5432/PTE_AI_test"
-
 import pytest
+from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 
-from app.core.database import SessionLocal, engine
-from app.db.base import Base
-from app.main import app
+load_dotenv()
+
+os.environ["DATABASE_URL"] = os.environ.get(
+    "TEST_DATABASE_URL",
+    "postgresql+psycopg2://postgres:postgres@localhost:5432/PTE_AI_test",
+)
+
+from app.core.database import SessionLocal, engine  # noqa: E402
+from app.db.base import Base  # noqa: E402
+from app.main import app  # noqa: E402
 
 
 @pytest.fixture(scope="session", autouse=True)

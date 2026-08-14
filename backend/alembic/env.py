@@ -1,10 +1,8 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-
 from app.core.config import settings
 from app.db.base import Base
 
@@ -17,8 +15,9 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Pull the URL from app settings instead of alembic.ini
-config.set_main_option("sqlalchemy.url", settings.database_url)
+# Pull the URL from app settings instead of alembic.ini.
+# Escaping "%" keeps ConfigParser interpolation from choking on encoded passwords.
+config.set_main_option("sqlalchemy.url", settings.database_url.replace("%", "%%"))
 
 # add your model's MetaData object here
 # for 'autogenerate' support
