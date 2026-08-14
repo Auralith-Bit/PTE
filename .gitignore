@@ -36,3 +36,5 @@ Home Page.png
 *.egg-info/
 .venv/
 venv/
+.pytest_cache/
+.ruff_cache/
