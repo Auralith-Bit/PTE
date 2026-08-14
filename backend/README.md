@@ -128,3 +128,53 @@ WHISPER_MODEL=base
 ## License
 
 MIT
+
+
+
+Environment scan complete. Here's the situation and plan.
+
+Environment findings
+
+- Installed already: fastapi 0.136.1, uvicorn 0.46, pydantic 2.13.4, sqlalchemy 2.0.49, psycopg2 2.9.12, pyjwt, passlib ✓
+- Missing: alembic (migrations), redis/docker (not needed yet)
+- PostgreSQL 18 running on localhost:5432 — but no .env, no pgpass, no PGPASSWORD; the postgres user requires a password I don't have
+- alembic/versions/ exists but is empty; all backend files are 0-byte placeholders
+Plan — Phase 0: Foundation + Database integration
+Deferred to later (per your direction): AI scoring (Whisper/LLM) and payments.
+
+
+Step 1 — venv + dependencies
+- Create backend/.venv, write requirements.txt (fastapi, uvicornstandard, sqlalchemy, psycopg2-binary, pydantic-settings, alembic, python-jose or pyjwt, passlibbcrypt, pytest, ruff)
+- Install alembic (missing today)
+
+Step 2 — Config
+- app/core/config.py — pydantic-settings: DATABASE_URL, JWT_SECRET_KEY, etc.
+- .env.example populated; .env created (gitignored)
+
+Step 3 — Database layer
+- app/core/database.py — SQLAlchemy 2.0 engine + session factory
+- app/db/session.py — get_db dependency
+- app/db/base.py — declarative base + model import registry
+
+Step 4 — Alembic setup
+- alembic init, alembic.ini, env.py wired to config
+- First migration (empty baseline) + verify alembic upgrade head works against live PG
+
+Step 5 — User model + first migration
+- app/models/user.py — users table (id, email, password_hash, name, created_at)
+- Auto-generate migration, apply it, verify table via \dt
+- app/schemas/user.py — Register/Login/UserOut Pydantic schemas
+
+Step 6 — Auth (small vertical slice, proves DB end-to-end)
+- app/core/security.py — bcrypt hashing + JWT access/refresh
+- app/api/routers/auth.py — POST /register, /login, /refresh, GET /me
+- app/api/router.py — mount under /api/v1
+- app/main.py — FastAPI app + CORS + router include
+- tests/test_auth.py — register→login→me round-trip
+
+Step 7 — Verify
+- pytest green; uvicorn app.main:app --reload → Swagger at /docs, hit register/login with curl
+
+Blockers I need from you
+1. PostgreSQL password for the postgres user (or a DB/user/credentials you want me to use) — required to apply migrations.
+2. Confirm interpretation: "we will start from AI work" — I read this as start with foundation/database first (AI scoring + payments later). Is that right, or do you want DB setup AND the AI scoring service built together in this pass?
