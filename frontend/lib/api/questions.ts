@@ -11,7 +11,7 @@ export interface ListQuestionsOptions {
   random?: boolean;
 }
 
-function buildQuery(params: Record<string, string | number | boolean | undefined>): string {
+function buildQuery(params: ListQuestionsOptions): string {
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
     if (value !== undefined && value !== null) {
