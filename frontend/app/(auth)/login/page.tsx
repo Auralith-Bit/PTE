@@ -1,9 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+
+import { useAuth } from '@/hooks/useAuth';
+import { errorMessage } from '@/lib/api/client';
 
 /* ─── SVG Icons ──────────────────────────────────────────────────── */
 const GoogleIcon = () => (
@@ -91,11 +94,16 @@ const features = [
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login, isAuthenticated } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [form, setForm] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) router.replace('/dashboard');
+  }, [isAuthenticated, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -116,9 +124,13 @@ export default function LoginPage() {
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1200));
-    setLoading(false);
-    router.push('/dashboard');
+    try {
+      await login(form.email.trim(), form.password);
+      router.push('/dashboard');
+    } catch (err) {
+      setErrors({ form: errorMessage(err) });
+      setLoading(false);
+    }
   };
 
   return (
@@ -269,6 +281,11 @@ export default function LoginPage() {
             </div>
 
             {/* Submit */}
+            {errors.form && (
+              <p className="text-xs text-red-500 bg-red-50 border border-red-200 rounded-lg px-3 py-2 mt-1">
+                {errors.form}
+              </p>
+            )}
             <button
               id="login-submit-btn"
               type="submit"

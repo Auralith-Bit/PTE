@@ -1,9 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+
+import { useAuth } from '@/hooks/useAuth';
+import { errorMessage } from '@/lib/api/client';
 
 /* ─── SVG Icons ──────────────────────────────────────────────────── */
 const GoogleIcon = () => (
@@ -102,12 +105,17 @@ const features = [
 
 export default function SignupPage() {
   const router = useRouter();
+  const { register, isAuthenticated } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [form, setForm] = useState({ fullName: '', email: '', password: '', confirmPassword: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) router.replace('/dashboard');
+  }, [isAuthenticated, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -129,9 +137,17 @@ export default function SignupPage() {
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1200));
-    setLoading(false);
-    router.push('/dashboard');
+    try {
+      await register({
+        email: form.email.trim(),
+        password: form.password,
+        full_name: form.fullName.trim(),
+      });
+      router.push('/dashboard');
+    } catch (err) {
+      setErrors({ form: errorMessage(err) });
+      setLoading(false);
+    }
   };
 
   return (
@@ -313,6 +329,11 @@ export default function SignupPage() {
             </div>
 
             {/* Submit */}
+            {errors.form && (
+              <p className="text-xs text-red-500 bg-red-50 border border-red-200 rounded-lg px-3 py-2 mt-1">
+                {errors.form}
+              </p>
+            )}
             <button
               id="signup-submit-btn"
               type="submit"
