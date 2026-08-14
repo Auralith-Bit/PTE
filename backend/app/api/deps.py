@@ -24,11 +24,10 @@ def get_current_user(
         raise _credentials_error
     try:
         payload = decode_token(credentials.credentials, expected_type="access")
-        user_id = int(payload["sub"])
-    except (jwt.PyJWTError, KeyError, TypeError, ValueError):
+    except jwt.PyJWTError:
         raise _credentials_error from None
 
-    user = db.get(User, user_id)
+    user = db.get(User, int(payload["sub"]))
     if user is None:
         raise _credentials_error
     return user
