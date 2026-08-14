@@ -4,6 +4,44 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
+import { errorMessage } from "@/lib/api/client";
+import { questionsApi } from "@/lib/api/questions";
+import type { Question } from "@/types";
+
+function textOf(q: Question): string {
+  return String(q.content.text ?? "");
+}
+function imageUrlOf(q: Question): string {
+  return String(q.content.image_url ?? "");
+}
+
+function useSpeakingQuestions(taskId: string) {
+  const [state, setState] = useState<{
+    loading: boolean;
+    error: string | null;
+    questions: Question[];
+  }>({ loading: true, error: null, questions: [] });
+  const [nonce, setNonce] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    setState({ loading: true, error: null, questions: [] });
+    questionsApi
+      .list("speaking", { type: taskId, limit: 100 })
+      .then((res) => {
+        if (!cancelled) setState({ loading: false, error: null, questions: res.items });
+      })
+      .catch((err) => {
+        if (!cancelled) setState({ loading: false, error: errorMessage(err), questions: [] });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [taskId, nonce]);
+
+  return { ...state, retry: () => setNonce((n) => n + 1) };
+}
+
 // ══════════════════════════════════════════════
 // Icons
 // ══════════════════════════════════════════════
@@ -237,19 +275,6 @@ function TaskFooterNav({
 // ══════════════════════════════════════════════
 // Read Aloud task (fully implemented)
 // ══════════════════════════════════════════════
-const READ_ALOUD_TEXTS = [
-  "The rapid advancement of technology has transformed the way we live, work and communicate. Artificial intelligence and automation are becoming increasingly integrated in our daily routines, offering both opportunities and challenges. As we embrace these changes, it is essential to adapt and acquire new skills to remain relevant in this ever-evolving world.",
-  "Climate change remains one of the most pressing issues of our time, affecting ecosystems, economies, and communities worldwide. Governments and organizations are increasingly investing in renewable energy and sustainable practices to reduce carbon emissions and mitigate long-term environmental damage.",
-  "Effective communication is a cornerstone of successful teamwork in any organization. Clear, concise, and respectful dialogue helps prevent misunderstandings and builds trust among colleagues, ultimately leading to higher productivity and a more positive work environment.",
-  "The rise of remote work has reshaped traditional office culture, giving employees greater flexibility while also introducing new challenges around collaboration and work-life balance. Companies are experimenting with hybrid models to find an approach that suits both business needs and employee wellbeing.",
-  "Reading regularly has been shown to improve vocabulary, critical thinking, and empathy. By exposing readers to diverse perspectives and unfamiliar situations, books encourage a deeper understanding of the world and the people who inhabit it.",
-  "Urban planning plays a crucial role in shaping how cities function and how residents experience daily life. Thoughtful design of public spaces, transportation networks, and housing can significantly improve quality of life while reducing environmental impact.",
-  "The global shift toward e-commerce has changed consumer behavior dramatically over the past decade. Businesses must now prioritize digital experience, fast delivery, and personalized service to remain competitive in an increasingly crowded marketplace.",
-  "Scientific research relies heavily on collaboration across disciplines to solve complex problems. By combining expertise from fields such as biology, computer science, and engineering, researchers can develop innovative solutions to challenges that no single discipline could address alone.",
-  "Financial literacy is an essential life skill that is often overlooked in traditional education systems. Understanding concepts such as budgeting, saving, and investing empowers individuals to make informed decisions and build long-term financial security.",
-  "Travel broadens perspective by exposing individuals to different cultures, languages, and ways of life. Even short trips to unfamiliar places can challenge assumptions and foster a greater appreciation for the diversity of human experience.",
-];
-const TOTAL_QUESTIONS = READ_ALOUD_TEXTS.length;
 const RECORD_LIMIT_SECONDS = 60;
 
 const readAloudInstructions = [
@@ -270,7 +295,9 @@ function formatTime(totalSeconds: number) {
   return `${m}:${s}`;
 }
 
-function ReadAloudTask() {
+function ReadAloudTask({ questions }: { questions: Question[] }) {
+  const texts = questions.map(textOf);
+  const TOTAL_QUESTIONS = texts.length;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -357,7 +384,7 @@ function ReadAloudTask() {
           </p>
 
           <h3 className="task-block-label">Text to Read</h3>
-          <div className="task-text-box">{READ_ALOUD_TEXTS[currentIndex]}</div>
+          <div className="task-text-box">{texts[currentIndex]}</div>
 
           <div className="task-recording-row">
             <h3 className="task-block-label">Your Recording</h3>
@@ -412,19 +439,6 @@ function ReadAloudTask() {
 // ══════════════════════════════════════════════
 // Repeat Sentence task
 // ══════════════════════════════════════════════
-const REPEAT_SENTENCES = [
-  "The professor explained that the experiment yielded unexpected results.",
-  "Students are required to submit their assignments before the deadline.",
-  "The new policy will take effect starting next month.",
-  "Climate change is one of the most significant challenges facing humanity today.",
-  "The company decided to expand its operations into international markets.",
-  "Regular exercise and a balanced diet are essential for maintaining good health.",
-  "The museum houses an impressive collection of modern art from around the world.",
-  "Advances in technology have revolutionized the way we communicate with each other.",
-  "The government announced new measures to reduce carbon emissions by thirty percent.",
-  "Research shows that reading for pleasure improves both vocabulary and comprehension.",
-];
-const REPEAT_TOTAL = REPEAT_SENTENCES.length;
 const REPEAT_TIME_LIMIT = 15;
 
 const repeatSentenceInstructions = [
@@ -439,7 +453,8 @@ const repeatSentenceTips = [
   "Practice note-taking for longer sentences.",
 ];
 
-function RepeatSentenceTask() {
+function RepeatSentenceTask({ questions }: { questions: Question[] }) {
+  const REPEAT_TOTAL = questions.length;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -594,19 +609,6 @@ function RepeatSentenceTask() {
 // ══════════════════════════════════════════════
 // Describe Image task
 // ══════════════════════════════════════════════
-const DESCRIBE_IMAGES = [
-  { image: "/images/describeimage1.png" },
-  { image: "/images/describeimage2.png" },
-  { image: "/images/describeimage3.png" },
-  { image: "/images/describeimage4.png" },
-  { image: "/images/describeimage5.png" },
-  { image: "/images/describeimage6.png" },
-  { image: "/images/describeimage6.png" },
-  { image: "/images/describeimage8.png" },
-  { image: "/images/describeimage9.png" },
-  { image: "/images/describeimage10.png" },
-];
-const DESCRIBE_TOTAL = DESCRIBE_IMAGES.length;
 const DESCRIBE_TIME_LIMIT = 60;
 
 const describeImageInstructions = [
@@ -621,7 +623,9 @@ const describeImageTips = [
   "Practice structuring your response in 60 seconds.",
 ];
 
-function DescribeImageTask() {
+function DescribeImageTask({ questions }: { questions: Question[] }) {
+  const images = questions.map(imageUrlOf);
+  const DESCRIBE_TOTAL = images.length;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -726,7 +730,7 @@ function DescribeImageTask() {
     document.addEventListener("touchend", onEnd);
   }
 
-  const currentImage = DESCRIBE_IMAGES[currentIndex];
+  const currentImage = { image: images[currentIndex] };
 
   return (
     <div className="task-page">
@@ -911,19 +915,6 @@ function DescribeImageTask() {
 // ══════════════════════════════════════════════
 // Retell Lecture task
 // ══════════════════════════════════════════════
-const RETELL_LECTURES = [
-  { title: "The Water Cycle", notes: "The water cycle describes how water moves through the environment. Evaporation turns water into vapor, which rises and forms clouds. When clouds cool, condensation occurs and precipitation falls back to Earth, replenishing rivers, lakes, and groundwater." },
-  { title: "Photosynthesis", notes: "Plants convert sunlight, carbon dioxide, and water into glucose and oxygen through photosynthesis. This process occurs mainly in leaves using chlorophyll. Photosynthesis is essential for life on Earth as it produces oxygen and forms the base of food chains." },
-  { title: "The Industrial Revolution", notes: "The Industrial Revolution began in Britain in the late 18th century. It marked a shift from manual production to machine manufacturing. New inventions like the steam engine and power loom transformed textiles, transportation, and communication, reshaping society." },
-  { title: "Plate Tectonics", notes: "The Earth's outer shell is divided into several plates that float on the semi-fluid mantle beneath. These plates move very slowly, driven by convection currents. Where plates collide, mountains form; where they pull apart, new crust is created at mid-ocean ridges." },
-  { title: "Supply and Demand", notes: "In economics, supply and demand determine market prices. When demand exceeds supply, prices rise. When supply exceeds demand, prices fall. Producers and consumers interact in markets to reach equilibrium, where the quantity demanded equals the quantity supplied." },
-  { title: "The Human Brain", notes: "The human brain contains approximately 86 billion neurons connected by trillions of synapses. The cerebrum handles thinking and memory, the cerebellum controls movement, and the brainstem regulates basic functions like breathing and heart rate." },
-  { title: "Globalization", notes: "Globalization refers to the increasing interconnectedness of economies, cultures, and populations worldwide. Driven by trade, technology, and migration, it has created economic growth but also raised concerns about inequality, cultural homogenization, and environmental impact." },
-  { title: "Artificial Intelligence", notes: "Artificial intelligence aims to create machines that can perform tasks requiring human intelligence. Machine learning, a subset of AI, allows systems to learn from data. Applications include speech recognition, medical diagnosis, and autonomous vehicles." },
-  { title: "Ocean Currents", notes: "Ocean currents are continuous movements of seawater driven by wind, temperature, and salinity differences. They distribute heat around the globe, affecting weather patterns and marine ecosystems. The Gulf Stream, for example, keeps Western Europe warmer than it would otherwise be." },
-  { title: "Renewable Energy", notes: "Renewable energy comes from naturally replenishing sources like sunlight, wind, and water. Solar panels convert sunlight to electricity, wind turbines harness wind energy, and hydroelectric dams generate power from flowing water. These sources reduce reliance on fossil fuels." },
-];
-const RETELL_TOTAL = RETELL_LECTURES.length;
 const RETELL_TIME_LIMIT = 60;
 
 const retellLectureInstructions = [
@@ -938,7 +929,12 @@ const retellLectureTips = [
   "Keep your response organized and concise.",
 ];
 
-function RetellLectureTask() {
+function RetellLectureTask({ questions }: { questions: Question[] }) {
+  const lectures = questions.map((q) => ({
+    title: String(q.content.title ?? ""),
+    notes: String(q.content.notes ?? ""),
+  }));
+  const RETELL_TOTAL = lectures.length;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -1014,7 +1010,7 @@ function RetellLectureTask() {
     resetForQuestion();
   }
 
-  const currentLecture = RETELL_LECTURES[currentIndex];
+  const currentLecture = lectures[currentIndex];
 
   return (
     <div className="task-page">
@@ -1117,19 +1113,6 @@ function RetellLectureTask() {
 // ══════════════════════════════════════════════
 // Answer Short Question task
 // ══════════════════════════════════════════════
-const SHORT_QUESTIONS = [
-  { question: "What is the largest ocean on Earth?", answer: "The Pacific Ocean" },
-  { question: "What gas do plants absorb from the atmosphere?", answer: "Carbon dioxide" },
-  { question: "How many continents are there on Earth?", answer: "Seven" },
-  { question: "What is the chemical symbol for water?", answer: "H2O" },
-  { question: "Which planet is known as the Red Planet?", answer: "Mars" },
-  { question: "What is the main language spoken in Brazil?", answer: "Portuguese" },
-  { question: "What device measures temperature?", answer: "A thermometer" },
-  { question: "What is the boiling point of water in Celsius?", answer: "100 degrees" },
-  { question: "Which organ pumps blood throughout the body?", answer: "The heart" },
-  { question: "What is the capital of Japan?", answer: "Tokyo" },
-];
-const SHORT_TOTAL = SHORT_QUESTIONS.length;
 const SHORT_TIME_LIMIT = 10;
 
 const shortQuestionInstructions = [
@@ -1144,7 +1127,9 @@ const shortQuestionTips = [
   "If unsure, give the most reasonable answer.",
 ];
 
-function AnswerShortQuestionTask() {
+function AnswerShortQuestionTask({ questions }: { questions: Question[] }) {
+  const shortQuestions = questions.map((q) => ({ question: String(q.content.question ?? "") }));
+  const SHORT_TOTAL = shortQuestions.length;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -1210,7 +1195,7 @@ function AnswerShortQuestionTask() {
     resetForQuestion();
   }
 
-  const currentQ = SHORT_QUESTIONS[currentIndex];
+  const currentQ = shortQuestions[currentIndex];
 
   return (
     <div className="task-page">
@@ -1290,16 +1275,74 @@ function ComingSoonTask({ taskId }: { taskId: string }) {
 }
 
 // ══════════════════════════════════════════════
+// Loading / error / empty states for known task types
+// ══════════════════════════════════════════════
+function TaskState({
+  taskId,
+  title,
+  children,
+}: {
+  taskId: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="task-page">
+      <TaskTopBar activeTaskId={taskId} />
+      <div className="task-coming-soon">
+        <h1>{title}</h1>
+        <p>{children}</p>
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════
 // Dynamic dispatcher — params.taskId decides which task renders
 // ══════════════════════════════════════════════
 export default function TaskPage({ params }: { params: { taskId: string } }) {
   const { taskId } = params;
+  const { loading, error, questions, retry } = useSpeakingQuestions(taskId);
 
-  if (taskId === "read-aloud") return <ReadAloudTask />;
-  if (taskId === "repeat-sentence") return <RepeatSentenceTask />;
-  if (taskId === "describe-image") return <DescribeImageTask />;
-  if (taskId === "retell-lecture") return <RetellLectureTask />;
-  if (taskId === "answer-short-question") return <AnswerShortQuestionTask />;
+  const knownTask =
+    taskId === "read-aloud" ||
+    taskId === "repeat-sentence" ||
+    taskId === "describe-image" ||
+    taskId === "retell-lecture" ||
+    taskId === "answer-short-question";
 
-  return <ComingSoonTask taskId={taskId} />;
+  if (!knownTask) return <ComingSoonTask taskId={taskId} />;
+
+  if (loading) {
+    return (
+      <TaskState taskId={taskId} title="Loading questions…">
+        Please wait a moment while we prepare your task.
+      </TaskState>
+    );
+  }
+
+  if (error) {
+    return (
+      <TaskState taskId={taskId} title="Something went wrong">
+        We could not load this task. Please check your connection and try again.
+        <button type="button" className="task-link-button" onClick={retry}>
+          Try again
+        </button>
+      </TaskState>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <TaskState taskId={taskId} title="No questions yet">
+        There are no questions available for this task type right now. Please check back later.
+      </TaskState>
+    );
+  }
+
+  if (taskId === "read-aloud") return <ReadAloudTask questions={questions} />;
+  if (taskId === "repeat-sentence") return <RepeatSentenceTask questions={questions} />;
+  if (taskId === "describe-image") return <DescribeImageTask questions={questions} />;
+  if (taskId === "retell-lecture") return <RetellLectureTask questions={questions} />;
+  return <AnswerShortQuestionTask questions={questions} />;
 }

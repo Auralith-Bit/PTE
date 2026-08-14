@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import Footer from "@/components/common/Footer";
+import { SpeakingTypeCount } from "@/components/practice/SpeakingTypeCount";
 
 const Chevron = () => <span className="chevron" aria-hidden="true">›</span>;
 
@@ -195,7 +196,7 @@ export default function SpeakingPracticePage() {
                 <span className="speaking-type-icon"><Icon /></span>
                 <h3>{title}</h3>
                 <p>{description}</p>
-                <span className="speaking-type-meta">15+ Solutions</span>
+                <SpeakingTypeCount slug={slug} />
                 <Link className="outline-pill-button" href={`/practice/speaking/${slug}`}>
                   Practice <span aria-hidden="true">→</span>
                 </Link>

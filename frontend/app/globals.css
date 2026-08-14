@@ -674,6 +674,12 @@ body {
 .task-coming-soon { max-width: 600px; margin: 4rem auto; text-align: center; }
 .task-coming-soon h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.5rem; }
 .task-coming-soon p { color: #55556b; }
+.task-link-button {
+  display: inline-block; margin-top: 0.75rem; padding: 0.5rem 1.25rem; font-size: 0.9rem;
+  font-weight: 700; color: var(--brand-blue); background: transparent; border: 1.5px solid var(--brand-blue);
+  border-radius: 8px; cursor: pointer; transition: all 0.15s ease;
+}
+.task-link-button:hover { background: var(--brand-blue); color: #fff; }
 
 @media (max-width: 1200px) {
   .task-layout { grid-template-columns: 250px 1fr 250px; }
