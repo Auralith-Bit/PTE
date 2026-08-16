@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-import Navbar from '@/components/common/Navbar';
 import './globals.css';
 
 const inter = localFont({
@@ -31,7 +30,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className="font-sans antialiased">
-        <Navbar />
         {children}
       </body>
     </html>

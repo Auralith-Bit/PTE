@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import Footer from '@/components/common/Footer';
+import Navbar from '@/components/common/Navbar';
 
 // ─────────────────────────────────────────────
 // HERO SECTION
@@ -626,6 +627,7 @@ function TestimonialsSection() {
 export default function HomePage() {
   return (
     <main className="min-h-screen">
+      <Navbar />
       <HeroSection />
       <TrustSection />
       <FeaturesSection />
