@@ -87,6 +87,95 @@ SPEAKING_SHORT_QUESTIONS = [
     {"question": "What is the capital of Japan?", "answer": "Tokyo"},
 ]
 
+SPEAKING_SUMMARIZE = [
+    {
+        "title": "Sleep and Memory",
+        "transcript": "Recent studies suggest that sleep plays a critical role in memory consolidation. During deep sleep, the brain replays the day's experiences, strengthening important neural connections and discarding irrelevant information. Researchers recommend that students prioritise consistent, high-quality sleep, especially before examinations.",
+    },
+    {
+        "title": "Urban Green Spaces",
+        "transcript": "Urban green spaces such as parks and community gardens provide measurable benefits to city residents. They improve air quality, reduce the urban heat island effect, and offer spaces for recreation and social interaction. Planners increasingly treat green space as essential infrastructure rather than an optional luxury.",
+    },
+    {
+        "title": "The Benefits of Reading",
+        "transcript": "Reading regularly improves vocabulary, concentration, and empathy. It exposes readers to different perspectives and helps develop critical thinking. Experts agree that even thirty minutes of daily reading can have a noticeable impact on academic performance and overall wellbeing.",
+    },
+    {
+        "title": "Renewable Energy Adoption",
+        "transcript": "The cost of renewable energy has fallen dramatically over the past decade. Solar and wind power are now among the cheapest sources of electricity in many regions. Governments are offering incentives to encourage adoption, while businesses invest in storage technology to overcome the problem of intermittent supply.",
+    },
+    {
+        "title": "The Rise of Remote Work",
+        "transcript": "Remote work has changed how companies operate and how employees balance their personal and professional lives. While it offers flexibility and saves commuting time, it can also blur the boundary between work and home. Many organizations are adopting hybrid models to combine the benefits of both approaches.",
+    },
+    {
+        "title": "Ocean Pollution",
+        "transcript": "Plastic waste entering the world's oceans has reached alarming levels. Microplastics have been found in marine animals, drinking water, and even human tissue. Addressing the problem requires reducing plastic production, improving waste management, and developing biodegradable alternatives.",
+    },
+    {
+        "title": "Artificial Intelligence in Healthcare",
+        "transcript": "Artificial intelligence is transforming healthcare by improving diagnosis, personalising treatment, and streamlining administrative tasks. Algorithms can analyse medical images faster than humans and identify patterns that might otherwise go unnoticed. However, patient privacy and algorithmic bias remain important concerns.",
+    },
+    {
+        "title": "The Importance of Exercise",
+        "transcript": "Regular physical activity reduces the risk of chronic diseases such as heart disease, diabetes, and obesity. It also improves mental health by reducing stress and anxiety. Health experts recommend at least one hundred and fifty minutes of moderate exercise per week for adults.",
+    },
+    {
+        "title": "Space Exploration",
+        "transcript": "Space exploration has led to countless innovations that benefit daily life, from satellite communication to advanced materials. It inspires young people to pursue careers in science and engineering. Supporters argue that the knowledge gained justifies the high cost of missions.",
+    },
+    {
+        "title": "The Gig Economy",
+        "transcript": "The gig economy gives workers flexibility to choose when and how much they work, but it also brings uncertainty about income and benefits. Many gig workers lack job security, health insurance, and retirement plans. Policymakers are debating how to regulate these new forms of employment.",
+    },
+]
+
+SPEAKING_RESPOND_SITUATIONS = [
+    {
+        "scenario": "A colleague at work has asked you to cover their shift next Saturday, but you already have important family plans. Respond to their request.",
+    },
+    {
+        "scenario": "You are at a conference and a speaker you admire is standing alone during a coffee break. Introduce yourself and start a conversation.",
+    },
+    {
+        "scenario": "Your neighbour's dog has been barking all night for several days and you have not been able to sleep. Explain how you would address this politely.",
+    },
+    {
+        "scenario": "A friend is feeling anxious about an upcoming job interview. Offer them advice and encouragement.",
+    },
+    {
+        "scenario": "You have been given a free ticket to a concert tonight, but you also have an assignment due tomorrow. Describe what you would do and why.",
+    },
+    {
+        "scenario": "A visitor from another country asks you for directions to a well-known landmark in your city. Respond helpfully.",
+    },
+    {
+        "scenario": "Your manager has asked you to take on an extra project, but your schedule is already full. Respond to the request.",
+    },
+    {
+        "scenario": "You witness someone drop their wallet on the street and do not notice. Explain what you would do.",
+    },
+    {
+        "scenario": "A younger student asks you for study tips for their final exams. Share your advice.",
+    },
+    {
+        "scenario": "A restaurant served you the wrong dish, and you are in a hurry. Describe how you would handle the situation.",
+    },
+]
+
+SPEAKING_PERSONAL_INTROS = [
+    "Introduce yourself. Include your name, where you are from, and what you do.",
+    "Tell us about your hometown and what you like most about it.",
+    "Describe your studies or your current job and why you chose this path.",
+    "Talk about a hobby or interest you enjoy in your free time.",
+    "Introduce yourself and describe your goals for the next few years.",
+    "Tell us about a book, film, or trip that has influenced you.",
+    "Describe a person who has had a significant impact on your life.",
+    "Talk about a skill you would like to learn and why.",
+    "Introduce yourself and explain why you are taking a PTE preparation course.",
+    "Describe your dream career and the steps you plan to take to achieve it.",
+]
+
 WRITING_SUMMARIZE_PASSAGES = [
     "Global warming refers to the long-term heating of Earth's surface observed since the pre-industrial period. The primary drivers are human activities that emit greenhouse gases, especially carbon dioxide and methane. These gases trap heat in the atmosphere, causing average temperatures to rise and leading to melting ice caps, rising sea levels, and more frequent extreme weather events.",
     "The internet has fundamentally changed how people access information and communicate. Before its widespread adoption, knowledge was primarily distributed through print media and broadcast television. Today, anyone with a connection can publish and consume content instantly, enabling collaboration across borders and giving a voice to previously marginalized communities.",
@@ -222,6 +311,33 @@ def build_seed_questions() -> list[dict]:
                 "type": "answer-short-question",
                 "difficulty": "easy",
                 "content": {"question": sq["question"], "answer": sq["answer"]},
+            }
+        )
+    for item in SPEAKING_SUMMARIZE:
+        questions.append(
+            {
+                "category": "speaking",
+                "type": "summarize-spoken-test",
+                "difficulty": "medium",
+                "content": {"title": item["title"], "transcript": item["transcript"]},
+            }
+        )
+    for item in SPEAKING_RESPOND_SITUATIONS:
+        questions.append(
+            {
+                "category": "speaking",
+                "type": "response-to-a-situation",
+                "difficulty": "medium",
+                "content": {"scenario": item["scenario"]},
+            }
+        )
+    for prompt in SPEAKING_PERSONAL_INTROS:
+        questions.append(
+            {
+                "category": "speaking",
+                "type": "personal-introduction",
+                "difficulty": "easy",
+                "content": {"prompt": prompt},
             }
         )
 

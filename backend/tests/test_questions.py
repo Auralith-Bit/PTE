@@ -35,7 +35,7 @@ class TestSpeakingQuestions:
         res = client.get("/api/v1/speaking/questions")
         assert res.status_code == 200
         data = res.json()
-        assert data["total"] == 50
+        assert data["total"] == 80
         assert len(data["items"]) == 20
         assert all(q["category"] == "speaking" for q in data["items"])
 
@@ -51,6 +51,24 @@ class TestSpeakingQuestions:
         assert data["total"] == 10
         assert all(q["type"] == "answer-short-question" for q in data["items"])
 
+    @pytest.mark.parametrize(
+        "task_type",
+        [
+            "summarize-spoken-test",
+            "response-to-a-situation",
+            "personal-introduction",
+        ],
+    )
+    def test_new_speaking_types_return_questions(self, client, task_type):
+        res = client.get("/api/v1/speaking/questions", params={"type": task_type, "limit": 100})
+        assert res.status_code == 200
+        data = res.json()
+        assert data["total"] == 10
+        assert len(data["items"]) == 10
+        assert all(q["type"] == task_type for q in data["items"])
+        for q in data["items"]:
+            _assert_no_answers(q["content"])
+
     def test_filter_by_difficulty(self, client):
         res = client.get("/api/v1/speaking/questions", params={"difficulty": "hard"})
         assert res.status_code == 200
@@ -60,7 +78,7 @@ class TestSpeakingQuestions:
         res = client.get("/api/v1/speaking/questions", params={"limit": 5, "offset": 5})
         data = res.json()
         assert len(data["items"]) == 5
-        assert data["total"] == 50
+        assert data["total"] == 80
 
     def test_random_returns_distinct(self, client):
         res1 = client.get("/api/v1/speaking/questions", params={"random": True, "limit": 3})
