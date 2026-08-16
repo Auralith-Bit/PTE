@@ -110,7 +110,7 @@ const speakingTypes = [
   ["Answer Short Question", "Respond quickly and accurately to general knowledge and everyday questions with answers.", ChatIcon, "answer-short-question"],
   ["Summarize Spoken Test", "Listen to an audio recording and write a concise summary of the key information.", HeadphonesIcon, "summarize-spoken-test"],
   ["Response to a Situation", "Read a real-life scenario and provide an appropriate, effective spoken response.", PeopleIcon, "response-to-a-situation"],
-  ["Read Aloud", "Read the displayed text clearly and naturally to improve pronunciation and fluency.", WaveformIcon, "read-aloud"],
+  ["Personal Introduction", "Introduce yourself and speak naturally about your background, studies, and goals.", MicIcon, "personal-introduction"],
 ] as const;
 
 const overviewBars = [
