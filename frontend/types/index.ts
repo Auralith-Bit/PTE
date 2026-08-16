@@ -38,3 +38,36 @@ export interface QuestionList {
   items: Question[];
   total: number;
 }
+
+export interface ActivityItem {
+  title: string;
+  status: 'completed' | 'in_progress' | 'not_started';
+  time: string;
+}
+
+export interface DashboardSummary {
+  practice_completed_pct: number;
+  practice_completed_weekly_delta: number;
+  questions_solved: number;
+  questions_solved_weekly_delta: number;
+  mock_tests_taken: number;
+  mock_tests_weekly_delta: number;
+  overall_progress_pct: number;
+  target_score: number;
+  goal_description: string;
+  goal_total: number;
+  goal_done: number;
+  streak_days: number;
+  streak_week: boolean[];
+  speaking_pct: number;
+  writing_pct: number;
+  reading_pct: number;
+  listening_pct: number;
+  recent_mock_name: string;
+  recent_mock_score: number;
+  recent_mock_completed_label: string;
+  upcoming_course_name: string;
+  upcoming_course_progress_pct: number;
+  recent_activity: ActivityItem[];
+}
+

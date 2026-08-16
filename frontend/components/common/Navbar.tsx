@@ -114,7 +114,9 @@ export default function Navbar() {
   // Hide Navbar on auth pages — they have their own headers
   const authRoutes = ['/signup', '/login'];
   const isAuthPage = authRoutes.some(r => pathname === r || pathname.startsWith(r + '/'));
-  if (isAuthPage) return null;
+  // Also hide on dashboard — dashboard has its own DashboardNavbar
+  const isDashboard = pathname === '/dashboard' || pathname.startsWith('/dashboard/');
+  if (isAuthPage || isDashboard) return null;
 
   return (
     <nav className="w-full bg-[#F5F3FF] sticky top-0 z-50">
