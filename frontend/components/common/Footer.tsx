@@ -9,21 +9,21 @@ type LinkItem = { label: string; href?: string; icon?: string };
 const footerColumns: Record<string, LinkItem[]> = {
   Platform: [
     { label: 'Practice', href: '/practice', icon: '/images/Group 10.png' },
-    { label: 'Mock Test', icon: '/images/Vector (1).png' },
+    { label: 'Mock Test', href: '/mock-test', icon: '/images/Vector (1).png' },
     { label: 'Study Plan', icon: '/images/Group.png' },
     { label: 'Speaking Practice', href: '/practice/speaking', icon: '/images/Group (1).png' },
-    { label: 'Vocabulary', icon: '/images/Vector (1).png' },
+    { label: 'Vocabulary', href: '/resources', icon: '/images/Vector (1).png' },
   ],
   Courses: [
-    { label: 'PTE Courses', icon: '/images/Vector (2).png' },
+    { label: 'PTE Courses', href: '/courses', icon: '/images/Vector (2).png' },
     { label: 'Beginner Courses', icon: '/images/Vector (2).png' },
     { label: 'Advance Courses', icon: '/images/Vector (2).png' },
     { label: 'Free Courses', icon: '/images/Vector (2).png' },
     { label: 'Live Courses', icon: '/images/Vector (2).png' },
   ],
   Resources: [
-    { label: 'Study Guide', icon: '/images/Group.png' },
-    { label: 'Sample Questions', icon: '/images/Vector (4).png' },
+    { label: 'Study Guide', href: '/resources', icon: '/images/Group.png' },
+    { label: 'Sample Questions', href: '/resources', icon: '/images/Vector (4).png' },
     { label: 'Download', icon: '/images/Vector (3).png' },
     { label: 'Blogs and Tips', icon: '/images/Vector (4).png' },
     { label: 'About Us', icon: '/images/Vector (4).png' },

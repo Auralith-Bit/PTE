@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import Footer from '@/components/common/Footer';
 
 // ─────────────────────────────────────────────
@@ -25,7 +26,8 @@ function HeroSection() {
 
             {/* CTA Buttons */}
             <div className="flex items-center gap-4 mb-10">
-              <button
+              <Link
+                href="/practice"
                 id="hero-start-practice"
                 className="flex items-center gap-2 bg-[#3008F8] text-white px-6 py-3 rounded-lg font-semibold text-sm hover:bg-[#2506c4] transition-all duration-200 shadow-md hover:shadow-indigo-200"
               >
@@ -33,13 +35,14 @@ function HeroSection() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                 </svg>
-              </button>
-              <button
+              </Link>
+              <Link
+                href="/courses"
                 id="hero-explore-courses"
                 className="px-6 py-3 text-sm font-semibold text-gray-800 bg-white border border-gray-300 rounded-lg hover:border-[#3008F8] hover:text-[#3008F8] transition-all duration-200"
               >
                 Explore Courses
-              </button>
+              </Link>
             </div>
 
             {/* Stats Row */}
