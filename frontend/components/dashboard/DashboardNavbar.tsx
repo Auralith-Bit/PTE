@@ -181,7 +181,7 @@ export default function DashboardNavbar() {
                   <p className="text-[12px] text-gray-400 truncate">{user?.email}</p>
                 </div>
                 <Link
-                  href="/profile"
+                  href="/dashboard/profile"
                   className="flex items-center gap-3 px-4 py-2 text-[14px] font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
                   onClick={() => setUserMenuOpen(false)}
                 >

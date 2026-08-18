@@ -13,7 +13,7 @@ from app.core.security import (
 )
 from app.db.session import get_db
 from app.models.user import User
-from app.schemas.user import RefreshRequest, TokenPair, UserLogin, UserOut, UserRegister
+from app.schemas.user import ChangePassword, RefreshRequest, TokenPair, UserLogin, UserOut, UserRegister
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -71,3 +71,16 @@ def refresh(payload: RefreshRequest, db: Session = Depends(get_db)) -> TokenPair
 @router.get("/me", response_model=UserOut)
 def get_me(user: User = Depends(get_current_user)) -> User:
     return user
+
+
+@router.post("/change-password")
+def change_password(
+    payload: ChangePassword,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> dict:
+    if not verify_password(payload.current_password, user.password_hash):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Current password is incorrect")
+    user.password_hash = hash_password(payload.new_password)
+    db.commit()
+    return {"message": "Password changed successfully"}
