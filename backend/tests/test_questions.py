@@ -130,7 +130,6 @@ class TestOtherCategories:
         assert "options" in item["content"]
         assert "correct" not in item["content"]
 
-    def test_unknown_type_returns_empty(self, client):
+    def test_unknown_type_returns_422(self, client):
         res = client.get("/api/v1/writing/questions", params={"type": "does-not-exist"})
-        assert res.status_code == 200
-        assert res.json()["total"] == 0
+        assert res.status_code == 422

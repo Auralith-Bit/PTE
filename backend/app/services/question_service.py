@@ -11,14 +11,14 @@ def get_questions(
     difficulty: str | None = None,
     limit: int = 20,
     offset: int = 0,
-    random: bool = False,
+    shuffle: bool = False,
 ) -> list[Question]:
     stmt = select(Question).where(Question.category == category)
     if type is not None:
         stmt = stmt.where(Question.type == type)
     if difficulty is not None:
         stmt = stmt.where(Question.difficulty == difficulty)
-    if random:
+    if shuffle:
         stmt = stmt.order_by(func.random())
     stmt = stmt.limit(limit).offset(offset)
     return list(db.scalars(stmt).all())

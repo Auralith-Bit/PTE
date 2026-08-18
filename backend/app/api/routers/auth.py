@@ -1,3 +1,5 @@
+import logging
+
 import jwt
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
@@ -14,6 +16,8 @@ from app.core.security import (
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.user import ChangePassword, RefreshRequest, TokenPair, UserLogin, UserOut, UserRegister
+
+log = logging.getLogger("app.auth")
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -43,6 +47,7 @@ def register(payload: UserRegister, db: Session = Depends(get_db)) -> User:
     db.add(user)
     db.commit()
     db.refresh(user)
+    log.info("User registered: %s (id=%d)", email, user.id)
     return user
 
 
@@ -50,7 +55,9 @@ def register(payload: UserRegister, db: Session = Depends(get_db)) -> User:
 def login(payload: UserLogin, db: Session = Depends(get_db)) -> TokenPair:
     user = _get_user_or_404(db, payload.email)
     if not verify_password(payload.password, user.password_hash):
+        log.warning("Failed login attempt for %s", payload.email)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+    log.info("User logged in: %s (id=%d)", payload.email, user.id)
     return _token_pair(user)
 
 
@@ -81,6 +88,12 @@ def change_password(
 ) -> dict:
     if not verify_password(payload.current_password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Current password is incorrect")
+    if verify_password(payload.new_password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be different from current password",
+        )
     user.password_hash = hash_password(payload.new_password)
     db.commit()
+    log.info("Password changed for user id=%d", user.id)
     return {"message": "Password changed successfully"}
