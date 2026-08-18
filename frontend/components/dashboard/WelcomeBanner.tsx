@@ -9,21 +9,21 @@ interface WelcomeBannerProps {
 
 export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
   return (
-    <div className="relative bg-gradient-to-r from-[#EEF0FF] to-[#F3EFFF] rounded-2xl p-6 flex items-center justify-between overflow-hidden shadow-sm border border-indigo-100">
+    <div className="relative bg-gradient-to-r from-[#F0F1FF] to-[#F5F0FF] rounded-2xl pl-8 pr-0 py-8 md:pl-10 md:py-9 min-h-[220px] flex items-center justify-between overflow-visible shadow-sm">
       {/* Text + CTAs */}
-      <div className="z-10">
-        <h1 className="text-2xl font-extrabold text-gray-800 mb-1 flex items-center gap-2">
-          <span>👋</span>
-          <span>Welcome back, {firstName}!</span>
+      <div className="z-10 flex flex-col justify-center gap-1">
+        <h1 className="text-[26px] md:text-[30px] font-extrabold text-gray-900 leading-tight">
+          <span className="mr-1">&#128075;</span>
+          Welcome back, {firstName}!
         </h1>
-        <p className="text-gray-500 text-[14px] mb-5">
+        <p className="text-gray-500 text-[15px] leading-relaxed mb-5">
           Keep practicing every day to achieve your target score.
         </p>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <Link
             href="/practice"
             id="continue-practice-btn"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white font-bold text-[14px] rounded-xl hover:bg-indigo-700 transition-all duration-150 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 px-7 py-3 bg-[#4F46E5] text-white font-bold text-[15px] rounded-xl hover:bg-[#4338CA] transition-all duration-150 shadow-md hover:shadow-lg"
           >
             Continue Practice
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,7 +33,7 @@ export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
           <Link
             href="/mock-test"
             id="take-mock-test-btn"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-indigo-600 font-bold text-[14px] rounded-xl border-2 border-indigo-200 hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-150"
+            className="inline-flex items-center gap-2 px-7 py-3 bg-white text-[#4F46E5] font-bold text-[15px] rounded-xl border-2 border-[#4F46E5] hover:bg-[#F0F1FF] transition-all duration-150"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -45,14 +45,13 @@ export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
       </div>
 
       {/* Illustration */}
-      <div className="absolute right-4 bottom-0 z-0 opacity-95 pointer-events-none">
+      <div className="shrink-0 self-end z-0 pointer-events-none">
         <Image
           src="/images/ChatGPT Image Aug 10, 2026, 03_34_56 PM 1.png"
           alt="Student studying"
-          width={180}
-          height={160}
-          className="object-contain drop-shadow-lg"
-          style={{ width: 'auto', height: 'auto' }}
+          width={375}
+          height={271}
+          className="object-contain drop-shadow-lg h-auto w-[220px] md:w-[280px]"
           priority
         />
       </div>
