@@ -9,17 +9,17 @@ interface WelcomeBannerProps {
 
 export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
   return (
-    <div className="relative bg-gradient-to-r from-[#EEF0FF] to-[#F3EFFF] rounded-2xl px-6 py-8 md:px-8 md:py-10 min-h-[240px] md:min-h-[280px] flex items-center overflow-hidden shadow-sm border border-indigo-100">
+    <div className="relative bg-gradient-to-r from-[#EEF0FF] to-[#F3EFFF] rounded-2xl p-6 flex items-center justify-between overflow-hidden shadow-sm border border-indigo-100">
       {/* Text + CTAs */}
-      <div className="z-10 max-w-[55%]">
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-gray-800 mb-2 leading-tight">
-          <span className="mr-2">&#128075;</span>
-          Welcome back, {firstName}!
+      <div className="z-10">
+        <h1 className="text-2xl font-extrabold text-gray-800 mb-1 flex items-center gap-2">
+          <span>👋</span>
+          <span>Welcome back, {firstName}!</span>
         </h1>
-        <p className="text-gray-500 text-[13px] md:text-[14px] mb-5 leading-relaxed">
+        <p className="text-gray-500 text-[14px] mb-5">
           Keep practicing every day to achieve your target score.
         </p>
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-3">
           <Link
             href="/practice"
             id="continue-practice-btn"
@@ -45,13 +45,13 @@ export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
       </div>
 
       {/* Illustration */}
-      <div className="absolute right-4 md:right-8 bottom-0 z-0 pointer-events-none">
+      <div className="absolute right-6 bottom-0 z-0 opacity-95 pointer-events-none">
         <Image
           src="/images/ChatGPT Image Aug 10, 2026, 03_34_56 PM 1.png"
           alt="Student studying"
           width={375}
           height={271}
-          className="object-contain drop-shadow-lg h-auto w-[180px] sm:w-[240px] md:w-[300px]"
+          className="object-contain drop-shadow-lg h-auto w-[200px] sm:w-[260px] md:w-[300px]"
           priority
         />
       </div>
