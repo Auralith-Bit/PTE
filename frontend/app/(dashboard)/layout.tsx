@@ -6,7 +6,7 @@ export default function DashboardLayout({ children }: Readonly<{ children: React
   return (
     <AuthGuard>
       <DashboardNavbar />
-      <div className="flex gap-[clamp(16px,2.55vw,50px)] min-h-[calc(100vh-65px)] bg-white">
+      <div className="flex gap-[10px] min-h-[calc(100vh-65px)] bg-white">
         <Sidebar />
         <main className="flex-1 overflow-y-auto">
           {children}

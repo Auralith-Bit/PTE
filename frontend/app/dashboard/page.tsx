@@ -57,7 +57,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="flex min-h-full py-4 w-full px-4 gap-[clamp(16px,2.55vw,50px)]">
+    <div className="flex min-h-full py-4 w-full px-4 gap-[10px]">
       {/* ── Main content (center) ── */}
       <div className="flex-1 min-w-0 flex flex-col gap-5">
         {/* Welcome Banner */}
