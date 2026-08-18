@@ -6,7 +6,7 @@ export default function DashboardRouteLayout({ children }: Readonly<{ children: 
   return (
     <AuthGuard>
       <DashboardNavbar />
-      <div className="flex min-h-[calc(100vh-65px)] bg-gray-50">
+      <div className="flex min-h-[calc(100vh-65px)] bg-[#F5F3FF]">
         <Sidebar />
         <main className="flex-1 overflow-y-auto">
           {children}

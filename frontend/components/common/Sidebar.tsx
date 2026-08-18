@@ -110,7 +110,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-[220px] shrink-0 h-[calc(100vh-65px)] sticky top-[65px] bg-[#F5F3FF] border-r border-[#D9D9D9] flex flex-col overflow-y-auto py-4">
+    <aside className="hidden lg:flex shrink-0 h-[calc(100vh-65px)] sticky top-[65px] bg-[#F5F3FF] border-r border-[#D9D9D9] flex-col overflow-y-auto py-4" style={{ width: 'clamp(200px, 16.56vw, 325px)' }}>
       <div className="flex-1 px-4 flex flex-col">
 
         {/* Dashboard link */}

@@ -10,12 +10,11 @@ interface WelcomeBannerProps {
 export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
   return (
     <div
-      className="relative rounded-2xl flex items-center overflow-visible shadow-sm"
+      className="relative rounded-2xl flex items-center overflow-visible shadow-sm w-full"
       style={{
-        width: 986,
-        height: 280,
-        padding: '3px 22px 0 22px',
-        gap: 20,
+        height: 'clamp(180px, 14.3vw, 280px)',
+        padding: 'clamp(2px, 0.15vw, 3px) clamp(12px, 1.12vw, 22px) 0 clamp(12px, 1.12vw, 22px)',
+        gap: 'clamp(12px, 1.02vw, 20px)',
         background: `linear-gradient(90deg, rgba(244,244,244,0.2) 0%, rgba(246,246,246,0.2) 24.69%, rgba(246,246,246,0.2) 50%, rgba(246,246,246,0.2) 66.43%, rgba(28,5,146,0.2) 100%),
                      linear-gradient(89.01deg, rgba(48,8,248,0.03) 0.14%, rgba(48,8,248,0.03) 100.8%)`
       }}
@@ -61,7 +60,7 @@ export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
           alt="Student studying"
           width={375}
           height={271}
-          className="object-contain drop-shadow-lg h-auto w-[220px] md:w-[280px]"
+          className="object-contain drop-shadow-lg h-auto w-[clamp(120px, 14.3vw, 280px)]"
           priority
         />
       </div>
