@@ -52,6 +52,7 @@ export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
           width={180}
           height={160}
           className="object-contain drop-shadow-lg"
+          style={{ width: 'auto', height: 'auto' }}
           priority
         />
       </div>
