@@ -9,14 +9,24 @@ interface WelcomeBannerProps {
 
 export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
   return (
-    <div className="relative bg-gradient-to-r from-[#F0F1FF] to-[#F5F0FF] rounded-2xl pl-8 pr-0 py-8 md:pl-10 md:py-9 min-h-[220px] flex items-center justify-between overflow-visible shadow-sm">
+    <div
+      className="relative rounded-2xl flex items-center overflow-visible shadow-sm"
+      style={{
+        width: 986,
+        height: 280,
+        padding: '3px 22px 0 22px',
+        gap: 20,
+        background: `linear-gradient(90deg, rgba(244,244,244,0.2) 0%, rgba(246,246,246,0.2) 24.69%, rgba(246,246,246,0.2) 50%, rgba(246,246,246,0.2) 66.43%, rgba(28,5,146,0.2) 100%),
+                     linear-gradient(89.01deg, rgba(48,8,248,0.03) 0.14%, rgba(48,8,248,0.03) 100.8%)`
+      }}
+    >
       {/* Text + CTAs */}
-      <div className="z-10 flex flex-col justify-center gap-1">
-        <h1 className="text-[26px] md:text-[30px] font-extrabold text-gray-900 leading-tight">
+      <div className="z-10 flex flex-col justify-center">
+        <h1 className="text-[26px] md:text-[30px] font-extrabold text-gray-900 leading-tight mb-2">
           <span className="mr-1">&#128075;</span>
           Welcome back, {firstName}!
         </h1>
-        <p className="text-gray-500 text-[15px] leading-relaxed mb-5">
+        <p className="text-gray-500 text-[15px] leading-relaxed mb-7">
           Keep practicing every day to achieve your target score.
         </p>
         <div className="flex items-center gap-4">
