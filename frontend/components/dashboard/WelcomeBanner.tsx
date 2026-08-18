@@ -45,13 +45,14 @@ export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
       </div>
 
       {/* Illustration */}
-      <div className="absolute right-6 bottom-0 z-0 opacity-95 pointer-events-none">
+      <div className="absolute right-4 bottom-0 z-0 opacity-95 pointer-events-none">
         <Image
           src="/images/ChatGPT Image Aug 10, 2026, 03_34_56 PM 1.png"
           alt="Student studying"
-          width={375}
-          height={271}
-          className="object-contain drop-shadow-lg h-auto w-[200px] sm:w-[260px] md:w-[300px]"
+          width={180}
+          height={160}
+          className="object-contain drop-shadow-lg"
+          style={{ width: 'auto', height: 'auto' }}
           priority
         />
       </div>
