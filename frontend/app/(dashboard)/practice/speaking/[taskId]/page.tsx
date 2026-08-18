@@ -107,6 +107,25 @@ function EyeIcon() {
     </svg>
   );
 }
+function HeadphonesIcon() {
+  return (
+    <svg viewBox="0 0 24 24">
+      <path d="M4 13v-1a8 8 0 0 1 16 0v1" />
+      <rect x="2" y="13" width="5" height="7" rx="2" />
+      <rect x="17" y="13" width="5" height="7" rx="2" />
+    </svg>
+  );
+}
+function PeopleIcon() {
+  return (
+    <svg viewBox="0 0 24 24">
+      <circle cx="9" cy="8" r="3" />
+      <circle cx="17" cy="9.5" r="2.4" />
+      <path d="M4 20v-1a5 5 0 0 1 10 0v1" />
+      <path d="M14.5 20v-.8a4 4 0 0 1 6-3.5" />
+    </svg>
+  );
+}
 
 // ══════════════════════════════════════════════
 // Shared task metadata (drives top tab bar + sidebar list)
@@ -117,6 +136,9 @@ const speakingTasks = [
   { id: "describe-image", label: "Describe Image", Icon: ImageTypeIcon },
   { id: "retell-lecture", label: "Retell Lecture", Icon: LectureIcon },
   { id: "answer-short-question", label: "Answer Short Question", Icon: ChatIcon },
+  { id: "summarize-spoken-test", label: "Summarize Spoken Test", Icon: HeadphonesIcon },
+  { id: "response-to-a-situation", label: "Response to a Situation", Icon: PeopleIcon },
+  { id: "personal-introduction", label: "Personal Introduction", Icon: MicIcon },
 ] as const;
 
 // ══════════════════════════════════════════════
@@ -1259,6 +1281,477 @@ function AnswerShortQuestionTask({ questions }: { questions: Question[] }) {
 }
 
 // ══════════════════════════════════════════════
+// Summarize Spoken Test task
+// ══════════════════════════════════════════════
+const SUMMARIZE_TIME_LIMIT = 60;
+
+const summarizeInstructions = [
+  "Listen to the recording carefully when you click play.",
+  "After listening, click the microphone to summarize.",
+  "You will have up to 60 seconds to record your summary.",
+  "Include the key points and the overall message.",
+];
+const summarizeTips = [
+  "Focus on the main idea rather than minor details.",
+  "Use your own words to paraphrase what you heard.",
+  "Keep your summary concise and well-structured.",
+];
+
+function SummarizeSpokenTestTask({ questions }: { questions: Question[] }) {
+  const recordings = questions.map((q) => ({
+    title: String(q.content.title ?? ""),
+    transcript: String(q.content.transcript ?? ""),
+  }));
+  const SUMMARIZE_TOTAL = recordings.length;
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isRecording, setIsRecording] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [hasRecorded, setHasRecorded] = useState(false);
+  const [recordedSet, setRecordedSet] = useState<Set<number>>(new Set());
+  const [showTranscript, setShowTranscript] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (isRecording) {
+      intervalRef.current = setInterval(() => {
+        setElapsedSeconds((prev) => {
+          if (prev + 1 >= SUMMARIZE_TIME_LIMIT) {
+            setIsRecording(false);
+            setHasRecorded(true);
+            setRecordedSet((p) => new Set(p).add(currentIndex));
+            return SUMMARIZE_TIME_LIMIT;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isRecording]);
+
+  function handleMicClick() {
+    if (isRecording) {
+      setIsRecording(false);
+      setHasRecorded(true);
+      setRecordedSet((prev) => new Set(prev).add(currentIndex));
+    } else {
+      setElapsedSeconds(0);
+      setHasRecorded(false);
+      setIsRecording(true);
+    }
+  }
+
+  function handlePlayClick() {
+    if (isPlaying) return;
+    setIsPlaying(true);
+    setTimeout(() => setIsPlaying(false), 2000);
+  }
+
+  function resetForQuestion() {
+    setIsRecording(false);
+    setElapsedSeconds(0);
+    setHasRecorded(false);
+    setShowTranscript(false);
+    setIsPlaying(false);
+  }
+
+  function goToPrevious() {
+    const next = Math.max(0, currentIndex - 1);
+    setCurrentIndex(next);
+    resetForQuestion();
+  }
+
+  function goToNext() {
+    const next = Math.min(SUMMARIZE_TOTAL - 1, currentIndex + 1);
+    setCurrentIndex(next);
+    resetForQuestion();
+  }
+
+  function goToQuestion(index: number) {
+    setCurrentIndex(index);
+    resetForQuestion();
+  }
+
+  const currentRecording = recordings[currentIndex];
+
+  return (
+    <div className="task-page">
+      <TaskTopBar activeTaskId="summarize-spoken-test" />
+      <div className="task-layout">
+        <TaskSidebar
+          activeTaskId="summarize-spoken-test"
+          questionCount={currentIndex + 1}
+          progress={{ current: recordedSet.size, total: SUMMARIZE_TOTAL }}
+        />
+        <section className="task-main">
+          <div className="task-main-header">
+            <span className="task-main-header-icon"><HeadphonesIcon /></span>
+            <h1>Summarize Spoken Test</h1>
+          </div>
+          <p className="task-main-sub">
+            Listen to the recording and then summarize the key information in your own words.
+          </p>
+
+          <div className="task-audio-header">
+            <h3 className="task-block-label">Audio Recording</h3>
+            <button
+              type="button"
+              className="task-show-hide-btn"
+              onClick={() => setShowTranscript((v) => !v)}
+              aria-label={showTranscript ? "Hide Transcript" : "Show Transcript"}
+            >
+              <EyeIcon />
+              {showTranscript ? "Hide Transcript" : "Show Transcript"}
+            </button>
+          </div>
+          <div className="task-audio-box">
+            <button
+              type="button"
+              className={`task-mic-button${isPlaying ? " recording" : ""}`}
+              onClick={handlePlayClick}
+              disabled={isPlaying}
+              aria-label="Play recording"
+            >
+              <SpeakerIcon />
+            </button>
+            <p className="task-recording-title">
+              {isPlaying ? "Playing…" : "Click play to listen to the recording."}
+            </p>
+          </div>
+          {showTranscript && (
+            <div className="task-question-box">
+              <p style={{ margin: "0 0 0.75rem", fontWeight: 800, fontSize: "1.05rem" }}>{currentRecording.title}</p>
+              <p style={{ margin: 0, lineHeight: 1.7 }}>{currentRecording.transcript}</p>
+            </div>
+          )}
+
+          <div className="task-recording-row">
+            <h3 className="task-block-label">Your Recording</h3>
+            <span className={`task-status-pill${hasRecorded ? " recorded" : ""}`}>
+              {hasRecorded ? "Recorded" : "Not Recorded"}
+            </span>
+          </div>
+          <div className="task-recording-box">
+            <button
+              type="button"
+              className={`task-mic-button${isRecording ? " recording" : ""}`}
+              onClick={handleMicClick}
+              aria-label={isRecording ? "Stop recording" : "Start recording"}
+            >
+              <MicIcon />
+            </button>
+            <p className="task-recording-title">
+              {isRecording ? "Recording… click to stop" : hasRecorded ? "Recording complete" : "Click the microphone to start recording"}
+            </p>
+            <p className="task-recording-sub">You will have up to {SUMMARIZE_TIME_LIMIT} seconds to summarize.</p>
+            <div className="task-timer">
+              <ClockIcon /> {formatTime(elapsedSeconds)} / {formatTime(SUMMARIZE_TIME_LIMIT)}
+            </div>
+          </div>
+          <TaskFooterNav current={currentIndex + 1} total={SUMMARIZE_TOTAL} onPrevious={goToPrevious} onNext={goToNext} />
+        </section>
+        <TaskInfoPanels
+          instructions={summarizeInstructions}
+          tips={summarizeTips}
+          currentIndex={currentIndex}
+          totalQuestions={SUMMARIZE_TOTAL}
+          recordedSet={recordedSet}
+          onNavigate={goToQuestion}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════
+// Response to a Situation task
+// ══════════════════════════════════════════════
+const SITUATION_TIME_LIMIT = 60;
+
+const situationInstructions = [
+  "Read the situation described on screen.",
+  "Think about an appropriate and effective response.",
+  "You will have up to 60 seconds to record your response.",
+  "Speak clearly and address the situation directly.",
+];
+const situationTips = [
+  "Consider what a sensible person would do in this situation.",
+  "Explain your decision briefly and confidently.",
+  "Stay calm and natural — there is no single correct answer.",
+];
+
+function ResponseToSituationTask({ questions }: { questions: Question[] }) {
+  const situations = questions.map((q) => ({ scenario: String(q.content.scenario ?? "") }));
+  const SITUATION_TOTAL = situations.length;
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isRecording, setIsRecording] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [hasRecorded, setHasRecorded] = useState(false);
+  const [recordedSet, setRecordedSet] = useState<Set<number>>(new Set());
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (isRecording) {
+      intervalRef.current = setInterval(() => {
+        setElapsedSeconds((prev) => {
+          if (prev + 1 >= SITUATION_TIME_LIMIT) {
+            setIsRecording(false);
+            setHasRecorded(true);
+            setRecordedSet((p) => new Set(p).add(currentIndex));
+            return SITUATION_TIME_LIMIT;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isRecording]);
+
+  function handleMicClick() {
+    if (isRecording) {
+      setIsRecording(false);
+      setHasRecorded(true);
+      setRecordedSet((prev) => new Set(prev).add(currentIndex));
+    } else {
+      setElapsedSeconds(0);
+      setHasRecorded(false);
+      setIsRecording(true);
+    }
+  }
+
+  function resetForQuestion() {
+    setIsRecording(false);
+    setElapsedSeconds(0);
+    setHasRecorded(false);
+  }
+
+  function goToPrevious() {
+    const next = Math.max(0, currentIndex - 1);
+    setCurrentIndex(next);
+    resetForQuestion();
+  }
+
+  function goToNext() {
+    const next = Math.min(SITUATION_TOTAL - 1, currentIndex + 1);
+    setCurrentIndex(next);
+    resetForQuestion();
+  }
+
+  function goToQuestion(index: number) {
+    setCurrentIndex(index);
+    resetForQuestion();
+  }
+
+  const currentSituation = situations[currentIndex];
+
+  return (
+    <div className="task-page">
+      <TaskTopBar activeTaskId="response-to-a-situation" />
+      <div className="task-layout">
+        <TaskSidebar
+          activeTaskId="response-to-a-situation"
+          questionCount={currentIndex + 1}
+          progress={{ current: recordedSet.size, total: SITUATION_TOTAL }}
+        />
+        <section className="task-main">
+          <div className="task-main-header">
+            <span className="task-main-header-icon"><PeopleIcon /></span>
+            <h1>Response to a Situation</h1>
+          </div>
+          <p className="task-main-sub">
+            Read the real-life situation and respond as you would in that moment.
+          </p>
+
+          <h3 className="task-block-label">Situation</h3>
+          <div className="task-text-box" style={{ display: "flex", alignItems: "center", minHeight: "16vh" }}>
+            <p style={{ margin: 0, fontWeight: 600, fontSize: "1.05rem", lineHeight: 1.6 }}>{currentSituation.scenario}</p>
+          </div>
+
+          <div className="task-recording-row">
+            <h3 className="task-block-label">Your Recording</h3>
+            <span className={`task-status-pill${hasRecorded ? " recorded" : ""}`}>
+              {hasRecorded ? "Recorded" : "Not Recorded"}
+            </span>
+          </div>
+          <div className="task-recording-box">
+            <button
+              type="button"
+              className={`task-mic-button${isRecording ? " recording" : ""}`}
+              onClick={handleMicClick}
+              aria-label={isRecording ? "Stop recording" : "Start recording"}
+            >
+              <MicIcon />
+            </button>
+            <p className="task-recording-title">
+              {isRecording ? "Recording… click to stop" : hasRecorded ? "Recording complete" : "Click the microphone to start recording"}
+            </p>
+            <p className="task-recording-sub">You will have up to {SITUATION_TIME_LIMIT} seconds to respond.</p>
+            <div className="task-timer">
+              <ClockIcon /> {formatTime(elapsedSeconds)} / {formatTime(SITUATION_TIME_LIMIT)}
+            </div>
+          </div>
+          <TaskFooterNav current={currentIndex + 1} total={SITUATION_TOTAL} onPrevious={goToPrevious} onNext={goToNext} />
+        </section>
+        <TaskInfoPanels
+          instructions={situationInstructions}
+          tips={situationTips}
+          currentIndex={currentIndex}
+          totalQuestions={SITUATION_TOTAL}
+          recordedSet={recordedSet}
+          onNavigate={goToQuestion}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════
+// Personal Introduction task
+// ══════════════════════════════════════════════
+const INTRO_TIME_LIMIT = 60;
+
+const introInstructions = [
+  "Read the prompt and introduce yourself naturally.",
+  "You will have up to 60 seconds to record.",
+  "Speak about yourself clearly and confidently.",
+  "You can't re-record once you submit.",
+];
+const introTips = [
+  "Mention your name, background, studies or work.",
+  "Share your interests and goals.",
+  "Speak at a relaxed, natural pace.",
+];
+
+function PersonalIntroductionTask({ questions }: { questions: Question[] }) {
+  const prompts = questions.map((q) => String(q.content.prompt ?? ""));
+  const INTRO_TOTAL = prompts.length;
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isRecording, setIsRecording] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [hasRecorded, setHasRecorded] = useState(false);
+  const [recordedSet, setRecordedSet] = useState<Set<number>>(new Set());
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (isRecording) {
+      intervalRef.current = setInterval(() => {
+        setElapsedSeconds((prev) => {
+          if (prev + 1 >= INTRO_TIME_LIMIT) {
+            setIsRecording(false);
+            setHasRecorded(true);
+            setRecordedSet((p) => new Set(p).add(currentIndex));
+            return INTRO_TIME_LIMIT;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isRecording]);
+
+  function handleMicClick() {
+    if (isRecording) {
+      setIsRecording(false);
+      setHasRecorded(true);
+      setRecordedSet((prev) => new Set(prev).add(currentIndex));
+    } else {
+      setElapsedSeconds(0);
+      setHasRecorded(false);
+      setIsRecording(true);
+    }
+  }
+
+  function resetForQuestion() {
+    setIsRecording(false);
+    setElapsedSeconds(0);
+    setHasRecorded(false);
+  }
+
+  function goToPrevious() {
+    const next = Math.max(0, currentIndex - 1);
+    setCurrentIndex(next);
+    resetForQuestion();
+  }
+
+  function goToNext() {
+    const next = Math.min(INTRO_TOTAL - 1, currentIndex + 1);
+    setCurrentIndex(next);
+    resetForQuestion();
+  }
+
+  function goToQuestion(index: number) {
+    setCurrentIndex(index);
+    resetForQuestion();
+  }
+
+  return (
+    <div className="task-page">
+      <TaskTopBar activeTaskId="personal-introduction" />
+      <div className="task-layout">
+        <TaskSidebar
+          activeTaskId="personal-introduction"
+          questionCount={currentIndex + 1}
+          progress={{ current: recordedSet.size, total: INTRO_TOTAL }}
+        />
+        <section className="task-main">
+          <div className="task-main-header">
+            <span className="task-main-header-icon"><MicIcon /></span>
+            <h1>Personal Introduction</h1>
+          </div>
+          <p className="task-main-sub">
+            Introduce yourself based on the prompt below.
+          </p>
+
+          <h3 className="task-block-label">Prompt</h3>
+          <div className="task-text-box" style={{ display: "flex", alignItems: "center", minHeight: "12vh" }}>
+            <p style={{ margin: 0, fontWeight: 800, fontSize: "1.15rem", lineHeight: 1.6 }}>{prompts[currentIndex]}</p>
+          </div>
+
+          <div className="task-recording-row">
+            <h3 className="task-block-label">Your Recording</h3>
+            <span className={`task-status-pill${hasRecorded ? " recorded" : ""}`}>
+              {hasRecorded ? "Recorded" : "Not Recorded"}
+            </span>
+          </div>
+          <div className="task-recording-box">
+            <button
+              type="button"
+              className={`task-mic-button${isRecording ? " recording" : ""}`}
+              onClick={handleMicClick}
+              aria-label={isRecording ? "Stop recording" : "Start recording"}
+            >
+              <MicIcon />
+            </button>
+            <p className="task-recording-title">
+              {isRecording ? "Recording… click to stop" : hasRecorded ? "Recording complete" : "Click the microphone to start recording"}
+            </p>
+            <p className="task-recording-sub">You will have up to {INTRO_TIME_LIMIT} seconds to introduce yourself.</p>
+            <div className="task-timer">
+              <ClockIcon /> {formatTime(elapsedSeconds)} / {formatTime(INTRO_TIME_LIMIT)}
+            </div>
+          </div>
+          <TaskFooterNav current={currentIndex + 1} total={INTRO_TOTAL} onPrevious={goToPrevious} onNext={goToNext} />
+        </section>
+        <TaskInfoPanels
+          instructions={introInstructions}
+          tips={introTips}
+          currentIndex={currentIndex}
+          totalQuestions={INTRO_TOTAL}
+          recordedSet={recordedSet}
+          onNavigate={goToQuestion}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════
 // Fallback for unknown task types
 // ══════════════════════════════════════════════
 function ComingSoonTask({ taskId }: { taskId: string }) {
@@ -1309,7 +1802,10 @@ export default function TaskPage({ params }: { params: { taskId: string } }) {
     taskId === "repeat-sentence" ||
     taskId === "describe-image" ||
     taskId === "retell-lecture" ||
-    taskId === "answer-short-question";
+    taskId === "answer-short-question" ||
+    taskId === "summarize-spoken-test" ||
+    taskId === "response-to-a-situation" ||
+    taskId === "personal-introduction";
 
   if (!knownTask) return <ComingSoonTask taskId={taskId} />;
 
@@ -1344,5 +1840,8 @@ export default function TaskPage({ params }: { params: { taskId: string } }) {
   if (taskId === "repeat-sentence") return <RepeatSentenceTask questions={questions} />;
   if (taskId === "describe-image") return <DescribeImageTask questions={questions} />;
   if (taskId === "retell-lecture") return <RetellLectureTask questions={questions} />;
+  if (taskId === "summarize-spoken-test") return <SummarizeSpokenTestTask questions={questions} />;
+  if (taskId === "response-to-a-situation") return <ResponseToSituationTask questions={questions} />;
+  if (taskId === "personal-introduction") return <PersonalIntroductionTask questions={questions} />;
   return <AnswerShortQuestionTask questions={questions} />;
 }
