@@ -52,18 +52,21 @@ const quickActions = [
 export default function QuickActions() {
   return (
     <div>
-      <h2 className="text-[17px] font-extrabold text-gray-800 mb-3">Quick Actions</h2>
-      <div className="flex gap-3 flex-wrap">
+      <h2 className="text-[21px] font-extrabold text-black mb-3">Quick Actions</h2>
+      <div className="grid grid-cols-4 gap-3">
         {quickActions.map((action) => (
           <Link
             key={action.href}
             href={action.href}
             id={action.id}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-indigo-200 text-indigo-600 font-bold text-[13px] rounded-xl hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all duration-150 shadow-sm hover:shadow-md hover:-translate-y-0.5"
+            className="inline-flex items-center gap-3 px-5 py-3 rounded-xl transition-all duration-150 shadow-sm hover:shadow-md hover:-translate-y-0.5"
+            style={{ backgroundColor: '#F5F3FF', border: '1px solid #3008F8' }}
           >
-            {action.icon}
-            {action.label}
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <span className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-[#3008F8]" style={{ border: '2px solid #3008F8' }}>
+              {action.icon}
+            </span>
+            <span className="text-[#3008F8] font-bold text-[14px]">{action.label}</span>
+            <svg className="w-4 h-4 ml-auto text-[#3008F8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
           </Link>

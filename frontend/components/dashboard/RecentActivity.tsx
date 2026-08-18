@@ -9,7 +9,7 @@ interface RecentActivityProps {
 function StatusIcon({ status }: { status: ActivityItem['status'] }) {
   if (status === 'completed') {
     return (
-      <div className="w-5 h-5 rounded-full bg-indigo-600 flex items-center justify-center shrink-0">
+      <div className="w-5 h-5 rounded-full bg-[#3008F8] flex items-center justify-center shrink-0">
         <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
         </svg>
@@ -18,8 +18,8 @@ function StatusIcon({ status }: { status: ActivityItem['status'] }) {
   }
   if (status === 'in_progress') {
     return (
-      <div className="w-5 h-5 rounded-full bg-indigo-200 flex items-center justify-center shrink-0">
-        <div className="w-2 h-2 rounded-full bg-indigo-600" />
+      <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: 'rgba(48, 8, 248, 0.15)' }}>
+        <div className="w-2 h-2 rounded-full bg-[#3008F8]" />
       </div>
     );
   }
@@ -42,8 +42,8 @@ function StatusBadge({ status }: { status: ActivityItem['status'] }) {
 
 export default function RecentActivity({ activities }: RecentActivityProps) {
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-      <h2 className="text-[17px] font-extrabold text-gray-800 mb-4">Recent Activity</h2>
+    <div className="bg-white rounded-2xl p-5 shadow-sm" style={{ border: '2px solid #D9D9D9' }}>
+      <h2 className="text-[21px] font-extrabold text-black mb-4">Recent Activity</h2>
       <div className="flex flex-col gap-0">
         {activities.map((activity, i) => (
           <div

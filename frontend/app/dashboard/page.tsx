@@ -57,12 +57,9 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div
-      className="flex min-h-full py-4 w-full px-4"
-      style={{ gap: 'clamp(16px, 2.55vw, 50px)' }}
-    >
+    <div className="flex min-h-full py-4 w-full px-4 gap-[clamp(16px,2.55vw,50px)]">
       {/* ── Main content (center) ── */}
-      <div className="flex-1 min-w-0 flex flex-col gap-5 max-w-[51.35vw]">
+      <div className="flex-1 min-w-0 flex flex-col gap-5">
         {/* Welcome Banner */}
         <WelcomeBanner firstName={firstName} />
 
@@ -112,7 +109,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Right Panel ── */}
-      <aside className="shrink-0 p-4 pt-6 flex flex-col gap-4 border-l border-[#D9D9D9]" style={{ width: 'clamp(250px, 27vw, 530px)', backgroundColor: '#F5F3FF' }}>
+      <aside className="shrink-0 p-4 pt-6 flex flex-col gap-4" style={{ width: 'clamp(250px, 27vw, 530px)' }}>
         {loading ? (
           <>
             <SkeletonCard className="h-48" />

@@ -40,9 +40,9 @@ function CircularProgress({ pct, color }: { pct: number; color: string }) {
 
 function SectionCard({ title, description, percentage, href, icon, color }: SectionCardProps) {
   return (
-    <div className="bg-white rounded-2xl p-5 flex flex-col gap-3 border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex-1 min-w-0">
+    <div className="bg-white rounded-2xl p-5 flex flex-col gap-3 flex-1 min-w-0 hover:shadow-md transition-shadow">
       <div className="flex items-start gap-3">
-        <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 text-indigo-600">
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-[#3008F8]" style={{ border: '1px solid #3008F8', backgroundColor: 'rgba(48, 8, 248, 0.08)' }}>
           {icon}
         </div>
         <div>
@@ -54,7 +54,7 @@ function SectionCard({ title, description, percentage, href, icon, color }: Sect
       <Link
         href={href}
         id={`practice-${title.toLowerCase()}-btn`}
-        className="block text-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[13px] rounded-xl py-2 transition-colors shadow-sm hover:shadow"
+        className="block text-center bg-[#3008F8] hover:bg-[#2506c4] text-white font-bold text-[13px] rounded-xl py-2 transition-colors shadow-sm hover:shadow"
       >
         Practice
       </Link>
@@ -76,7 +76,7 @@ export default function PracticeSections({ speakingPct, writingPct, readingPct, 
       description: 'Improve your pronunciation and fluency.',
       percentage: speakingPct,
       href: '/practice/speaking',
-      color: '#4F46E5',
+      color: '#3008F8',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -89,7 +89,7 @@ export default function PracticeSections({ speakingPct, writingPct, readingPct, 
       description: 'Enhance your grammar and writing skills.',
       percentage: writingPct,
       href: '/practice/writing',
-      color: '#7C3AED',
+      color: '#3008F8',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -102,7 +102,7 @@ export default function PracticeSections({ speakingPct, writingPct, readingPct, 
       description: 'Strengthen comprehension skills.',
       percentage: readingPct,
       href: '/practice/reading',
-      color: '#6366F1',
+      color: '#3008F8',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -115,7 +115,7 @@ export default function PracticeSections({ speakingPct, writingPct, readingPct, 
       description: 'Develop your listening accuracy.',
       percentage: listeningPct,
       href: '/practice/listening',
-      color: '#8B5CF6',
+      color: '#3008F8',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -126,8 +126,8 @@ export default function PracticeSections({ speakingPct, writingPct, readingPct, 
   ];
 
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-      <h2 className="text-[17px] font-extrabold text-gray-800 mb-4">Practice by Section</h2>
+    <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#D9D9D9]">
+      <h2 className="text-[21px] font-extrabold text-black mb-4">Practice by Section</h2>
       <div className="grid grid-cols-4 gap-4">
         {sections.map((s) => (
           <SectionCard key={s.title} {...s} />
