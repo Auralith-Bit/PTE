@@ -72,7 +72,6 @@ export default function StatsCards({
         label="Questions Solved"
         value={questionsSolved.toLocaleString()}
         weeklyDelta={questionsWeeklyDelta}
-        progress={60}
       />
       <StatCard
         label="Mock Tests Taken"
