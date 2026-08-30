@@ -42,6 +42,28 @@ def _reset_schema():
     Base.metadata.drop_all(bind=engine)
 
 
+@pytest.fixture(scope="session", autouse=True)
+def _seed_test_questions(_reset_schema):
+    """Seed the question bank once after the schema is reset."""
+    from app.db.seed_data import build_seed_questions
+    from app.models.question import Question
+
+    session = SessionLocal()
+    try:
+        for q in build_seed_questions():
+            session.add(
+                Question(
+                    category=q["category"],
+                    type=q["type"],
+                    difficulty=q["difficulty"],
+                    content=q["content"],
+                )
+            )
+        session.commit()
+    finally:
+        session.close()
+
+
 @pytest.fixture
 def client():
     with TestClient(app) as c:

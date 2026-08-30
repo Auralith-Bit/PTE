@@ -1,11 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
+from app.api.deps import get_current_user
 from app.db.session import get_db
 from app.models.question import Question
+from app.models.user import User
 from app.schemas.enums import ListeningType, QuestionDifficulty
-from app.schemas.practice import QuestionListOut, QuestionOut
+from app.schemas.practice import AnswerResult, AnswerSubmission, QuestionListOut, QuestionOut
 from app.services.question_service import count_questions, get_questions
+from app.services.submit_service import submit_answer
 
 router = APIRouter(prefix="/listening", tags=["listening"])
 
@@ -35,3 +38,12 @@ def get_question(question_id: int, db: Session = Depends(get_db)) -> QuestionOut
     if question is None or question.category != "listening":
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Question not found")
     return QuestionOut.from_question(question)
+
+
+@router.post("/submit", response_model=AnswerResult)
+def submit(
+    payload: AnswerSubmission,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> AnswerResult:
+    return submit_answer(db, current_user, "listening", payload)

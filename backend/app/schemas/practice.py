@@ -40,3 +40,31 @@ class QuestionOut(BaseModel):
 class QuestionListOut(BaseModel):
     items: list[QuestionOut]
     total: int
+
+
+class AnswerSubmission(BaseModel):
+    """User's answer to a question for scoring."""
+    question_id: int
+    answer: dict
+
+    @property
+    def answer_text(self) -> str:
+        return str(self.answer.get("response") or self.answer.get("text") or "")
+
+
+class AnswerResult(BaseModel):
+    score: int
+    max_score: int
+    feedback: str
+    correct: bool
+    attempt_id: int
+
+    @classmethod
+    def from_result(cls, attempt_id: int, score: int, max_score: int, feedback: str) -> "AnswerResult":
+        return cls(
+            score=score,
+            max_score=max_score,
+            feedback=feedback,
+            correct=score == max_score,
+            attempt_id=attempt_id,
+        )

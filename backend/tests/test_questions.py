@@ -1,28 +1,6 @@
 import pytest
 
-from app.core.database import SessionLocal
-from app.db.seed_data import build_seed_questions
-from app.models.question import Question
-
 ANSWER_KEYS = ("correct", "correct_answer", "answer", "answers", "order")
-
-
-@pytest.fixture(scope="session", autouse=True)
-def _seed_test_questions():
-    session = SessionLocal()
-    try:
-        for q in build_seed_questions():
-            session.add(
-                Question(
-                    category=q["category"],
-                    type=q["type"],
-                    difficulty=q["difficulty"],
-                    content=q["content"],
-                )
-            )
-        session.commit()
-    finally:
-        session.close()
 
 
 def _assert_no_answers(content: dict) -> None:
