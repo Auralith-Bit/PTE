@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ComponentType } from "react";
 import Footer from "@/components/common/Footer";
 
 const Chevron = () => <span className="chevron" aria-hidden="true">›</span>;
@@ -75,16 +76,16 @@ const aiFeedbackRows = [
   { label: "Coherence", tag: "Good" },
 ];
 
-const readingTypes = [
-  ["Reading & Writing: Fill in the Blanks", "Fill in the missing words by selecting the most suitable options from the list.", EditSquareIcon],
-  ["Multiple Choice, Multiple Answers", "Fill in the missing words by selecting the most suitable options from the list.", ChecklistIcon],
-  ["Re-order Paragraphs", "Arrange the text boxes into the correct logical order to form a meaningful passage.", SwapIcon],
-  ["Reading: Fill in the Blanks", "Fill in the missing words by selecting the most suitable options from the list.", LinesIcon],
-  ["Multiple Choice, Single Answer", "Fill in the missing words by selecting the most suitable options from the list.", BulletListIcon],
-  ["Reading Overview Card", "Fill in the missing words by selecting the most suitable options from the list.", BookIcon],
-  ["Summarize Written Text", "Fill in the missing words by selecting the most suitable options from the list.", EditSquareIcon],
-  ["Highlight Correct Summary", "Fill in the missing words by selecting the most suitable options from the list.", SearchIcon],
-] as const;
+const readingTypes: { title: string; description: string; Icon: ComponentType; slug: string }[] = [
+  { title: "Reading & Writing: Fill in the Blanks", description: "Fill in the missing words by selecting the most suitable options from the list.", Icon: EditSquareIcon, slug: "fill-in-the-blanks" },
+  { title: "Re-order Paragraphs", description: "Arrange the text boxes into the correct logical order to form a meaningful passage.", Icon: SwapIcon, slug: "re-order-paragraphs" },
+  { title: "Multiple Choice, Single Answer", description: "Read the passage and choose the single best answer from the options.", Icon: BulletListIcon, slug: "multiple-choice-single" },
+  { title: "Reading: Fill in the Blanks", description: "Fill in the missing words by selecting the most suitable options from the list.", Icon: LinesIcon, slug: "reading-fill-in-the-blanks" },
+  { title: "Multiple Choice, Multiple Answers", description: "Select all the correct answers from the list.", Icon: ChecklistIcon, slug: "multiple-choice-multiple-answers" },
+  { title: "Reading Overview Card", description: "Get an overview of your reading performance.", Icon: BookIcon, slug: "reading-overview" },
+  { title: "Summarize Written Text", description: "Read a passage and write a one-sentence summary.", Icon: EditSquareIcon, slug: "summarize-written-text" },
+  { title: "Highlight Correct Summary", description: "Choose the summary that best captures the passage.", Icon: SearchIcon, slug: "highlight-correct-summary" },
+];
 
 const overviewRows = [
   { label: "Accuracy", value: 90 },
@@ -153,13 +154,13 @@ export default function ReadingPracticePage() {
         <h2 className="section-title-center">Reading Question Types</h2>
         <div className="speaking-types-layout">
           <div className="speaking-types-grid">
-            {readingTypes.map(([title, description, Icon], i) => (
+            {readingTypes.map(({ title, description, Icon, slug }, i) => (
               <article className="speaking-type-card" key={`${title}-${i}`}>
                 <span className="speaking-type-icon"><Icon /></span>
                 <h3>{title}</h3>
                 <p>{description}</p>
                 <span className="speaking-type-meta">15+ Solutions</span>
-                <Link className="outline-pill-button" href="/practice/reading">
+                <Link className="outline-pill-button" href={`/practice/reading/${slug}`}>
                   Practice <span aria-hidden="true">→</span>
                 </Link>
               </article>

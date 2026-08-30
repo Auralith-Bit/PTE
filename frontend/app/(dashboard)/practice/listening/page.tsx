@@ -79,7 +79,7 @@ const listeningTasks = [
     description: "Listen to the audio and choose the single best answer.",
     time: "Average Time 10 mins",
     Icon: RadioIcon,
-    slug: "multiple-choice-single-answer",
+    slug: "multiple-choice-single",
   },
   {
     title: "Fill in the Blanks",

@@ -69,6 +69,7 @@ const writingTasks = [
     time: "Average Time: 30 mins",
     Icon: SummarizeIcon,
     image: "/images/writingtext.png",
+    slug: "summarize-written-text",
   },
   {
     title: "Essay",
@@ -77,6 +78,7 @@ const writingTasks = [
     time: "Average Time: 30 mins",
     Icon: EssayIcon,
     image: "/images/writingessay.png",
+    slug: "essay",
   },
 ];
 
@@ -144,7 +146,7 @@ export default function WritingPracticePage() {
       <section className="content-section writing-tasks-section">
         <div className="page-container">
         <div className="writing-tasks-grid">
-          {writingTasks.map(({ title, description, bullets, time, Icon, image }) => (
+          {writingTasks.map(({ title, description, bullets, time, Icon, image, slug }) => (
             <article className="writing-task-card" key={title}>
               <div className="writing-task-copy">
                 <div className="writing-task-heading">
@@ -166,7 +168,7 @@ export default function WritingPracticePage() {
               </div>
               <div className="writing-task-footer">
                 <span className="writing-time"><ClockIcon /> {time}</span>
-                <Link href="/practice/writing" className="practice-button">
+                <Link href={`/practice/writing/${slug}`} className="practice-button">
                   Practice <span aria-hidden="true">→</span>
                 </Link>
               </div>
