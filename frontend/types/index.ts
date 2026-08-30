@@ -39,6 +39,19 @@ export interface QuestionList {
   total: number;
 }
 
+export interface AnswerSubmission {
+  question_id: number;
+  answer: Record<string, unknown>;
+}
+
+export interface AnswerResult {
+  score: number;
+  max_score: number;
+  feedback: string;
+  correct: boolean;
+  attempt_id: number;
+}
+
 export interface ActivityItem {
   title: string;
   status: 'completed' | 'in_progress' | 'not_started';

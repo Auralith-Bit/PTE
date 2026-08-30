@@ -6,7 +6,7 @@ import Image from "next/image";
 
 import { errorMessage } from "@/lib/api/client";
 import { questionsApi } from "@/lib/api/questions";
-import type { Question } from "@/types";
+import type { AnswerResult, Question } from "@/types";
 
 function textOf(q: Question): string {
   return String(q.content.text ?? "");
@@ -40,6 +40,38 @@ function useSpeakingQuestions(taskId: string) {
   }, [taskId, nonce]);
 
   return { ...state, retry: () => setNonce((n) => n + 1) };
+}
+
+// Text-based scoring flow for a single question in a speaking task
+function useTaskSubmit() {
+  const [state, setState] = useState<{
+    submitted: boolean;
+    submitting: boolean;
+    error: string | null;
+    result: AnswerResult | null;
+  }>({ submitted: false, submitting: false, error: null, result: null });
+
+  async function submit(question: Question, answer: string): Promise<AnswerResult | null> {
+    if (state.submitting || !answer.trim()) return null;
+    setState((s) => ({ ...s, submitting: true, error: null }));
+    try {
+      const result = await questionsApi.submit("speaking", {
+        question_id: question.id,
+        answer: { response: answer },
+      });
+      setState({ submitted: true, submitting: false, error: null, result });
+      return result;
+    } catch (err) {
+      setState((s) => ({ ...s, submitting: false, error: errorMessage(err) }));
+      return null;
+    }
+  }
+
+  function reset() {
+    setState({ submitted: false, submitting: false, error: null, result: null });
+  }
+
+  return { ...state, submit, reset };
 }
 
 // ══════════════════════════════════════════════
@@ -294,6 +326,80 @@ function TaskFooterNav({
   );
 }
 
+// Reusable text-answer + submit block for scoring-enabled speaking tasks
+function TaskTextSubmit({
+  question,
+  submitted,
+  submitting,
+  error,
+  result,
+  onSubmit,
+  submitLabel = "Submit Answer",
+  hint,
+}: {
+  question: Question;
+  submitted: boolean;
+  submitting: boolean;
+  error: string | null;
+  result: AnswerResult | null;
+  onSubmit: (answer: string) => void;
+  submitLabel?: string;
+  hint?: string;
+}) {
+  const [value, setValue] = useState("");
+  const isScored = result !== null;
+
+  return (
+    <div className="task-text-submit">
+      <div className="task-recording-row">
+        <h3 className="task-block-label">Your Answer</h3>
+        <span className={`task-status-pill${isScored || submitted ? " recorded" : ""}`}>
+          {isScored ? "Scored" : submitted ? "Submitted" : "Not Submitted"}
+        </span>
+      </div>
+      <textarea
+        className="task-answer-textarea"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder={hint ?? "Type your answer here…"}
+        rows={5}
+        disabled={submitting}
+      />
+      {error && (
+        <p className="task-submit-error">
+          <span className="task-submit-error-icon">⚠</span> {error}
+        </p>
+      )}
+      {!isScored && (
+        <div className="task-submit-row">
+          <button
+            type="button"
+            className="practice-button task-submit-btn"
+            onClick={() => onSubmit(value)}
+            disabled={submitting || !value.trim()}
+          >
+            {submitting ? "Submitting…" : submitLabel}
+          </button>
+        </div>
+      )}
+      {isScored && (
+        <div className={`task-result-card${result.correct ? " correct" : " incorrect"}`}>
+          <div className="task-result-score">
+            {result.score}
+            <span className="task-result-max">/{result.max_score}</span>
+          </div>
+          <div className="task-result-copy">
+            <p className="task-result-title">
+              {result.correct ? "Great work!" : "Keep practising"}
+            </p>
+            <p className="task-result-feedback">{result.feedback}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ══════════════════════════════════════════════
 // Read Aloud task (fully implemented)
 // ══════════════════════════════════════════════
@@ -327,6 +433,7 @@ function ReadAloudTask({ questions }: { questions: Question[] }) {
   const [recordedSet, setRecordedSet] = useState<Set<number>>(new Set());
   const [visitedSet, setVisitedSet] = useState<Set<number>>(new Set(new Set([0])));
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const textSubmit = useTaskSubmit();
 
   useEffect(() => {
     if (isRecording) {
@@ -359,10 +466,17 @@ function ReadAloudTask({ questions }: { questions: Question[] }) {
     }
   }
 
+  function handleTextSubmit(answer: string) {
+    textSubmit.submit(questions[currentIndex], answer).then((result) => {
+      if (result) setRecordedSet((prev) => new Set(prev).add(currentIndex));
+    });
+  }
+
   function resetForQuestion() {
     setIsRecording(false);
     setElapsedSeconds(0);
     setHasRecorded(false);
+    textSubmit.reset();
   }
 
   function goToPrevious() {
@@ -437,6 +551,16 @@ function ReadAloudTask({ questions }: { questions: Question[] }) {
             </div>
           </div>
 
+          <TaskTextSubmit
+            question={questions[currentIndex]}
+            submitted={textSubmit.submitted}
+            submitting={textSubmit.submitting}
+            error={textSubmit.error}
+            result={textSubmit.result}
+            onSubmit={handleTextSubmit}
+            hint="Type the text you read aloud, then submit to score it."
+          />
+
           <TaskFooterNav
             current={currentIndex + 1}
             total={TOTAL_QUESTIONS}
@@ -485,6 +609,7 @@ function RepeatSentenceTask({ questions }: { questions: Question[] }) {
   const [visitedSet, setVisitedSet] = useState<Set<number>>(new Set(new Set([0])));
   const [isPlaying, setIsPlaying] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const textSubmit = useTaskSubmit();
 
   useEffect(() => {
     if (isRecording) {
@@ -517,6 +642,12 @@ function RepeatSentenceTask({ questions }: { questions: Question[] }) {
     }
   }
 
+  function handleTextSubmit(answer: string) {
+    textSubmit.submit(questions[currentIndex], answer).then((result) => {
+      if (result) setRecordedSet((prev) => new Set(prev).add(currentIndex));
+    });
+  }
+
   function handlePlayClick() {
     if (isPlaying) return;
     setIsPlaying(true);
@@ -528,6 +659,7 @@ function RepeatSentenceTask({ questions }: { questions: Question[] }) {
     setElapsedSeconds(0);
     setHasRecorded(false);
     setIsPlaying(false);
+    textSubmit.reset();
   }
 
   function goToPrevious() {
@@ -613,6 +745,15 @@ function RepeatSentenceTask({ questions }: { questions: Question[] }) {
               <ClockIcon /> {formatTime(elapsedSeconds)} / {formatTime(REPEAT_TIME_LIMIT)}
             </div>
           </div>
+          <TaskTextSubmit
+            question={questions[currentIndex]}
+            submitted={textSubmit.submitted}
+            submitting={textSubmit.submitting}
+            error={textSubmit.error}
+            result={textSubmit.result}
+            onSubmit={handleTextSubmit}
+            hint="Type the sentence you repeated, then submit to score it."
+          />
           <TaskFooterNav current={currentIndex + 1} total={REPEAT_TOTAL} onPrevious={goToPrevious} onNext={goToNext} />
         </section>
         <TaskInfoPanels
@@ -1159,6 +1300,7 @@ function AnswerShortQuestionTask({ questions }: { questions: Question[] }) {
   const [recordedSet, setRecordedSet] = useState<Set<number>>(new Set());
   const [visitedSet, setVisitedSet] = useState<Set<number>>(new Set(new Set([0])));
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const textSubmit = useTaskSubmit();
 
   useEffect(() => {
     if (isRecording) {
@@ -1191,10 +1333,17 @@ function AnswerShortQuestionTask({ questions }: { questions: Question[] }) {
     }
   }
 
+  function handleTextSubmit(answer: string) {
+    textSubmit.submit(questions[currentIndex], answer).then((result) => {
+      if (result) setRecordedSet((prev) => new Set(prev).add(currentIndex));
+    });
+  }
+
   function resetForQuestion() {
     setIsRecording(false);
     setElapsedSeconds(0);
     setHasRecorded(false);
+    textSubmit.reset();
   }
 
   function goToPrevious() {
@@ -1265,6 +1414,16 @@ function AnswerShortQuestionTask({ questions }: { questions: Question[] }) {
               <ClockIcon /> {formatTime(elapsedSeconds)} / {formatTime(SHORT_TIME_LIMIT)}
             </div>
           </div>
+          <TaskTextSubmit
+            question={questions[currentIndex]}
+            submitted={textSubmit.submitted}
+            submitting={textSubmit.submitting}
+            error={textSubmit.error}
+            result={textSubmit.result}
+            onSubmit={handleTextSubmit}
+            hint="Type your short answer here, then submit to score it."
+            submitLabel="Submit Answer"
+          />
           <TaskFooterNav current={currentIndex + 1} total={SHORT_TOTAL} onPrevious={goToPrevious} onNext={goToNext} />
         </section>
         <TaskInfoPanels

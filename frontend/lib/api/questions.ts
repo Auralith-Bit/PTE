@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { Question, QuestionList } from '@/types';
+import type { AnswerResult, AnswerSubmission, Question, QuestionList } from '@/types';
 
 export type QuestionCategory = 'speaking' | 'writing' | 'reading' | 'listening';
 
@@ -27,4 +27,6 @@ export const questionsApi = {
     api.get<QuestionList>(`/${category}/questions${buildQuery(options)}`),
   get: (category: QuestionCategory, questionId: number) =>
     api.get<Question>(`/${category}/questions/${questionId}`),
+  submit: (category: QuestionCategory, submission: AnswerSubmission) =>
+    api.post<AnswerResult>(`/${category}/submit`, submission),
 };
