@@ -57,7 +57,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="flex min-h-full py-4 w-full px-4 gap-[10px]">
+    <div className="flex min-h-full w-full flex-col py-4 px-4 gap-[10px] lg:flex-row">
       {/* ── Main content (center) ── */}
       <div className="flex-1 min-w-0 flex flex-col gap-5">
         {/* Welcome Banner */}
@@ -65,7 +65,7 @@ export default function DashboardPage() {
 
         {/* Stats Cards */}
         {loading ? (
-          <div className="flex gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row">
             <SkeletonCard className="flex-1" />
             <SkeletonCard className="flex-1" />
             <SkeletonCard className="flex-1" />
@@ -109,7 +109,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Right Panel ── */}
-      <aside className="shrink-0 p-4 pt-6 flex flex-col gap-4" style={{ width: 'clamp(250px, 27vw, 530px)' }}>
+      <aside className="w-full shrink-0 p-4 pt-6 flex flex-col gap-4 lg:w-[clamp(250px,27vw,530px)]">
         {loading ? (
           <>
             <SkeletonCard className="h-48" />

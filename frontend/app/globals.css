@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==========================================================
+   BREAKPOINT SCALE — single source of truth
+   ----------------------------------------------------------
+   These match Tailwind's default screens so that the
+   hand-written CSS in this file and the utility classes in
+   JSX collapse at exactly the same widths.
+
+     sm   640px  -> @media (max-width: 639px)   (under sm)
+     md   768px  -> @media (max-width: 767px)   (under md)
+     lg  1024px  -> @media (max-width: 1023px)  (under lg)
+     xl  1280px  -> @media (max-width: 1279px)  (under xl)
+     2xl 1536px  -> @media (min-width: 1280px)  (xl and up)
+
+   Plus one extra step for small phones:
+     480px       -> @media (max-width: 480px)
+
+   Do not introduce new ad-hoc values. If a layout needs to
+   change at a new width, add it to this list first.
+   ========================================================== */
+
 :root {
   /* Brand */
   --brand-blue: rgba(48, 8, 248, 1);
@@ -243,7 +263,7 @@ body {
 .mode-card h3 { margin: 0 0 5px; font-size: 16px; font-weight: 700; line-height: 1.2; }
 .mode-card p { margin: 0 0 8px; color: #4f4f4f; font-size: 13px; line-height: 1.3; }
 .mode-card .text-link { font-size: 14px; font-weight: 700; color: var(--brand-blue); text-decoration: none; }
-@media (max-width: 992px) {
+@media (max-width: 1023px) {
   .mode-grid {
     grid-template-columns: 1fr;
   }
@@ -278,13 +298,13 @@ body {
 .daily-banner p { margin: 0; color: #4f4f6c; font-weight: 500; font-size: 0.95rem; line-height: 1.5; }
 .daily-banner .practice-button { padding: 0.55rem 1.1rem; font-size: 0.9rem; }
 
-@media (max-width: 1200px) {
+@media (max-width: 1279px) {
   .practice-hero { padding-top: 40px; }
   .practice-hero .hero-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
   .practice-hero h1 { margin-top: 8px; }
   .question-grid { grid-template-columns: repeat(3, minmax(200px, 1fr)); }
 }
-@media (max-width: 800px) {
+@media (max-width: 767px) {
   .practice-hero { padding: 32px 0; }
   .practice-hero .hero-grid { width: 100%; display: block; margin: 0; }
   .practice-hero h1 { margin: 20px 0 16px; font-size: 30px; line-height: 1.35; }
@@ -382,7 +402,7 @@ body {
 .speaking-hero-copy { display: flex; flex-direction: column; justify-content: space-between; align-self: stretch; padding-top: 0; }
 .speaking-hero-copy h1 { margin: 0 0 0; font-size: 35px; font-weight: 800; line-height: 1.2; }
 .speaking-hero-copy p { margin: 0 0 10px; color: #46465a; font-size: 1.05rem; line-height: 1.7; font-weight: 500; max-width: 520px; }
-@media (min-width: 1101px) {
+@media (min-width: 1280px) {
   .speaking-hero-copy { min-height: 395px; }
 }
 
@@ -484,13 +504,13 @@ body {
 .ai-cta-copy h3 { margin: 0 0 0.3rem; font-size: 1rem; font-weight: 800; }
 .ai-cta-copy p { margin: 0 0 0.6rem; color: #4f4f6c; font-size: 0.85rem; }
 .ai-cta-copy .practice-button { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
-@media (max-width: 1100px) {
+@media (max-width: 1023px) {
   .speaking-hero-grid { grid-template-columns: 1fr; }
   .speaking-hero-visual { margin-top: 32px; }
   .speaking-types-layout { grid-template-columns: 1fr; }
   .speaking-types-grid { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 640px) {
+@media (max-width: 639px) {
   .speaking-types-grid { grid-template-columns: 1fr; }
   .ai-cta-banner { flex-direction: column; align-items: flex-start; }
 }
@@ -554,7 +574,9 @@ body {
 .task-progress-label { font-size: 0.85rem; font-weight: 700; color: var(--brand-blue); }
 
 /* ── Main panel ── */
-.task-main { border: 1px solid #c0c3f0; border-radius: 14px; padding: 1.75rem; min-height: 85vh; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+/* min-width:0 lets long transcripts wrap instead of forcing the
+   1fr grid track wider than its share. */
+.task-main { border: 1px solid #c0c3f0; border-radius: 14px; padding: 1.75rem; min-height: 85vh; min-width: 0; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
 .task-main-header { display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem; }
 .task-main-header-icon { color: var(--brand-blue); display: flex; }
 .task-main-header-icon svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -762,11 +784,24 @@ body {
 .task-reorder-btn:hover:not(:disabled) { background: var(--brand-blue); color: #fff; }
 .task-reorder-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-@media (max-width: 1200px) {
+@media (max-width: 1279px) {
   .task-layout { grid-template-columns: 250px 1fr 250px; }
 }
-@media (max-width: 992px) {
+@media (max-width: 1023px) {
   .task-layout { grid-template-columns: 1fr; }
+}
+/* Phones / small tablets: drop the viewport-relative panel heights,
+   which otherwise force very tall boxes on short landscape screens. */
+@media (max-width: 767px) {
+  .task-layout { padding: 1rem var(--page-gutter) 2rem; gap: 1rem; }
+  .task-main { min-height: 0; padding: 1.15rem; }
+  .task-sidebar { padding: 1.15rem 1rem; }
+  .task-text-box { min-height: 0; padding: 1rem; }
+  .task-audio-box { min-height: 0; padding: 1.5rem 1rem; }
+  .task-recording-box { min-height: 0; }
+  .task-topbar { padding: 0.85rem var(--page-gutter); gap: 0.6rem; }
+  .task-main-header h1 { font-size: 1.2rem; }
+  .task-footer-nav { flex-wrap: wrap; }
 }
 
 /* ══════════════════════════════════════════════
@@ -841,13 +876,13 @@ body {
 .practice-cta-button { flex-shrink: 0; padding: 0.65rem 1.4rem; font-size: 1rem; }
 .practice-cta-illustration { flex-shrink: 0; }
 
-@media (max-width: 1100px) {
+@media (max-width: 1023px) {
   .writing-tasks-grid { grid-template-columns: 1fr; }
   .practice-skills-grid { grid-template-columns: repeat(2, 1fr); row-gap: 2rem; }
   .practice-skill-item { border-left: none; }
   .practice-cta-banner { flex-wrap: wrap; }
 }
-@media (max-width: 640px) {
+@media (max-width: 639px) {
   .practice-skills-grid { grid-template-columns: 1fr; }
   .writing-task-illustration { display: none; }
   .writing-task-card > .writing-task-copy > p { max-width: 100%; }
@@ -897,7 +932,7 @@ body {
 .overview-plain-label { font-weight: 600; font-size: 0.95rem; color: #1a1a2e; }
 .overview-plain-value { font-weight: 700; font-size: 0.95rem; color: #1a1a2e; }
 
-@media (max-width: 1100px) {
+@media (max-width: 1023px) {
   .reading-book-stack { display: none; }
 }
 
@@ -927,12 +962,46 @@ body {
 .listening-task-time svg { width: 14px; height: 14px; fill: none; stroke: rgba(48, 8, 248, 1); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .listening-task-card .practice-button { padding: 0.4rem 0.85rem; font-size: 0.8rem; border-radius: 8px; margin-top: 0.5rem; }
 
-@media (max-width: 1100px) {
+@media (max-width: 1023px) {
   .listening-tasks-grid { grid-template-columns: repeat(3, 1fr); }
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .listening-tasks-grid { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 500px) {
+@media (max-width: 480px) {
   .listening-tasks-grid { grid-template-columns: 1fr; }
+}
+
+/* ==========================================================
+   FLOATING DECORATIVE CARDS
+   ----------------------------------------------------------
+   These are absolutely positioned inside a relative hero
+   visual. At desktop widths a negative `left` tucks them
+   over the edge of the artwork, which is the intended look.
+   Once the hero collapses to a single column there is no
+   artwork beside them, so the negative offset pushes the
+   card past the viewport edge and creates a horizontal
+   scrollbar. Anchor them inside the visual instead.
+   ========================================================== */
+@media (max-width: 1023px) {
+  .ai-feedback-card,
+  .practice-feedback-card,
+  .reading-feedback-card,
+  .listening-hero-visual .practice-feedback-card {
+    left: 0;
+    max-width: calc(100% - 1rem);
+  }
+  /* The writing illustration is absolutely positioned in the
+     top-right and collides with the copy once stacked. */
+  .writing-task-illustration { display: none; }
+}
+
+@media (max-width: 480px) {
+  .ai-feedback-card,
+  .practice-feedback-card,
+  .reading-feedback-card {
+    position: static;
+    margin-top: 0.75rem;
+    max-width: 100%;
+  }
 }

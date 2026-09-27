@@ -8,7 +8,7 @@ export default function DashboardLayout({ children }: Readonly<{ children: React
       <DashboardNavbar />
       <div className="flex gap-[10px] min-h-[calc(100vh-65px)] bg-white">
         <Sidebar />
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 min-w-0 overflow-y-auto">
           {children}
         </main>
       </div>

@@ -107,7 +107,7 @@ export default function GoogleSigninPage() {
   /* Shared card wrapper */
   const Card = ({ children }: { children: React.ReactNode }) => (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      <div className="bg-white rounded-3xl border border-gray-200 shadow-sm w-full max-w-xl p-10">
+      <div className="bg-white rounded-3xl border border-gray-200 shadow-sm w-full max-w-xl p-6 sm:p-10">
         {children}
       </div>
       <div className="flex gap-6 mt-6 text-xs text-gray-500">
@@ -259,9 +259,9 @@ export default function GoogleSigninPage() {
   /* ── STEP 3: Success ───────────────────────────────────────────── */
   return (
     <Card>
-      <div className="flex items-start gap-8">
+      <div className="flex flex-col sm:flex-row items-start gap-8">
         {/* Left */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0 w-full">
           <div className="mb-6"><GoogleLogo /></div>
           <h1 className="text-2xl font-normal text-gray-900 mb-4">You&apos;re signed in</h1>
 

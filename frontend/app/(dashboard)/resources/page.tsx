@@ -57,7 +57,7 @@ export default function ResourcesPage() {
           </div>
 
           {/* Right Content - Hero Image */}
-          <div className="flex-1 relative w-full h-[450px] flex items-center justify-center">
+          <div className="flex-1 relative w-full h-[260px] sm:h-[360px] lg:h-[450px] flex items-center justify-center">
               <Image src="/images/Frame 1654.png" alt="PTE Resources" width={600} height={400} className="w-[90%] h-[90%] object-contain rounded-3xl" />
            </div>
         </div>

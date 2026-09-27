@@ -44,10 +44,10 @@ export default function Footer() {
     <footer className="bg-[#F5F3FF]">
       {/* Main Footer Content */}
       <div className="page-container pt-12 pb-6">
-        <div className="grid grid-cols-5 gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
 
           {/* Brand Column */}
-          <div className="col-span-1">
+          <div className="sm:col-span-2 lg:col-span-1">
             {/* Logo */}
             <div className="flex items-center gap-2 mb-4">
               <Image src="/images/PTElogo.png" alt="PTE Prep Logo" width={48} height={48} className="rounded-full bg-[rgba(74,45,219,0.2)] flex-shrink-0" />
@@ -110,7 +110,7 @@ export default function Footer() {
 
           {/* Link Columns */}
           {Object.entries(footerColumns).map(([category, links]) => (
-            <div key={category} className="border-l border-gray-300 pl-6">
+            <div key={category} className="lg:border-l lg:border-gray-300 lg:pl-6">
               <h4 className="font-bold text-gray-900 text-[21px] mb-4">{category}</h4>
               <ul className="space-y-2.5">
                 {links.map((item) => (
@@ -146,56 +146,56 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* Divider */}
-        <div className="flex items-center gap-[107px] mb-5">
+        {/* Highlight cards — wrap instead of forcing a 1174px row */}
+        <div className="flex flex-wrap items-stretch gap-4 mb-5 xl:gap-[107px]">
           {/* Card 1: Security Badge */}
-          <div className="flex items-center gap-3 h-[77px] rounded-[10px] bg-white border border-gray-200 pl-[10px] pr-[27px] w-[320px]" style={{ boxShadow: '1px 1px 10px 0px #00000033' }}>
+          <div className="flex w-full sm:w-[300px] xl:w-[320px] min-h-[77px] items-center gap-3 rounded-[10px] bg-white border border-gray-200 py-3 pl-[10px] pr-[27px]" style={{ boxShadow: '1px 1px 10px 0px #00000033' }}>
               <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
                 <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                     d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="font-semibold text-sm text-gray-900">100% Secure & Trusted</p>
                 <p className="text-xs text-gray-500 mt-[1px] leading-relaxed">Your data is safe with us. We never share your information.</p>
             </div>
           </div>
 
           {/* Card 2: Stay Updated */}
-          <div className="flex items-center gap-3 h-[77px] rounded-[10px] bg-white border border-gray-200 pl-[10px] pr-[27px]  w-[320px]" style={{ boxShadow: '1px 1px 10px 0px #00000033' }}>
+          <div className="flex w-full sm:w-[300px] xl:w-[320px] min-h-[77px] items-center gap-3 rounded-[10px] bg-white border border-gray-200 py-3 pl-[10px] pr-[27px]" style={{ boxShadow: '1px 1px 10px 0px #00000033' }}>
             <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
               <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            <div>
-              <p className="font-semibold text-sm text-gray-900">Stay Updated</p>
-              <p className="text-xs text-gray-500 mt-[1px] leading-relaxed">Subscribe to get the latest tips, free materials and exclusive offers.</p>
+              <div className="min-w-0">
+                <p className="font-semibold text-sm text-gray-900">Stay Updated</p>
+                <p className="text-xs text-gray-500 mt-[1px] leading-relaxed">Subscribe to get the latest tips, free materials and exclusive offers.</p>
+              </div>
             </div>
-          </div>
 
           {/* Card 3: Email + Subscribe */}
-          <div className="flex items-center gap-3 h-[77px] rounded-[10px] bg-[#F5F3FF] px-[27px] flex-shrink-0">
+          <div className="flex w-full sm:w-[300px] xl:w-[420px] min-h-[77px] items-center gap-3 rounded-[10px] bg-[#F5F3FF] px-[27px] py-3">
               <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
                 <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                     d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
-              <div className="flex items-center gap-2 flex-1">
+              <div className="flex flex-1 min-w-0 flex-col gap-2 sm:flex-row sm:items-center">
                 <input
                   id="footer-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email..."
-                  className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-indigo-400 bg-white placeholder-gray-400 transition-colors"
+                  className="min-w-0 flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-indigo-400 bg-white placeholder-gray-400 transition-colors"
                 />
                 <button
                   onClick={() => setEmail('')}
-                  className="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
+                  className="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors flex-shrink-0"
                 >
                   Subscribe
                 </button>
@@ -204,7 +204,7 @@ export default function Footer() {
           </div>
 
         {/* Copyright Bar */}
-        <div className="w-full h-[53px] rounded-[10px] bg-[#3008F826] pt-[10px] pb-[10px] pl-[27px] pr-[27px] flex items-center justify-between mt-[10px]">
+        <div className="w-full min-h-[53px] rounded-[10px] bg-[#3008F826] py-2.5 pl-[27px] pr-[27px] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mt-[10px]">
           <p className="text-[14px] text-gray-900">© 2026 PTE Prep. All rights reserved.</p>
           <p className="text-[14px] text-gray-900">Made with passion for your success</p>
         </div>

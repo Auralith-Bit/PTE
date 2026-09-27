@@ -10,9 +10,8 @@ interface WelcomeBannerProps {
 export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
   return (
     <div
-      className="relative rounded-2xl flex items-center overflow-hidden shadow-sm w-full"
+      className="relative rounded-2xl flex flex-col sm:flex-row sm:items-center overflow-hidden shadow-sm w-full min-h-[210px] sm:min-h-0 sm:h-[clamp(180px,14.3vw,290px)]"
       style={{
-        height: 'clamp(180px, 14.3vw, 290px)',
         padding: 'clamp(2px, 0.15vw, 3px) clamp(12px, 1.12vw, 22px) 0 clamp(12px, 1.12vw, 22px)',
         gap: 'clamp(12px, 1.02vw, 20px)',
         background: `linear-gradient(90deg, rgba(244,244,244,0.2) 0%, rgba(246,246,246,0.2) 24.69%, rgba(246,246,246,0.2) 50%, rgba(246,246,246,0.2) 66.43%, rgba(28,5,146,0.2) 100%),
@@ -20,21 +19,21 @@ export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
       }}
     >
       {/* Text + CTAs */}
-      <div className="z-10 flex flex-col justify-between h-full min-w-0 pt-2 pb-[3px]">
+      <div className="z-10 flex flex-col justify-center gap-4 h-full min-w-0 pt-2 pb-[3px]">
         <div>
-          <h1 className="text-[26px] md:text-[30px] font-extrabold text-black leading-tight mb-2">
+          <h1 className="text-[22px] sm:text-[26px] md:text-[30px] font-extrabold text-black leading-tight mb-2">
             <span className="mr-1">&#128075;</span>
             Welcome back, {firstName}!
           </h1>
-          <p className="text-black text-[15px] leading-relaxed">
+          <p className="text-black text-[14px] sm:text-[15px] leading-relaxed">
             Keep practicing every day to achieve your target score.
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <Link
             href="/practice"
             id="continue-practice-btn"
-            className="inline-flex items-center gap-2 px-7 py-3 bg-[#3008F8] text-white font-bold text-[15px] rounded-xl hover:bg-[#2506c4] transition-all duration-150 shadow-md hover:shadow-lg"
+            className="inline-flex items-center gap-2 px-4 sm:px-7 py-2.5 sm:py-3 bg-[#3008F8] text-white font-bold text-[14px] sm:text-[15px] rounded-xl hover:bg-[#2506c4] transition-all duration-150 shadow-md hover:shadow-lg"
           >
             Continue Practice
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,7 +43,7 @@ export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
           <Link
             href="/mock-test"
             id="take-mock-test-btn"
-            className="inline-flex items-center gap-2 px-7 py-3 bg-white text-[#4F46E5] font-bold text-[15px] rounded-xl border-2 border-[#4F46E5] hover:bg-[#F0F1FF] transition-all duration-150"
+            className="inline-flex items-center gap-2 px-4 sm:px-7 py-2.5 sm:py-3 bg-white text-[#4F46E5] font-bold text-[14px] sm:text-[15px] rounded-xl border-2 border-[#4F46E5] hover:bg-[#F0F1FF] transition-all duration-150"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -55,8 +54,8 @@ export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
         </div>
       </div>
 
-      {/* Illustration */}
-      <div className="shrink-0 self-end z-0 pointer-events-none h-full flex items-end">
+      {/* Illustration — hidden on phones, where the CTAs need the full width */}
+      <div className="hidden sm:flex shrink-0 self-end z-0 pointer-events-none h-full items-end">
         <Image
           src="/images/ChatGPT Image Aug 10, 2026, 03_34_56 PM 1.png"
           alt="Student studying"

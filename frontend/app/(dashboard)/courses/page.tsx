@@ -10,13 +10,13 @@ export default function CoursesPage() {
       {/* 1. Hero Section */}
       <section className="bg-[#F5F3FF] overflow-hidden">
         <div className="page-container">
-          <div className="breadcrumbs w-[44%] pt-7">
+          <div className="breadcrumbs w-full lg:w-[44%] pt-7">
             <Link href="/">Home</Link><Chevron /><span>Courses</span><Chevron />
           </div>
-          <div className="flex items-start min-h-[486px]">
+          <div className="flex flex-col lg:flex-row lg:items-start min-h-0 lg:min-h-[486px]">
 
           {/* Left Content */}
-          <div className="w-[44%] pt-9 pb-14 pr-6 flex-shrink-0">
+          <div className="w-full lg:w-[44%] pt-9 pb-10 lg:pb-14 lg:pr-6 lg:flex-shrink-0 min-w-0">
             <h1 className="text-[2rem] font-extrabold text-gray-900 leading-[1.18] mb-5">
               Master PTE with{' '}
               <span className="text-indigo-600">Structured Learning Paths</span>
@@ -39,29 +39,29 @@ export default function CoursesPage() {
             </div>
 
             {/* Stats Row */}
-            <div className="w-[606px] h-[63px] flex items-center gap-[17px] rounded-[7px] border-[1.5px] border-[#D9D9D9] p-[7px] bg-white" style={{ boxShadow: '1px 1px 10px 0px #0000001A' }}>
+            <div className="w-full max-w-[606px] min-h-[63px] flex flex-wrap items-center gap-x-[17px] gap-y-2 rounded-[7px] border-[1.5px] border-[#D9D9D9] p-[7px] bg-white" style={{ boxShadow: '1px 1px 10px 0px #0000001A' }}>
               {/* Badge 1 */}
-              <div className="flex items-center gap-2 flex-1">
+              <div className="flex items-center gap-2 flex-1 min-w-[130px]">
                 <Image src="/images/Vector.png" alt="Expert Trainers" width={28} height={28} />
                 <div>
                   <p className="text-[15px] font-bold text-gray-900 leading-tight">Expert Trainers</p>
                 </div>
               </div>
 
-              <div className="w-[1.5px] h-[35px] bg-gray-200 flex-shrink-0" />
+              <div className="w-[1.5px] h-[35px] bg-gray-200 flex-shrink-0 hidden sm:block" />
 
               {/* Badge 2 */}
-              <div className="flex items-center gap-2 flex-1">
+              <div className="flex items-center gap-2 flex-1 min-w-[130px]">
                 <Image src="/images/Vector (1).png" alt="AI Learning" width={28} height={28} />
                 <div>
                   <p className="text-[15px] font-bold text-gray-900 leading-tight">AI-Powered Learning</p>
                 </div>
               </div>
 
-              <div className="w-[1.5px] h-[35px] bg-gray-200 flex-shrink-0" />
+              <div className="w-[1.5px] h-[35px] bg-gray-200 flex-shrink-0 hidden sm:block" />
 
               {/* Badge 3 */}
-              <div className="flex items-center gap-2 flex-1">
+              <div className="flex items-center gap-2 flex-1 min-w-[130px]">
                 <Image src="/images/Vector (2).png" alt="Mock Tests" width={28} height={28} />
                 <div>
                   <p className="text-[15px] font-bold text-gray-900 leading-tight">Real Exam Simulation</p>
@@ -71,7 +71,7 @@ export default function CoursesPage() {
           </div>
 
           {/* Right Content - Hero Image */}
-          <div className="w-[694px] relative h-[326px] flex-shrink-0 overflow-visible ml-[70px]">
+          <div className="w-full max-w-[694px] relative h-[326px] mt-10 lg:flex-shrink-0 lg:ml-[70px] overflow-visible">
             <Image src="/images/Frame 1472.png" alt="Student studying" fill className="object-contain" />
           </div>
 
@@ -84,7 +84,7 @@ export default function CoursesPage() {
         <div className="page-container">
         <h2 className="text-[2rem] font-extrabold text-gray-900 mb-12">Choose Your Learning Path</h2>
         
-        <div className="flex justify-between gap-[33px]">
+        <div className="flex flex-col lg:flex-row justify-between gap-[33px]">
           {/* Beginner Card */}
           <div className="bg-[#F6F6F680] rounded-[10px] border-2 border-[#D9D9D9] pt-[10px] pr-[25px] pb-[10px] pl-[25px] flex flex-col shadow-sm hover:shadow-xl transition-shadow relative overflow-hidden flex-1 min-h-[380px]">
             <div className="bg-[#E6F4EA] text-[#137333] text-xs font-bold px-3 py-1 rounded-full w-fit mb-5 tracking-wide uppercase">Beginner</div>
@@ -307,7 +307,7 @@ export default function CoursesPage() {
       {/* 5. Journey & Testimonials */}
       <section className="bg-white py-20 w-full">
         <div className="page-container">
-        <div className="grid grid-cols-2 gap-[20px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-[20px]">
            {/* Left: Journey */}
             <div className="bg-white rounded-2xl px-8 py-8 flex flex-col items-center justify-center min-h-[400px]">
                <h2 className="text-[29px] font-extrabold text-black pt-[4px] text-center mb-8">Your PTE Learning Journey</h2>

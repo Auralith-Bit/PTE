@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 
@@ -20,6 +20,12 @@ export const metadata: Metadata = {
   description:
     'Master every section with AI-powered feedback, realistic mock tests, and personalized PTE preparation. Join 50,000+ happy students worldwide.',
   keywords: 'PTE, PTE preparation, PTE practice, AI feedback, mock test, PTE score, English proficiency',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({

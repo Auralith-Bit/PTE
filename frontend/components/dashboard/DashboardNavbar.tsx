@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import MobileDrawer from '@/components/common/MobileDrawer';
 
 export default function DashboardNavbar() {
   const pathname = usePathname();
@@ -12,6 +13,7 @@ export default function DashboardNavbar() {
   const { user, logout } = useAuth();
   const [practiceOpen, setPracticeOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
@@ -38,6 +40,16 @@ export default function DashboardNavbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Navigating away should never leave the drawer or dropdown open.
+  useEffect(() => {
+    setDrawerOpen(false);
+    setPracticeOpen(false);
+  }, [pathname]);
+
+  function closeDrawer() {
+    setDrawerOpen(false);
+  }
+
   function handleLogout() {
     logout();
     router.push('/login');
@@ -53,7 +65,7 @@ export default function DashboardNavbar() {
 
   return (
     <nav className="w-full bg-[#F5F3FF] sticky top-0 z-50 border-b border-indigo-100">
-      <div className="h-[65px] px-8 flex items-center justify-between gap-6">
+      <div className="h-[65px] px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4 lg:gap-6">
 
         {/* Logo */}
         <Link href="/dashboard" className="flex items-center gap-2 shrink-0">
@@ -64,14 +76,14 @@ export default function DashboardNavbar() {
             height={44}
             className="rounded-full bg-[rgba(74,45,219,0.15)]"
           />
-          <span className="text-[20px] font-[800] tracking-tight">
+          <span className="hidden min-[400px]:inline text-[20px] font-[800] tracking-tight">
             <span className="text-indigo-600">PTE.</span>
             <span className="text-indigo-600">Prep</span>
           </span>
         </Link>
 
-        {/* Center Nav Links */}
-        <div className="flex items-center gap-1">
+        {/* Center Nav Links — desktop only, the drawer handles small screens */}
+        <div className="hidden lg:flex items-center gap-1">
           {/* Dashboard link */}
           <Link
             href="/dashboard"
@@ -84,13 +96,17 @@ export default function DashboardNavbar() {
             Dashboard
           </Link>
 
-          {/* Practice Dropdown */}
+          {/* Practice Dropdown — hover for pointer, click for touch/keyboard */}
           <div
             className="relative"
             onMouseEnter={() => setPracticeOpen(true)}
             onMouseLeave={() => setPracticeOpen(false)}
           >
             <button
+              type="button"
+              onClick={() => setPracticeOpen((v) => !v)}
+              aria-expanded={practiceOpen}
+              aria-haspopup="true"
               className={`px-4 py-[6px] rounded-full text-[15px] font-semibold transition-all duration-150 inline-flex items-center gap-1 ${
                 pathname.startsWith('/practice')
                   ? 'bg-indigo-600 text-white shadow-sm'
@@ -165,7 +181,7 @@ export default function DashboardNavbar() {
               <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
                 {initial}
               </div>
-              <span className="text-[14px] font-semibold text-gray-700">{firstName}</span>
+              <span className="hidden sm:inline max-w-[120px] truncate text-[14px] font-semibold text-gray-700">{firstName}</span>
               <svg
                 className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`}
                 fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -216,8 +232,128 @@ export default function DashboardNavbar() {
               </div>
             )}
           </div>
+
+          {/* Hamburger — small screens only */}
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            aria-label="Open navigation menu"
+            aria-expanded={drawerOpen}
+            className="lg:hidden grid h-10 w-10 flex-shrink-0 place-items-center rounded-lg text-indigo-700 transition-colors hover:bg-indigo-100"
+          >
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+          </button>
         </div>
       </div>
+
+      <MobileDrawer open={drawerOpen} onClose={closeDrawer} title="Menu">
+        <nav className="flex flex-col p-4">
+          <div className="mb-3 flex items-center gap-2 border-b border-gray-100 pb-3">
+            <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
+              {initial}
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-[14px] font-bold text-gray-800">
+                {user?.full_name ?? firstName}
+              </p>
+              <p className="truncate text-[12px] text-gray-400">{user?.email}</p>
+            </div>
+          </div>
+
+          <DashboardDrawerLink href="/dashboard" label="Dashboard" active={isActive('/dashboard')} onClick={closeDrawer} />
+          <DashboardDrawerLink
+            href="/practice"
+            label="Practice"
+            active={pathname.startsWith('/practice')}
+            onClick={closeDrawer}
+          />
+
+          <p className="mt-3 mb-1 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+            Practice modules
+          </p>
+          {practiceLinks.map((item) => (
+            <DashboardDrawerLink
+              key={item.href}
+              href={item.href}
+              label={item.name}
+              indent
+              active={pathname === item.href}
+              onClick={closeDrawer}
+            />
+          ))}
+
+          <p className="mt-3 mb-1 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+            Explore
+          </p>
+          {navLinks.filter((l) => l.name !== 'Dashboard').map((link) => (
+            <DashboardDrawerLink
+              key={link.name}
+              href={link.href}
+              label={link.name}
+              active={isActive(link.href)}
+              onClick={closeDrawer}
+            />
+          ))}
+          <DashboardDrawerLink href="/ai-score" label="AI Score" active={isActive('/ai-score')} onClick={closeDrawer} />
+
+          <p className="mt-3 mb-1 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+            Account
+          </p>
+          <DashboardDrawerLink href="/dashboard/profile" label="My Profile" onClick={closeDrawer} />
+          <DashboardDrawerLink href="/settings" label="Settings" onClick={closeDrawer} />
+
+          <Link
+            href="/upgrade"
+            onClick={closeDrawer}
+            className="mt-3 block rounded-xl bg-gradient-to-br from-[#6C5CE7] to-[#4F46E5] px-4 py-2.5 text-center text-[14px] font-bold text-white shadow-sm transition-opacity hover:opacity-90"
+          >
+            Go Premium
+          </Link>
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="mt-4 flex items-center gap-3 rounded-lg border border-red-200 px-3 py-2.5 text-left text-[15px] font-semibold text-red-500 transition-colors hover:bg-red-50"
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Log Out
+          </button>
+        </nav>
+      </MobileDrawer>
     </nav>
+  );
+}
+
+function DashboardDrawerLink({
+  href,
+  label,
+  active,
+  indent,
+  onClick,
+}: {
+  href: string;
+  label: string;
+  active?: boolean;
+  indent?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className={`rounded-lg px-3 py-2.5 text-[15px] font-semibold transition-colors ${
+        indent ? 'pl-6 text-[14px]' : ''
+      } ${
+        active
+          ? 'bg-indigo-50 text-indigo-600'
+          : 'text-gray-700 hover:bg-indigo-50 hover:text-indigo-600'
+      }`}
+    >
+      {label}
+    </Link>
   );
 }

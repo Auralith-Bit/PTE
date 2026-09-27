@@ -4,10 +4,12 @@ import React, { useState, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
+import MobileDrawer from './MobileDrawer';
 
 export default function Navbar() {
   const pathname = usePathname();
   const [practiceOpen, setPracticeOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const navLinks = [
     { name: 'Mock Test', href: '/mock-test' },
@@ -26,6 +28,7 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showResults, setShowResults] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const drawerSearchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const searchIndex = useMemo<{ label: string; href: string; category: string }[]>(() => [
@@ -103,13 +106,26 @@ export default function Navbar() {
 
   React.useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      const insideInline = searchRef.current?.contains(target);
+      const insideDrawer = drawerSearchRef.current?.contains(target);
+      if (!insideInline && !insideDrawer) {
         setShowResults(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Navigating away should never leave the drawer or dropdown open.
+  React.useEffect(() => {
+    setDrawerOpen(false);
+    setPracticeOpen(false);
+  }, [pathname]);
+
+  function closeDrawer() {
+    setDrawerOpen(false);
+  }
 
   // Hide Navbar on auth pages — they have their own headers
   const authRoutes = ['/signup', '/login'];
@@ -120,19 +136,19 @@ export default function Navbar() {
 
   return (
     <nav className="w-full bg-[#F5F3FF] sticky top-0 z-50">
-      <div className="h-[65px] px-8 flex items-center justify-between gap-8">
+      <div className="h-[65px] px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4 lg:gap-8">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
+        <Link href="/" className="flex items-center gap-2 group shrink-0">
           <Image src="/images/PTElogo.png" alt="PTE Prep" width={50} height={50} className="rounded-full bg-[rgba(74,45,219,0.2)]" />
-          <span className="text-[22px] font-[800] tracking-tight">
+          <span className="hidden min-[400px]:inline text-[22px] font-[800] tracking-tight">
             <span className="text-indigo-600">PTE.</span>
             <span className="text-indigo-600">Prep</span>
           </span>
         </Link>
 
-        {/* Nav Links */}
-        <div className="flex items-center gap-7">
+        {/* Nav Links — desktop only, the drawer handles small screens */}
+        <div className="hidden lg:flex items-center gap-5 xl:gap-7">
           {/* Home */}
           <Link
             href="/"
@@ -145,14 +161,17 @@ export default function Navbar() {
             Home
           </Link>
 
-          {/* Practice Dropdown */}
+          {/* Practice Dropdown — hover for pointer, click for touch/keyboard */}
           <div
             className="relative"
             onMouseEnter={() => setPracticeOpen(true)}
             onMouseLeave={() => setPracticeOpen(false)}
           >
-            <Link
-              href="/practice"
+            <button
+              type="button"
+              onClick={() => setPracticeOpen((v) => !v)}
+              aria-expanded={practiceOpen}
+              aria-haspopup="true"
               className={`text-[18px] font-bold pb-0.5 transition-all duration-150 inline-flex items-center gap-1 ${
                 pathname.startsWith('/practice')
                   ? 'text-indigo-600 border-b-2 border-indigo-600'
@@ -168,15 +187,30 @@ export default function Navbar() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
               </svg>
-            </Link>
+            </button>
 
             {/* Dropdown Menu */}
             {practiceOpen && (
               <div className="absolute top-full left-0 pt-1 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+                <Link
+                  href="/practice"
+                  onClick={() => setPracticeOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-2.5 text-[15px] font-semibold transition-colors duration-100 ${
+                    pathname === '/practice'
+                      ? 'bg-indigo-50 text-indigo-600'
+                      : 'text-gray-700 hover:bg-indigo-50 hover:text-indigo-600'
+                  }`}
+                >
+                  <svg className="w-5 h-5 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h10" />
+                  </svg>
+                  All Practice
+                </Link>
                 {practiceDropdown.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
+                    onClick={() => setPracticeOpen(false)}
                     className={`flex items-center gap-3 px-4 py-2.5 text-[15px] font-semibold transition-colors duration-100 ${
                       pathname === item.href
                         ? 'bg-indigo-50 text-indigo-600'
@@ -220,18 +254,18 @@ export default function Navbar() {
         </div>
 
         {/* Right: Search + Buttons */}
-        <div className="flex items-center gap-3">
-          {/* Search Bar */}
-          <div ref={searchRef} className="relative">
+        <div className="flex items-center gap-3 shrink-0">
+          {/* Search Bar — inline only on wide screens; the drawer offers a full-width field */}
+          <div ref={searchRef} className="relative hidden xl:block">
             <form onSubmit={handleSearch}>
-              <div className="flex items-center gap-9 bg-gray-50 border border-gray-200 rounded-lg px-3 py-[7px] hover:border-indigo-300 transition-colors">
+              <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-[7px] hover:border-indigo-300 transition-colors">
                 <input
                   ref={inputRef}
                   type="text"
                   placeholder="Search here...."
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="bg-transparent text-sm text-gray-500 outline-none w-[130px] placeholder-gray-400"
+                  className="bg-transparent text-sm text-gray-500 outline-none w-[110px] xl:w-[130px] placeholder-gray-400"
                 />
                 <svg
                   className="w-4 h-4 text-gray-400 flex-shrink-0"
@@ -274,7 +308,7 @@ export default function Navbar() {
           {/* Log in Button */}
           <Link
             href="/login"
-            className="px-5 py-[7px] text-[14px] font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
+            className="hidden sm:inline-flex px-5 py-[7px] text-[14px] font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
           >
             Log in
           </Link>
@@ -282,12 +316,153 @@ export default function Navbar() {
           {/* Sign Up Button */}
           <Link
             href="/register"
-            className="px-5 py-[7px] text-[14px] font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+            className="px-3 sm:px-5 py-[7px] text-[13px] sm:text-[14px] font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm whitespace-nowrap"
           >
             Sign Up
           </Link>
+
+          {/* Hamburger — small screens only */}
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            aria-label="Open navigation menu"
+            aria-expanded={drawerOpen}
+            className="lg:hidden grid h-10 w-10 flex-shrink-0 place-items-center rounded-lg text-indigo-700 transition-colors hover:bg-indigo-50"
+          >
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+          </button>
         </div>
       </div>
+
+      <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title="Menu">
+        <nav className="flex flex-col gap-1 p-4">
+          {/* Search — inline search is xl-only, so the drawer carries it below that */}
+          <div ref={drawerSearchRef} className="relative mb-2">
+            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+              <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search here...."
+                value={searchQuery}
+                onChange={handleSearchChange}
+                aria-label="Search site"
+                className="w-full min-w-0 bg-transparent text-sm text-gray-700 outline-none placeholder-gray-400"
+              />
+            </div>
+            {showResults && filteredResults.length > 0 && (
+              <div className="mt-1 w-full bg-white rounded-xl shadow-lg border border-gray-200 py-2 max-h-72 overflow-y-auto">
+                {filteredResults.map((group) => (
+                  <div key={group.category}>
+                    <div className="px-4 py-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                      {group.category}
+                    </div>
+                    {group.items.map((item) => (
+                      <button
+                        key={`drawer-${group.category}-${item.label}`}
+                        type="button"
+                        onClick={() => {
+                          handleResultClick(item.href);
+                          closeDrawer();
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <DrawerLink href="/" label="Home" active={pathname === '/'} onClick={closeDrawer} />
+          <DrawerLink
+            href="/practice"
+            label="Practice"
+            active={pathname.startsWith('/practice')}
+            onClick={closeDrawer}
+          />
+
+          <p className="mt-3 mb-1 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+            Practice modules
+          </p>
+          {practiceDropdown.map((item) => (
+            <DrawerLink
+              key={item.href}
+              href={item.href}
+              label={item.name}
+              indent
+              active={pathname === item.href}
+              onClick={closeDrawer}
+            />
+          ))}
+
+          <p className="mt-3 mb-1 px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+            Explore
+          </p>
+          {navLinks.map((link) => (
+            <DrawerLink
+              key={link.name}
+              href={link.href}
+              label={link.name}
+              active={pathname === link.href || pathname.startsWith(link.href + '/')}
+              onClick={closeDrawer}
+            />
+          ))}
+
+          <div className="mt-4 flex flex-col gap-2 border-t border-gray-100 pt-4">
+            <Link
+              href="/login"
+              onClick={closeDrawer}
+              className="rounded-lg border border-indigo-200 px-4 py-2.5 text-center text-[15px] font-bold text-indigo-600 transition-colors hover:bg-indigo-50"
+            >
+              Log in
+            </Link>
+            <Link
+              href="/register"
+              onClick={closeDrawer}
+              className="rounded-lg bg-indigo-600 px-4 py-2.5 text-center text-[15px] font-bold text-white transition-colors hover:bg-indigo-700"
+            >
+              Sign Up
+            </Link>
+          </div>
+        </nav>
+      </MobileDrawer>
     </nav>
+  );
+}
+
+function DrawerLink({
+  href,
+  label,
+  active,
+  indent,
+  onClick,
+}: {
+  href: string;
+  label: string;
+  active?: boolean;
+  indent?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className={`rounded-lg px-3 py-2.5 text-[15px] font-semibold transition-colors ${
+        indent ? 'pl-6 text-[14px]' : ''
+      } ${
+        active
+          ? 'bg-indigo-50 text-indigo-600'
+          : 'text-gray-700 hover:bg-indigo-50 hover:text-indigo-600'
+      }`}
+    >
+      {label}
+    </Link>
   );
 }

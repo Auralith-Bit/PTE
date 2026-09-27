@@ -60,7 +60,7 @@ export default function StatsCards({
   mockTestsWeeklyDelta,
 }: StatsCardsProps) {
   return (
-    <div className="flex gap-4">
+    <div className="flex flex-col gap-4 sm:flex-row">
       <StatCard
         label="Practice Completed"
         value={practiceCompletedPct}

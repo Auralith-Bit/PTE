@@ -10,10 +10,10 @@ function HeroSection() {
   return (
     <section className="bg-[#F5F3FF] overflow-hidden">
       <div className="page-container pt-[12px]">
-        <div className="flex items-center min-h-[486px]">
+        <div className="flex flex-col lg:flex-row lg:items-center min-h-0 lg:min-h-[486px]">
 
           {/* ── Left Content ── */}
-          <div className="w-[44%] py-14 pr-6 flex-shrink-0">
+          <div className="w-full lg:w-[44%] py-10 lg:py-14 lg:pr-6 flex-shrink-0 min-w-0">
             <h1 className="text-[2rem] font-extrabold text-gray-900 leading-[1.18] mb-5">
               Achieve Your Dream{' '}
               <span className="text-[#3008F8]">PTE Score</span>
@@ -26,7 +26,7 @@ function HeroSection() {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex items-center gap-4 mb-10">
+            <div className="flex flex-wrap items-center gap-4 mb-10">
               <Link
                 href="/practice"
                 id="hero-start-practice"
@@ -47,7 +47,7 @@ function HeroSection() {
             </div>
 
             {/* Stats Row */}
-            <div className="flex items-center gap-8">
+            <div className="flex flex-wrap items-center gap-6 sm:gap-8">
               <div className="flex items-center gap-2.5">
                 <Image src="/images/Vector.png" alt="Students icon" width={28} height={28} />
                 <div>
@@ -73,7 +73,9 @@ function HeroSection() {
           </div>
 
           {/* ── Right: Hero Image + Floating Cards ── */}
-          <div className="w-[684px] relative h-[316px] flex-shrink-0 overflow-visible">
+          {/* Fixed 684px at desktop; scales down and drops the decorative
+              cards on phones so nothing overflows the viewport. */}
+          <div className="hidden sm:block w-full lg:w-[684px] lg:flex-shrink-0 relative h-[316px] overflow-visible">
 
             {/* Dotted pattern decoration */}
             <div className="absolute right-0 top-8 w-48 h-48 hero-dots opacity-60 rounded-full" />
@@ -111,8 +113,10 @@ function HeroSection() {
               </div>
             </div>
 
-            {/* Hero Image */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-10 w-[717px] h-[361px]">
+            {/* Hero Image — 105% of the 684px frame reproduces the original
+                717px width on desktop while scaling down below it. aspect
+                ratio replaces the fixed height so the artwork never letterboxes. */}
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-10 w-[105%] aspect-[717/361]">
               <Image
                 src="/images/ChatGPT Image Jun 1, 2026, 03_21_42 PM 1.png"
                 alt="Student practicing PTE with AI-powered tools"
@@ -165,11 +169,11 @@ function TrustSection() {
   return (
     <section className="bg-white mt-[80px]">
       <div className="page-container min-h-[154px] flex flex-col justify-center gap-[27px]">
-        <p className="text-center font-bold text-[25px] leading-none">
+        <p className="text-center font-bold text-[20px] sm:text-[25px] leading-tight sm:leading-none">
           Trusted by 50,000+ students worldwide
         </p>
         <div className="border border-gray-200 rounded-[7px] py-[10px] px-[7px] flex items-center justify-center min-h-[107px] transition-all duration-300 hover:border-[#3008F8] hover:shadow-[0_10px_33px_#3008F8]" style={{ boxShadow: '1px 1px 12px 0px rgba(0,0,0,0.25)' }}>
-          <div className="flex items-center justify-evenly w-full">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-4 sm:justify-evenly w-full">
 
           {/* Pearson PTE */}
           <div className="flex items-center gap-2">
@@ -345,10 +349,12 @@ function MockTestSection() {
     <section className="bg-white py-[25px]">
       <div className="page-container">
         <div className="w-full rounded-2xl overflow-hidden" style={{ boxShadow: '1px 1px 12px 0px #3008F833' }}>
-        <div className="flex h-[301px] gap-[3px]">
+        {/* Stacks on phones. The original `calc(36%-100px)` was invalid CSS
+            (no spaces around the minus), so the browser dropped it entirely. */}
+        <div className="flex flex-col lg:flex-row h-auto lg:h-[301px] gap-[3px]">
 
           {/* ── Left Panel: Dark Indigo ── */}
-          <div className="w-[calc(36%-100px)] bg-[#3008F8] p-[27px] flex flex-col justify-between">
+          <div className="w-full lg:w-[calc(36%-100px)] lg:flex-shrink-0 bg-[#3008F8] p-[27px] flex flex-col justify-between">
             <div>
               <h2 className="text-[25px] font-bold text-white mb-[27px] leading-none font-[family-name:var(--font-inter)]">
                 Mock Test Experience
@@ -569,11 +575,11 @@ function TestimonialsSection() {
         </h2>
 
         <div className="flex justify-center">
-        <div className="grid grid-cols-4 gap-[28px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[28px]">
           {testimonials.map((t, i) => (
             <div
               key={i}
-              className="w-[243px] border border-gray-200 rounded-[16px] px-[17px] py-[25px] flex flex-col"
+              className="w-full border border-gray-200 rounded-[16px] px-[17px] py-[25px] flex flex-col"
               style={{ boxShadow: '1px 1px 10px 0px #00000033' }}
             >
               {/* Quote Mark */}

@@ -56,17 +56,17 @@ export default function ProfilePage() {
 
       {/* Profile Card */}
       <div className="rounded-2xl p-6 mb-5" style={{ border: '1px solid #D9D9D9' }}>
-        <div className="flex items-center gap-5 mb-6">
-          <div className="w-[72px] h-[72px] rounded-full flex items-center justify-center text-white font-bold text-[28px] shrink-0" style={{ backgroundColor: '#3008F8' }}>
+        <div className="flex items-center gap-4 sm:gap-5 mb-6">
+          <div className="w-[56px] h-[56px] sm:w-[72px] sm:h-[72px] rounded-full flex items-center justify-center text-white font-bold text-[22px] sm:text-[28px] shrink-0" style={{ backgroundColor: '#3008F8' }}>
             {initial}
           </div>
-          <div>
-            <h2 className="text-[20px] font-extrabold text-black">{fullName}</h2>
-            <p className="text-[14px] text-gray-500">{email}</p>
+          <div className="min-w-0">
+            <h2 className="text-[18px] sm:text-[20px] font-extrabold text-black break-words">{fullName}</h2>
+            <p className="text-[13px] sm:text-[14px] text-gray-500 break-all">{email}</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="rounded-xl p-4" style={{ backgroundColor: '#F5F3FF' }}>
             <p className="text-[12px] font-bold text-gray-500 uppercase tracking-wide mb-1">Full Name</p>
             <p className="text-[15px] font-semibold text-black">{fullName}</p>

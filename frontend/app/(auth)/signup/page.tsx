@@ -153,7 +153,7 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-[#EEEAF8] flex flex-col">
       {/* ── Top Bar ── */}
-      <header className="flex items-center justify-between px-8 py-4">
+      <header className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-8 py-4">
         <Link href="/" className="flex items-center gap-2 group">
           <Image src="/images/PTElogo.png" alt="PTE Prep" width={50} height={50} className="rounded-full bg-[rgba(74,45,219,0.2)]" />
           <div>
@@ -173,9 +173,9 @@ export default function SignupPage() {
       </header>
 
       {/* ── Main Content ── */}
-      <main className="flex flex-1 items-start justify-between max-w-7xl mx-auto w-full px-8 pb-8 gap-8">
+      <main className="flex flex-col lg:flex-row flex-1 items-start justify-between max-w-7xl mx-auto w-full px-4 sm:px-8 pb-8 gap-8">
         {/* Left: Hero */}
-        <div className="flex-1 pt-8 max-w-lg">
+        <div className="flex-1 pt-8 max-w-lg w-full min-w-0">
           <h1 className="text-[32px] font-bold text-gray-900 leading-tight mb-4">
             Start Your<br />
             <span className="text-brand">PTE Success</span><br />
@@ -201,7 +201,7 @@ export default function SignupPage() {
         </div>
 
         {/* Right: Form Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md shrink-0">
+        <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md lg:shrink-0">
           <h2 className="text-[22px] font-bold text-gray-900 mb-1">Create Your Account</h2>
           <p className="text-gray-500 text-[13px] mb-5">Join PTE.Prep and start preparing today!</p>
 

@@ -14,7 +14,7 @@ export default function OverallProgress({ progressPct, targetScore }: OverallPro
     <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
       <h2 className="text-[16px] font-extrabold text-gray-800 mb-4">Overall Progress</h2>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
         {/* Donut ring */}
         <div className="relative w-[120px] h-[120px] shrink-0">
           <svg className="w-[120px] h-[120px] -rotate-90" viewBox="0 0 120 120">
@@ -37,7 +37,7 @@ export default function OverallProgress({ progressPct, targetScore }: OverallPro
         </div>
 
         {/* Target Score + Message */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 w-full sm:w-auto">
           <div className="bg-indigo-50 rounded-xl px-4 py-2 text-center border border-indigo-100">
             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Target Score</p>
             <p className="text-[22px] font-extrabold text-indigo-600">{targetScore}+</p>

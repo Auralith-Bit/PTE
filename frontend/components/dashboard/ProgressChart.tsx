@@ -128,7 +128,7 @@ export default function PracticeSections({ speakingPct, writingPct, readingPct, 
   return (
     <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#D9D9D9]">
       <h2 className="text-[21px] font-extrabold text-black mb-4">Practice by Section</h2>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {sections.map((s) => (
           <SectionCard key={s.title} {...s} />
         ))}

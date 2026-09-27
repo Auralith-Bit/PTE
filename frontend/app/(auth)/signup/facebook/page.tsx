@@ -74,18 +74,18 @@ export default function FacebookSignupPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* ── Header ── */}
-      <header className="flex items-center justify-between px-8 py-4 border-b border-gray-100">
+      <header className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-8 py-4 border-b border-gray-100">
         <Link href="/" className="flex items-center gap-2 group">
           <Image src="/images/PTElogo.png" alt="PTE Prep" width={50} height={50} className="rounded-full bg-[rgba(74,45,219,0.2)]" />
           <div>
-            <span className="text-[22px] font-[800] tracking-tight">
+            <span className="text-[20px] sm:text-[22px] font-[800] tracking-tight">
               <span className="text-indigo-600">PTE.</span>
               <span className="text-indigo-600">Prep</span>
             </span>
-            <p className="text-xs text-gray-500 -mt-0.5">Practice Smarter. Score Higher</p>
+            <p className="text-[11px] sm:text-xs text-gray-500 -mt-0.5">Practice Smarter. Score Higher</p>
           </div>
         </Link>
-        <p className="text-sm text-gray-600">
+        <p className="text-[13px] sm:text-sm text-gray-600">
           Already have an account?{' '}
           <Link href="/login" className="text-brand font-semibold hover:underline">Log in</Link>
         </p>
@@ -93,11 +93,11 @@ export default function FacebookSignupPage() {
 
       {/* ── Facebook Heading ── */}
       <div className="text-center mt-10 mb-6">
-        <h1 className="text-5xl font-bold text-brand tracking-tight">facebook</h1>
+        <h1 className="text-4xl sm:text-5xl font-bold text-brand tracking-tight">facebook</h1>
       </div>
 
       {/* ── Card ── */}
-      <div className="mx-auto w-full max-w-lg border border-gray-200 rounded-2xl overflow-hidden shadow-sm mb-8">
+      <div className="mx-4 sm:mx-auto w-auto sm:w-full max-w-lg border border-gray-200 rounded-2xl overflow-hidden shadow-sm mb-8">
         {/* Card Header */}
         <div className="px-6 py-5 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-gray-900">Create a new account</h2>
