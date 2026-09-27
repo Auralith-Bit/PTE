@@ -52,6 +52,95 @@ export interface AnswerResult {
   attempt_id: number;
 }
 
+export interface MockTest {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  kind: 'full_length' | 'section';
+  category: string | null;
+  duration_minutes: number;
+  created_at: string;
+}
+
+export interface MockTestList {
+  items: MockTest[];
+  total: number;
+}
+
+export interface MockTestDetail {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  kind: 'full_length' | 'section';
+  category: string | null;
+  duration_minutes: number;
+  total_questions: number;
+  created_at: string;
+}
+
+export interface MockQuestion {
+  id: number;
+  category: string;
+  type: string;
+  title: string | null;
+  instructions: string | null;
+  content: Record<string, unknown>;
+}
+
+export interface MockAttemptStart {
+  attempt_id: number;
+  mock_test_id: number;
+  name: string;
+  duration_minutes: number;
+  questions: MockQuestion[];
+  started_at: string;
+}
+
+export interface MockPerQuestion {
+  question_id: number;
+  category: string;
+  type: string;
+  title: string | null;
+  content: Record<string, unknown>;
+  score: number;
+  max_score: number;
+  correct: boolean;
+  feedback: string;
+}
+
+export interface MockAttemptResult {
+  id: number;
+  mock_test_id: number;
+  test_name: string;
+  status: string;
+  total_score: number;
+  max_score: number;
+  per_question: MockPerQuestion[];
+  started_at: string;
+  completed_at: string | null;
+}
+
+export interface MockAttemptSummary {
+  id: number;
+  mock_test_id: number;
+  status: string;
+  test_name: string;
+  kind: 'full_length' | 'section';
+  category: string | null;
+  duration_minutes: number;
+  total_score: number | null;
+  max_score: number | null;
+  started_at: string;
+  completed_at: string | null;
+}
+
+export interface MockAttemptList {
+  items: MockAttemptSummary[];
+  total: number;
+}
+
 export interface ActivityItem {
   title: string;
   status: 'completed' | 'in_progress' | 'not_started';

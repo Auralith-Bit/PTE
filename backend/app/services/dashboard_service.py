@@ -5,6 +5,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.models.attempt import Attempt
+from app.models.mock_test import MockAttempt, MockTest
 from app.models.question import Question
 
 log = logging.getLogger("app.dashboard")
@@ -152,13 +153,60 @@ def compute_dashboard_summary(db: Session, user_id: int) -> dict:
             "time": time_label,
         })
 
+    # Recent mock test attempts
+    mock_tests_taken = db.scalar(
+        select(func.count())
+        .select_from(MockAttempt)
+        .where(MockAttempt.user_id == user_id, MockAttempt.status == "completed")
+    ) or 0
+    mock_tests_this_week = db.scalar(
+        select(func.count())
+        .select_from(MockAttempt)
+        .where(
+            MockAttempt.user_id == user_id,
+            MockAttempt.status == "completed",
+            MockAttempt.completed_at >= seven_days_ago,
+        )
+    ) or 0
+    mock_tests_prev_week = db.scalar(
+        select(func.count())
+        .select_from(MockAttempt)
+        .where(
+            MockAttempt.user_id == user_id,
+            MockAttempt.status == "completed",
+            MockAttempt.completed_at >= prev_week_start,
+            MockAttempt.completed_at < seven_days_ago,
+        )
+    ) or 0
+    mock_tests_weekly_delta = mock_tests_this_week - mock_tests_prev_week
+
+    recent_mock = (
+        db.query(MockAttempt)
+        .filter(MockAttempt.user_id == user_id, MockAttempt.status == "completed")
+        .order_by(MockAttempt.completed_at.desc())
+        .first()
+    )
+    if recent_mock is not None and recent_mock.mock_test_id:
+        mock_test = db.get(MockTest, recent_mock.mock_test_id)
+        recent_mock_name = mock_test.name if mock_test else "Mock Test"
+        recent_mock_score = recent_mock.total_score or 0
+        label = "—"
+        if recent_mock.max_score and recent_mock.completed_at:
+            pct = round((recent_mock.total_score or 0) / recent_mock.max_score * 100)
+            label = f"{pct}%"
+        recent_mock_completed_label = label
+    else:
+        recent_mock_name = "No mock tests yet"
+        recent_mock_score = 0
+        recent_mock_completed_label = "—"
+
     return {
         "practice_completed_pct": practice_completed_pct,
         "practice_completed_weekly_delta": practice_weekly_delta,
         "questions_solved": completed,
         "questions_solved_weekly_delta": questions_delta_pct,
-        "mock_tests_taken": 0,
-        "mock_tests_weekly_delta": 0,
+        "mock_tests_taken": mock_tests_taken,
+        "mock_tests_weekly_delta": mock_tests_weekly_delta,
         "overall_progress_pct": overall_progress_pct,
         "target_score": 79,
         "goal_description": "Practice 5 questions today",
@@ -170,9 +218,9 @@ def compute_dashboard_summary(db: Session, user_id: int) -> dict:
         "writing_pct": writing_pct,
         "reading_pct": reading_pct,
         "listening_pct": listening_pct,
-        "recent_mock_name": "No mock tests yet",
-        "recent_mock_score": 0,
-        "recent_mock_completed_label": "—",
+        "recent_mock_name": recent_mock_name,
+        "recent_mock_score": recent_mock_score,
+        "recent_mock_completed_label": recent_mock_completed_label,
         "upcoming_course_name": "No courses yet",
         "upcoming_course_progress_pct": 0,
         "recent_activity": recent_activity,

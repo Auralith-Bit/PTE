@@ -64,6 +64,14 @@ def _seed_test_questions(_reset_schema):
         session.close()
 
 
+@pytest.fixture(scope="session", autouse=True)
+def _seed_test_mock_tests(_seed_test_questions):
+    """Seed default mock test definitions."""
+    from app.db.init_db import seed_mock_tests
+
+    seed_mock_tests()
+
+
 @pytest.fixture
 def client():
     with TestClient(app) as c:
