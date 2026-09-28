@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
-import Footer from "@/components/common/Footer";
 import {
   emptyAnswerFor,
   QuestionRenderer,
@@ -197,7 +196,6 @@ export default function MockTestTakePage() {
           </div>
         </aside>
       </div>
-      <Footer />
     </div>
   );
 }

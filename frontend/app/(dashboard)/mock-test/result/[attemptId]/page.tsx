@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
-import Footer from "@/components/common/Footer";
 import { errorMessage } from "@/lib/api/client";
 import { mockTestApi } from "@/lib/api/mockTest";
 import type { MockAttemptResult } from "@/types";
@@ -107,7 +106,6 @@ export default function MockTestResultPage() {
           ))}
         </div>
       </div>
-      <Footer />
     </div>
   );
 }

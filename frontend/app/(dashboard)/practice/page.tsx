@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import Footer from "@/components/common/Footer";
 
 const Chevron = () => <span className="chevron" aria-hidden="true">›</span>;
 
@@ -256,8 +255,6 @@ export default function PracticePage() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </main>
   );
 }

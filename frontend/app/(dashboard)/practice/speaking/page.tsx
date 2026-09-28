@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import Footer from "@/components/common/Footer";
 import { SpeakingTypeCount } from "@/components/practice/SpeakingTypeCount";
 
 const Chevron = () => <span className="chevron" aria-hidden="true">›</span>;
@@ -254,8 +253,6 @@ export default function SpeakingPracticePage() {
         </div>
         </div>
       </section>
-
-      <Footer />
     </main>
   );
 }

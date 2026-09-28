@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import Footer from "@/components/common/Footer";
 import { errorMessage } from "@/lib/api/client";
 import { mockTestApi } from "@/lib/api/mockTest";
 import type { MockAttemptSummary, MockTest } from "@/types";
@@ -223,7 +222,6 @@ export function MockTestLanding() {
           </div>
         </div>
       </section>
-      <Footer />
     </div>
   );
 }
