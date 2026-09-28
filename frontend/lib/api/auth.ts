@@ -24,4 +24,11 @@ export const authApi = {
   oauthProviders: () => api.get<OAuthProviders>('/auth/oauth/providers'),
   exchangeOAuthCode: (code: string) =>
     api.post<OAuthExchangeResult>('/auth/oauth/exchange', { code }),
+  forgotPassword: (email: string) =>
+    api.post<{ message: string }>('/auth/forgot-password', { email }),
+  resetPassword: (token: string, newPassword: string) =>
+    api.post<{ message: string }>('/auth/reset-password', {
+      token,
+      new_password: newPassword,
+    }),
 };

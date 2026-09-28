@@ -18,30 +18,33 @@ def verify_password(plain_password: str, password_hash: str) -> bool:
         return False
 
 
-def _create_token(subject: str, expires_delta: timedelta, token_type: str) -> str:
+def _create_token(subject: str, expires_delta: timedelta, token_type: str, version: int = 0) -> str:
     now = datetime.now(UTC)
     payload: dict[str, Any] = {
         "sub": subject,
         "type": token_type,
+        "ver": version,
         "iat": now,
         "exp": now + expires_delta,
     }
     return jwt.encode(payload, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
 
 
-def create_access_token(user_id: int) -> str:
+def create_access_token(user_id: int, token_version: int = 0) -> str:
     return _create_token(
         str(user_id),
         timedelta(minutes=settings.access_token_expire_minutes),
         "access",
+        token_version,
     )
 
 
-def create_refresh_token(user_id: int) -> str:
+def create_refresh_token(user_id: int, token_version: int = 0) -> str:
     return _create_token(
         str(user_id),
         timedelta(days=settings.refresh_token_expire_days),
         "refresh",
+        token_version,
     )
 
 

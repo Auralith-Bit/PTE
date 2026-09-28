@@ -1,4 +1,4 @@
-"""Google and Facebook sign-in (OAuth 2.0 authorization code flow with PKCE).
+"""Google, Facebook and Apple sign-in (OAuth 2.0 authorization code flow).
 
 Flow
 ----
@@ -7,16 +7,20 @@ Flow
    provider's consent screen. The CSRF nonce is mirrored into an HttpOnly cookie.
 2. The provider redirects back to ``/auth/oauth/{provider}/callback``. The state
    token is verified, the CSRF nonce is compared against the cookie, and the code
-   is exchanged for a provider access token.
-3. The provider userinfo is read, the local user is created or refreshed, and an
+   is exchanged for a provider access token. Apple is the exception: it requires
+   ``response_mode=form_post``, so it POSTs to the same path and cannot replay the
+   SameSite=Lax cookie. Apple therefore binds its nonce into the signed id_token
+   instead, which ``services.apple`` verifies.
+3. The provider identity is read, the local user is created or refreshed, and an
    opaque single-use code is issued for the frontend to exchange for a real token
    pair (see ``app.core.oauth_codes``).
 
-A provider is only enabled when both its client id and secret are configured, so
-a half-finished setup degrades to "no button" instead of a broken sign-in.
+A provider is only enabled when the credentials it needs are configured, so a
+half-finished setup degrades to "no button" instead of a broken sign-in.
 """
 import base64
 import hashlib
+import json
 import logging
 import secrets
 from dataclasses import dataclass
@@ -31,6 +35,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.models.user import User
+from app.services import apple as apple_service
 
 log = logging.getLogger("app.oauth")
 
@@ -54,6 +59,10 @@ class OAuthProviderConfig:
     token_method: str
     userinfo_url: str
     scope: str
+    # Apple rejects PKCE parameters and requires a form POST for the callback.
+    supports_pkce: bool = True
+    response_mode: str | None = None
+    uses_form_post: bool = False
 
 
 def _google() -> OAuthProviderConfig | None:
@@ -89,8 +98,32 @@ def _facebook() -> OAuthProviderConfig | None:
     )
 
 
+def _apple() -> OAuthProviderConfig | None:
+    if not apple_service.enabled():
+        return None
+    return OAuthProviderConfig(
+        name="apple",
+        display_name="Apple",
+        client_id=settings.apple_client_id or "",
+        # Never used directly: the secret is minted per request in services.apple.
+        client_secret="",
+        authorize_url=apple_service.AUTHORIZE_URL,
+        token_url=apple_service.TOKEN_URL,
+        token_method="POST",
+        userinfo_url="",
+        scope=apple_service.SCOPE,
+        supports_pkce=False,
+        response_mode=apple_service.RESPONSE_MODE,
+        uses_form_post=True,
+    )
+
+
+def _provider_factories() -> dict[str, Any]:
+    return {"google": _google, "facebook": _facebook, "apple": _apple}
+
+
 def get_provider(name: str) -> OAuthProviderConfig:
-    config = {"google": _google, "facebook": _facebook}.get(name, lambda: None)()
+    config = _provider_factories().get(name, lambda: None)()
     if config is None:
         raise OAuthError(f"{name.title()} sign-in is not configured on this server.")
     return config
@@ -98,7 +131,7 @@ def get_provider(name: str) -> OAuthProviderConfig:
 
 def enabled_providers() -> dict[str, str]:
     """Map of provider name -> display name, for providers that are ready to use."""
-    available = {"google": _google(), "facebook": _facebook()}
+    available = {name: factory() for name, factory in _provider_factories().items()}
     return {name: conf.display_name for name, conf in available.items() if conf is not None}
 
 
@@ -159,19 +192,28 @@ def read_state_token(state: str) -> dict[str, Any]:
     return payload
 
 
-def build_authorize_url(config: OAuthProviderConfig, state: str, code_challenge: str) -> str:
+def build_authorize_url(
+    config: OAuthProviderConfig, state: str, code_challenge: str, nonce: str
+) -> str:
     params: dict[str, str] = {
         "client_id": config.client_id,
         "redirect_uri": callback_uri(config.name),
         "response_type": "code",
         "scope": config.scope,
         "state": state,
-        "code_challenge": code_challenge,
-        "code_challenge_method": "S256",
     }
+    if config.supports_pkce:
+        params["code_challenge"] = code_challenge
+        params["code_challenge_method"] = "S256"
+    if config.response_mode:
+        params["response_mode"] = config.response_mode
     if config.name == "google":
         params["access_type"] = "online"
         params["prompt"] = "select_account"
+    if config.name == "apple":
+        # Apple echoes this back inside the id_token, which is how the form POST
+        # callback is tied to this flow in place of the CSRF cookie.
+        params["nonce"] = nonce
     return f"{config.authorize_url}?{urlencode(params)}"
 
 
@@ -183,6 +225,19 @@ class ProviderIdentity:
     avatar_url: str | None
 
 
+@dataclass(frozen=True)
+class ProviderTokenResponse:
+    """Whatever the token endpoint returned.
+
+    Apple puts the identity in ``id_token`` and has no userinfo endpoint, so the
+    raw body is kept rather than collapsing it to a bare access token.
+    """
+
+    access_token: str
+    id_token: str | None = None
+    raw: dict[str, Any] | None = None
+
+
 def _require_email(info: dict[str, Any], display_name: str) -> str:
     email = info.get("email")
     if not email:
@@ -192,10 +247,23 @@ def _require_email(info: dict[str, Any], display_name: str) -> str:
     return str(email).strip().lower()
 
 
-async def fetch_access_token(
-    config: OAuthProviderConfig, code: str, verifier: str
-) -> str:
-    """Trade the authorization code for a provider access token."""
+async def fetch_token(
+    config: OAuthProviderConfig, code: str, verifier: str, nonce: str
+) -> ProviderTokenResponse:
+    """Trade the authorization code for the provider's token response."""
+    if config.name == "apple":
+        # Apple mints its own ES256 client secret and has no PKCE, so the shared
+        # request below cannot be used; services.apple performs the exchange.
+        try:
+            body = await apple_service.exchange_code(code, callback_uri(config.name))
+        except apple_service.AppleError as exc:
+            raise OAuthError(str(exc)) from None
+        return ProviderTokenResponse(
+            access_token=str(body.get("access_token") or ""),
+            id_token=body.get("id_token"),
+            raw=body,
+        )
+
     params = {
         "code": code,
         "client_id": config.client_id,
@@ -233,21 +301,62 @@ async def fetch_access_token(
     access_token = body.get("access_token")
     if not access_token:
         raise OAuthError(f"{config.display_name} did not return an access token.")
-    return str(access_token)
+    return ProviderTokenResponse(access_token=str(access_token), raw=body)
 
 
-async def fetch_identity(config: OAuthProviderConfig, access_token: str) -> ProviderIdentity:
+def _apple_name(user_field: str | None) -> str | None:
+    """Apple sends the name once, as a JSON blob in the form POST body."""
+    if not user_field:
+        return None
+    try:
+        name = json.loads(user_field).get("name", {})
+    except (TypeError, ValueError):
+        return None
+    parts = [str(name.get(key) or "").strip() for key in ("firstName", "lastName")]
+    full_name = " ".join(part for part in parts if part)
+    return full_name or None
+
+
+async def fetch_identity(
+    config: OAuthProviderConfig, tokens: ProviderTokenResponse, nonce: str, user_field: str | None = None
+) -> ProviderIdentity:
     """Read the signed-in user's profile from the provider."""
+    if config.name == "apple":
+        if not tokens.id_token:
+            raise OAuthError("Apple did not return an identity token.")
+        try:
+            claims = await apple_service.verify_id_token(tokens.id_token, nonce)
+        except apple_service.AppleError as exc:
+            raise OAuthError(str(exc)) from None
+
+        subject = claims.get("sub")
+        if not subject:
+            raise OAuthError("Apple did not return an account id.")
+        email = claims.get("email")
+        if not email:
+            # Apple only shares the email on the first authorization, so a missing
+            # one here only affects a user we have never seen before.
+            raise OAuthError("Apple did not share your email address, so we cannot sign you in.")
+        if not apple_service._email_is_verified(claims.get("email_verified", True)):
+            raise OAuthError("Your email address is not verified. Verify it with Apple first.")
+
+        return ProviderIdentity(
+            provider_user_id=str(subject),
+            email=str(email).strip().lower(),
+            full_name=_apple_name(user_field),
+            avatar_url=None,
+        )
+
     try:
         async with httpx.AsyncClient(timeout=HTTP_TIMEOUT_SECONDS) as client:
             if config.name == "facebook":
                 response = await client.get(
-                    config.userinfo_url, params={"access_token": access_token}
+                    config.userinfo_url, params={"access_token": tokens.access_token}
                 )
             else:
                 response = await client.get(
                     config.userinfo_url,
-                    headers={"Authorization": f"Bearer {access_token}"},
+                    headers={"Authorization": f"Bearer {tokens.access_token}"},
                 )
     except httpx.HTTPError:
         log.warning("OAuth userinfo request to %s failed", config.name, exc_info=True)

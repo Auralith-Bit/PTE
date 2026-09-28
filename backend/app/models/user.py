@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, String, UniqueConstraint
+from sqlalchemy import DateTime, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.time_utils import utcnow
@@ -28,6 +28,11 @@ class User(Base):
     )
     provider_user_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
     avatar_url: Mapped[str | None] = mapped_column(String(1024), nullable=True)
+
+    # Bumped whenever the password changes. Access and refresh tokens carry the
+    # value they were issued with, so raising it logs out every existing session
+    # (important for password reset, where the point is to cut off an attacker).
+    token_version: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
     @property
     def is_password_account(self) -> bool:

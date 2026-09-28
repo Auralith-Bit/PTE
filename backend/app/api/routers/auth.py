@@ -3,7 +3,7 @@ import secrets
 from urllib.parse import urlencode
 
 import jwt
-from fastapi import APIRouter, Cookie, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Query, Request, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -22,16 +22,19 @@ from app.db.session import get_db
 from app.models.user import User
 from app.schemas.user import (
     ChangePassword,
+    ForgotPasswordRequest,
     OAuthExchange,
     OAuthExchangeResult,
     OAuthProvidersOut,
     RefreshRequest,
+    ResetPasswordRequest,
     TokenPair,
     UserLogin,
     UserOut,
     UserRegister,
 )
 from app.services import oauth
+from app.services.password_reset import GENERIC_MESSAGE, complete_reset, create_reset
 
 log = logging.getLogger("app.auth")
 
@@ -50,8 +53,8 @@ def _get_user_or_404(db: Session, email: str) -> User:
 
 def _token_pair(user: User) -> TokenPair:
     return TokenPair(
-        access_token=create_access_token(user.id),
-        refresh_token=create_refresh_token(user.id),
+        access_token=create_access_token(user.id, user.token_version),
+        refresh_token=create_refresh_token(user.id, user.token_version),
     )
 
 
@@ -97,6 +100,11 @@ def refresh(payload: RefreshRequest, db: Session = Depends(get_db)) -> TokenPair
     user = db.get(User, int(data["sub"]))
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
+    if data.get("ver", 0) != user.token_version:
+        log.info("Refusing stale refresh token for user id=%d", user.id)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token"
+        )
     return _token_pair(user)
 
 
@@ -124,9 +132,28 @@ def change_password(
             detail="New password must be different from current password",
         )
     user.password_hash = hash_password(payload.new_password)
+    user.token_version += 1
     db.commit()
     log.info("Password changed for user id=%d", user.id)
     return {"message": "Password changed successfully"}
+
+
+@router.post("/forgot-password", status_code=status.HTTP_202_ACCEPTED)
+def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)) -> dict:
+    """Always the same answer, so this cannot be used to enumerate accounts."""
+    create_reset(db, payload.email)
+    return {"message": GENERIC_MESSAGE}
+
+
+@router.post("/reset-password")
+def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)) -> dict:
+    try:
+        complete_reset(db, payload.token, payload.new_password)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+        ) from None
+    return {"message": "Your password has been reset. You can sign in now."}
 
 
 def _frontend_error(message: str) -> RedirectResponse:
@@ -158,7 +185,7 @@ def oauth_start(
         provider, oauth.safe_next_path(next_path), verifier, csrf_nonce
     )
     response = RedirectResponse(
-        url=oauth.build_authorize_url(config, state, challenge),
+        url=oauth.build_authorize_url(config, state, challenge, csrf_nonce),
         status_code=status.HTTP_302_FOUND,
     )
     response.set_cookie(
@@ -173,15 +200,18 @@ def oauth_start(
     return response
 
 
-@router.get("/oauth/{provider}/callback")
-async def oauth_callback(
+async def _finish_oauth(
     provider: str,
-    code: str | None = None,
-    state: str | None = None,
-    error: str | None = None,
-    csrf_cookie: str | None = Cookie(default=None, alias=OAUTH_CSRF_COOKIE),
-    db: Session = Depends(get_db),
+    code: str | None,
+    state: str | None,
+    error: str | None,
+    csrf_cookie: str | None,
+    db: Session,
+    *,
+    via_form_post: bool,
+    user_field: str | None = None,
 ) -> RedirectResponse:
+    """Shared tail of the OAuth callback for both the GET and form POST routes."""
     if error:
         log.info("OAuth callback from %s returned error: %s", provider, error)
         return _frontend_error("Sign-in was cancelled.")
@@ -198,17 +228,28 @@ async def oauth_callback(
         payload = oauth.read_state_token(state)
         if payload.get("provider") != provider:
             return _frontend_error("Sign-in could not be completed. Please try again.")
-        if not csrf_cookie or not secrets.compare_digest(str(payload.get("csrf", "")), csrf_cookie):
-            log.warning("OAuth callback for %s failed CSRF check", provider)
-            return _frontend_error("Sign-in could not be verified. Please try again.")
+
+        # A SameSite=Lax cookie is only replayed on top-level GET navigations, so a
+        # form POST (Apple) never carries it. Apple instead proves the response
+        # belongs to this flow by echoing the nonce into its signed id_token, which
+        # fetch_identity checks below. Only the provider that actually needs this
+        # gets the exemption; every other provider still requires the cookie, so this
+        # route cannot be used to dodge the CSRF check on Google or Facebook.
+        if not via_form_post or not config.uses_form_post:
+            if not csrf_cookie or not secrets.compare_digest(
+                str(payload.get("csrf", "")), csrf_cookie
+            ):
+                log.warning("OAuth callback for %s failed CSRF check", provider)
+                return _frontend_error("Sign-in could not be verified. Please try again.")
 
         next_path = oauth.safe_next_path(payload.get("next"))
+        nonce = str(payload.get("csrf", ""))
         verifier = str(payload.get("verifier", ""))
-        if not verifier:
+        if not nonce or (config.supports_pkce and not verifier):
             return _frontend_error("Sign-in could not be completed. Please try again.")
 
-        access_token = await oauth.fetch_access_token(config, code, verifier)
-        identity = await oauth.fetch_identity(config, access_token)
+        tokens = await oauth.fetch_token(config, code, verifier, nonce)
+        identity = await oauth.fetch_identity(config, tokens, nonce, user_field)
         user = oauth.upsert_oauth_user(db, config, identity)
     except oauth.OAuthError as exc:
         log.info("OAuth callback for %s failed: %s", provider, exc)
@@ -221,6 +262,47 @@ async def oauth_callback(
     )
     response.delete_cookie(key=OAUTH_CSRF_COOKIE, path=OAUTH_COOKIE_PATH)
     return response
+
+
+@router.get("/oauth/{provider}/callback")
+async def oauth_callback(
+    provider: str,
+    code: str | None = None,
+    state: str | None = None,
+    error: str | None = None,
+    csrf_cookie: str | None = Cookie(default=None, alias=OAUTH_CSRF_COOKIE),
+    db: Session = Depends(get_db),
+) -> RedirectResponse:
+    return await _finish_oauth(
+        provider, code, state, error, csrf_cookie, db, via_form_post=False
+    )
+
+
+@router.post("/oauth/{provider}/callback")
+async def oauth_callback_form_post(
+    provider: str,
+    request: Request,
+    csrf_cookie: str | None = Cookie(default=None, alias=OAUTH_CSRF_COOKIE),
+    db: Session = Depends(get_db),
+) -> RedirectResponse:
+    """Apple's callback. It insists on form POST whenever a scope is requested."""
+    form = await request.form()
+
+    def field(name: str) -> str | None:
+        value = form.get(name)
+        return str(value) if value is not None else None
+
+    return await _finish_oauth(
+        provider,
+        field("code"),
+        field("state"),
+        field("error"),
+        csrf_cookie,
+        db,
+        via_form_post=True,
+        # Apple only sends the user's name on the very first authorization.
+        user_field=field("user"),
+    )
 
 
 @router.post("/oauth/exchange", response_model=OAuthExchangeResult)

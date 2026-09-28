@@ -5,6 +5,9 @@ psycopg2-binary==2.9.12
 pydantic-settings==2.15.0
 alembic==1.19.1
 pyjwt==2.13.0
+# PyJWT needs this for the asymmetric algorithms Sign in with Apple relies on:
+# ES256 to sign Apple's client secret and RS256 to verify its id_token.
+cryptography==46.0.4
 bcrypt==5.0.0
 python-multipart==0.0.32
 email-validator==2.3.0

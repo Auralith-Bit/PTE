@@ -88,10 +88,16 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [passwordReset, setPasswordReset] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) router.replace('/dashboard');
   }, [isAuthenticated, router]);
+
+  // Read the flag without useSearchParams so this page keeps its current shape.
+  useEffect(() => {
+    setPasswordReset(new URLSearchParams(window.location.search).get('reset') === '1');
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -179,6 +185,12 @@ export default function LoginPage() {
           </p>
 
           <OAuthButtons verb="Continue" />
+
+          {passwordReset && (
+            <p className="text-xs text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2 mb-3">
+              Your password has been reset. Please sign in with your new password.
+            </p>
+          )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">

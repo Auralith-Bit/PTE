@@ -6,7 +6,24 @@ import { authApi } from '@/lib/api/auth';
 import { API_BASE_URL } from '@/lib/api/client';
 import { safeNextPath } from '@/lib/auth';
 
-const PROVIDER_META: Record<string, { label: string; icon: React.ReactNode }> = {
+const PROVIDER_META: Record<
+  string,
+  { label: string; icon: React.ReactNode; text?: string; solid?: boolean }
+> = {
+  // Apple first: its Human Interface Guidelines ask for the button to sit above
+  // the other options and to be at least as prominent, and App Store review
+  // expects that whenever other social sign-ins are offered.
+  apple: {
+    label: 'Apple',
+    solid: true,
+    // Apple's guidelines specify this wording, not "Continue with Apple".
+    text: 'Sign in with Apple',
+    icon: (
+      <svg width="19" height="19" viewBox="0 0 384 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-2.9-1.5-57-26.3-57.1-91.9zm-57.1-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/>
+      </svg>
+    ),
+  },
   google: {
     label: 'Google',
     icon: (
@@ -31,18 +48,22 @@ const PROVIDER_META: Record<string, { label: string; icon: React.ReactNode }> = 
 const ENABLED_BUTTON_CLASS =
   'flex items-center justify-center gap-3 w-full border border-gray-200 rounded-xl py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 hover:shadow-sm';
 
+// Apple requires its button to be solid black with white content.
+const APPLE_BUTTON_CLASS =
+  'flex items-center justify-center gap-3 w-full border border-black rounded-xl py-2.5 text-[13px] font-medium bg-black text-white hover:bg-[#1d1d1f] transition-all duration-200 hover:shadow-sm';
+
 const DISABLED_BUTTON_CLASS =
   'flex items-center justify-center gap-3 w-full border border-gray-200 rounded-xl py-2.5 text-[13px] font-medium text-gray-400 bg-gray-50 cursor-not-allowed select-none';
 
 const PROVIDER_IDS = Object.keys(PROVIDER_META);
 
 /**
- * Real Google/Facebook sign-in buttons.
+ * Real Google/Facebook/Apple sign-in buttons.
  *
  * The section always renders so the layout does not change once sign-in is
  * enabled. A provider the backend has no credentials for is shown disabled with
  * an explanatory tooltip rather than hidden, and switches to a live link by
- * itself as soon as its client id and secret are present in backend/.env.
+ * itself as soon as it is configured in backend/.env.
  */
 export default function OAuthButtons({ verb = 'Continue' }: { verb?: string }) {
   const [enabled, setEnabled] = useState<string[] | null>(null);
@@ -76,6 +97,7 @@ export default function OAuthButtons({ verb = 'Continue' }: { verb?: string }) {
         {PROVIDER_IDS.map((id) => {
           const meta = PROVIDER_META[id];
           const query = next ? `?next=${encodeURIComponent(next)}` : '';
+          const caption = meta.text ?? `${verb} with ${meta.label}`;
 
           if (!enabled.includes(id)) {
             return (
@@ -89,7 +111,7 @@ export default function OAuthButtons({ verb = 'Continue' }: { verb?: string }) {
                 className={DISABLED_BUTTON_CLASS}
               >
                 {meta.icon}
-                {verb} with {meta.label}
+                {caption}
               </button>
             );
           }
@@ -99,10 +121,10 @@ export default function OAuthButtons({ verb = 'Continue' }: { verb?: string }) {
               key={id}
               id={`${id}-oauth-btn`}
               href={`${API_BASE_URL}/auth/oauth/${id}/start${query}`}
-              className={ENABLED_BUTTON_CLASS}
+              className={meta.solid ? APPLE_BUTTON_CLASS : ENABLED_BUTTON_CLASS}
             >
               {meta.icon}
-              {verb} with {meta.label}
+              {caption}
             </a>
           );
         })}

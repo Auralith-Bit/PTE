@@ -32,6 +32,13 @@ def _reset_oauth_settings(monkeypatch):
         "google_client_secret",
         "facebook_client_id",
         "facebook_client_secret",
+        "apple_client_id",
+        "apple_team_id",
+        "apple_key_id",
+        "apple_private_key",
+        "apple_private_key_path",
+        "apple_client_secret",
+        "apple_audiences",
     ):
         monkeypatch.setattr(settings, field, None)
     oauth_codes._codes.clear()
@@ -55,14 +62,14 @@ def facebook_enabled(monkeypatch):
 def fake_google(monkeypatch):
     """Stub out the two network calls for a successful Google sign-in."""
 
-    async def fake_token(config, code, verifier):
+    async def fake_token(config, code, verifier, nonce):
         assert config.name == "google"
         assert code == "test-auth-code"
         assert verifier
-        return "provider-access-token"
+        return oauth.ProviderTokenResponse(access_token="provider-access-token")
 
-    async def fake_identity(config, access_token):
-        assert access_token == "provider-access-token"
+    async def fake_identity(config, tokens, nonce, user_field=None):
+        assert tokens.access_token == "provider-access-token"
         return oauth.ProviderIdentity(
             provider_user_id="google-sub-123",
             email=NEW_USER_EMAIL,
@@ -70,7 +77,7 @@ def fake_google(monkeypatch):
             avatar_url="https://example.com/a.png",
         )
 
-    monkeypatch.setattr(oauth, "fetch_access_token", fake_token)
+    monkeypatch.setattr(oauth, "fetch_token", fake_token)
     monkeypatch.setattr(oauth, "fetch_identity", fake_identity)
 
 
@@ -270,6 +277,32 @@ def test_callback_rejects_provider_mismatch(client, google_enabled, facebook_ena
     assert "error" in _query(res)
 
 
+def test_form_post_callback_cannot_bypass_csrf_for_get_providers(
+    client, google_enabled, fake_google
+):
+    """The form-POST route exists for Apple only.
+
+    Google and Facebook return their callback over a top-level GET, which does
+    replay the SameSite=Lax cookie. If they were also allowed to complete over a
+    cross-site POST without that cookie, the CSRF check would be trivially
+    bypassable, so posting to the callback must fail for them.
+    """
+    start = _start(client, provider="google")
+    state = parse_qs(_location(start).query)["state"][0]
+    client.cookies.clear()
+
+    res = client.post(
+        "/api/v1/auth/oauth/google/callback",
+        data={"code": "auth-code", "state": state},
+        follow_redirects=False,
+    )
+    assert res.status_code == 302
+    query = _query(res)
+    assert "code" not in query
+    assert "error" in query
+
+
+
 def test_callback_rejects_tampered_state(client, google_enabled, fake_google):
     start = _start(client)
     state = parse_qs(_location(start).query)["state"][0]
@@ -300,10 +333,10 @@ def test_callback_refuses_to_take_over_password_account(client, google_enabled, 
         == 201
     )
 
-    async def fake_token(config, code, verifier):
-        return "provider-access-token"
+    async def fake_token(config, code, verifier, nonce):
+        return oauth.ProviderTokenResponse(access_token="provider-access-token")
 
-    async def fake_identity(config, access_token):
+    async def fake_identity(config, tokens, nonce, user_field=None):
         return oauth.ProviderIdentity(
             provider_user_id="google-sub-999",
             email=EXISTING_EMAIL,
@@ -311,7 +344,7 @@ def test_callback_refuses_to_take_over_password_account(client, google_enabled, 
             avatar_url=None,
         )
 
-    monkeypatch.setattr(oauth, "fetch_access_token", fake_token)
+    monkeypatch.setattr(oauth, "fetch_token", fake_token)
     monkeypatch.setattr(oauth, "fetch_identity", fake_identity)
 
     start = _start(client)
@@ -328,17 +361,17 @@ def test_callback_refuses_to_take_over_password_account(client, google_enabled, 
 
 
 def test_callback_rejects_unverified_google_email(client, google_enabled, monkeypatch):
-    async def fake_token(config, code, verifier):
-        return "provider-access-token"
+    async def fake_token(config, code, verifier, nonce):
+        return oauth.ProviderTokenResponse(access_token="provider-access-token")
 
-    async def fake_identity(config, access_token):
+    async def fake_identity(config, tokens, nonce, user_field=None):
         return oauth.ProviderIdentity(
             provider_user_id="google-sub-unverified",
             email=OTHER_USER_EMAIL,
             full_name="Unverified",
             avatar_url=None,
         )
-    monkeypatch.setattr(oauth, "fetch_access_token", fake_token)
+    monkeypatch.setattr(oauth, "fetch_token", fake_token)
     monkeypatch.setattr(oauth, "fetch_identity", fake_identity)
 
     start = _start(client)
@@ -365,11 +398,11 @@ def test_facebook_start_uses_graph_dialog(client, facebook_enabled):
 
 
 def test_facebook_callback_creates_user(client, facebook_enabled, monkeypatch):
-    async def fake_token(config, code, verifier):
+    async def fake_token(config, code, verifier, nonce):
         assert config.name == "facebook"
-        return "fb-access-token"
+        return oauth.ProviderTokenResponse(access_token="fb-access-token")
 
-    async def fake_identity(config, access_token):
+    async def fake_identity(config, tokens, nonce, user_field=None):
         return oauth.ProviderIdentity(
             provider_user_id="fb-555",
             email="oauth-fb-user@example.com",
@@ -377,7 +410,7 @@ def test_facebook_callback_creates_user(client, facebook_enabled, monkeypatch):
             avatar_url=None,
         )
 
-    monkeypatch.setattr(oauth, "fetch_access_token", fake_token)
+    monkeypatch.setattr(oauth, "fetch_token", fake_token)
     monkeypatch.setattr(oauth, "fetch_identity", fake_identity)
 
     start = _start(client, provider="facebook")
@@ -390,10 +423,10 @@ def test_facebook_callback_creates_user(client, facebook_enabled, monkeypatch):
 
 
 def test_provider_network_failure_reports_friendly_error(client, google_enabled, monkeypatch):
-    async def boom(config, code, verifier):
+    async def boom(config, code, verifier, nonce):
         raise oauth.OAuthError("Could not reach Google. Please try again.")
 
-    monkeypatch.setattr(oauth, "fetch_access_token", boom)
+    monkeypatch.setattr(oauth, "fetch_token", boom)
 
     start = _start(client)
     state = parse_qs(_location(start).query)["state"][0]

@@ -30,4 +30,8 @@ def get_current_user(
     user = db.get(User, int(payload["sub"]))
     if user is None:
         raise _credentials_error
+    # A password reset or change bumps token_version, which retires every token
+    # issued before it. Tokens predating the claim default to 0.
+    if payload.get("ver", 0) != user.token_version:
+        raise _credentials_error
     return user
