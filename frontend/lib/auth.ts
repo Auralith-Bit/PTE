@@ -46,3 +46,15 @@ export function setUser(user: User | null): void {
     window.localStorage.setItem(USER_KEY, JSON.stringify(user));
   }
 }
+
+/** Keep a post-login redirect on this site: relative paths only, never a host. */
+export function safeNextPath(value: string | null | undefined, fallback = '/dashboard'): string {
+  if (!value || !value.startsWith('/') || value.startsWith('//')) return fallback;
+  return value;
+}
+
+/** Where to send the user after a successful sign-in, honouring ?next=. */
+export function requestedNextPath(): string {
+  if (typeof window === 'undefined') return '/dashboard';
+  return safeNextPath(new URLSearchParams(window.location.search).get('next'));
+}

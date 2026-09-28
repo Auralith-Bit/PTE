@@ -20,6 +20,17 @@ class Settings(BaseSettings):
 
     allowed_origins: str = "http://localhost:3000"
 
+    # OAuth (Google / Facebook sign-in). Each provider is enabled only when both
+    # its client id and client secret are configured.
+    frontend_url: str = "http://localhost:3000"
+    backend_public_url: str = "http://localhost:8000"
+    google_client_id: str | None = None
+    google_client_secret: str | None = None
+    facebook_client_id: str | None = None
+    facebook_client_secret: str | None = None
+    oauth_state_ttl_seconds: int = 600
+    oauth_code_ttl_seconds: int = 120
+
     # Future service config (optional, no defaults needed for dev)
     redis_url: str | None = None
     s3_bucket_name: str | None = None

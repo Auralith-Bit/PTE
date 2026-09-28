@@ -7,23 +7,11 @@ import { useRouter } from 'next/navigation';
 
 import { useAuth } from '@/hooks/useAuth';
 import { errorMessage } from '@/lib/api/client';
+import { requestedNextPath } from '@/lib/auth';
+
+import OAuthButtons from '@/components/auth/OAuthButtons';
 
 /* ─── SVG Icons ──────────────────────────────────────────────────── */
-const GoogleIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M47.532 24.552c0-1.636-.146-3.2-.418-4.698H24.48v8.883h12.958c-.558 3.006-2.25 5.554-4.796 7.265v6.04h7.766c4.543-4.185 7.124-10.35 7.124-17.49z" fill="#4285F4"/>
-    <path d="M24.48 48c6.504 0 11.956-2.157 15.942-5.844l-7.766-6.04c-2.155 1.445-4.91 2.297-8.176 2.297-6.288 0-11.615-4.245-13.514-9.954H2.952v6.24C6.92 42.689 15.143 48 24.48 48z" fill="#34A853"/>
-    <path d="M10.966 28.46A14.42 14.42 0 0 1 10.23 24c0-1.556.268-3.07.736-4.46V13.3H2.952A23.977 23.977 0 0 0 .48 24c0 3.868.926 7.527 2.472 10.7l8.014-6.24z" fill="#FBBC05"/>
-    <path d="M24.48 9.586c3.543 0 6.723 1.217 9.224 3.61l6.916-6.916C36.427 2.385 30.975 0 24.48 0 15.143 0 6.92 5.311 2.952 13.3l8.014 6.24c1.899-5.709 7.226-9.954 13.514-9.954z" fill="#EA4335"/>
-  </svg>
-);
-
-const FacebookIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M24 12.073C24 5.403 18.627 0 12 0S0 5.403 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.883v2.27h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z" fill="#1877F2"/>
-  </svg>
-);
-
 const MailIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="4" width="20" height="16" rx="2"/>
@@ -126,7 +114,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(form.email.trim(), form.password);
-      router.push('/dashboard');
+      router.push(requestedNextPath());
     } catch (err) {
       setErrors({ form: errorMessage(err) });
       setLoading(false);
@@ -190,32 +178,7 @@ export default function LoginPage() {
             Welcome back! Please enter your details.
           </p>
 
-          {/* OAuth Buttons */}
-          <div className="flex flex-col gap-2.5 mb-4">
-            <Link
-              href="/signup/google"
-              id="login-google-btn"
-              className="flex items-center justify-center gap-3 w-full border border-gray-200 rounded-xl py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 hover:shadow-sm"
-            >
-              <GoogleIcon />
-              Continue with Google
-            </Link>
-            <Link
-              href="/signup/facebook"
-              id="login-facebook-btn"
-              className="flex items-center justify-center gap-3 w-full border border-gray-200 rounded-xl py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 hover:shadow-sm"
-            >
-              <FacebookIcon />
-              Continue with Facebook
-            </Link>
-          </div>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-[11px] text-gray-400 font-medium">or</span>
-            <div className="flex-1 h-px bg-gray-200" />
-          </div>
+          <OAuthButtons verb="Continue" />
 
           {/* Form */}
           <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">

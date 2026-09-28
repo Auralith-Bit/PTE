@@ -39,3 +39,20 @@ class RefreshRequest(BaseModel):
 class ChangePassword(BaseModel):
     current_password: str
     new_password: str = Field(min_length=8, max_length=128)
+
+
+class OAuthProvidersOut(BaseModel):
+    providers: dict[str, str] = Field(default_factory=dict)
+
+
+class OAuthExchange(BaseModel):
+    code: str = Field(min_length=10, max_length=200)
+
+
+class OAuthExchangeResult(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    expires_in: int = settings.access_token_expire_minutes * 60
+    user: UserOut
+    next: str = "/dashboard"

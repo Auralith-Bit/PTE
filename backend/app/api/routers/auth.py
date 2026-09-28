@@ -1,11 +1,16 @@
 import logging
+import secrets
+from urllib.parse import urlencode
 
 import jwt
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Query, status
+from fastapi.responses import RedirectResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
+from app.core import oauth_codes
+from app.core.config import settings
 from app.core.security import (
     create_access_token,
     create_refresh_token,
@@ -15,11 +20,25 @@ from app.core.security import (
 )
 from app.db.session import get_db
 from app.models.user import User
-from app.schemas.user import ChangePassword, RefreshRequest, TokenPair, UserLogin, UserOut, UserRegister
+from app.schemas.user import (
+    ChangePassword,
+    OAuthExchange,
+    OAuthExchangeResult,
+    OAuthProvidersOut,
+    RefreshRequest,
+    TokenPair,
+    UserLogin,
+    UserOut,
+    UserRegister,
+)
+from app.services import oauth
 
 log = logging.getLogger("app.auth")
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+OAUTH_CSRF_COOKIE = "pte_oauth_csrf"
+OAUTH_COOKIE_PATH = "/api/v1/auth/oauth"
 
 
 def _get_user_or_404(db: Session, email: str) -> User:
@@ -54,6 +73,12 @@ def register(payload: UserRegister, db: Session = Depends(get_db)) -> User:
 @router.post("/login", response_model=TokenPair)
 def login(payload: UserLogin, db: Session = Depends(get_db)) -> TokenPair:
     user = _get_user_or_404(db, payload.email)
+    if user.password_hash is None:
+        log.info("Password login attempted for OAuth-only account: %s", payload.email)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"This account signs in with {user.auth_provider.title()}. Use that button to continue.",
+        )
     if not verify_password(payload.password, user.password_hash):
         log.warning("Failed login attempt for %s", payload.email)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
@@ -86,6 +111,11 @@ def change_password(
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> dict:
+    if user.password_hash is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"This account signs in with {user.auth_provider.title()} and has no password to change.",
+        )
     if not verify_password(payload.current_password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Current password is incorrect")
     if verify_password(payload.new_password, user.password_hash):
@@ -97,3 +127,121 @@ def change_password(
     db.commit()
     log.info("Password changed for user id=%d", user.id)
     return {"message": "Password changed successfully"}
+
+
+def _frontend_error(message: str) -> RedirectResponse:
+    return RedirectResponse(
+        url=f"{oauth.frontend_callback_url()}?error={urlencode({'error': message})}",
+        status_code=status.HTTP_302_FOUND,
+    )
+
+
+@router.get("/oauth/providers", response_model=OAuthProvidersOut)
+def oauth_providers() -> OAuthProvidersOut:
+    """Which provider buttons the frontend should render."""
+    return OAuthProvidersOut(providers=oauth.enabled_providers())
+
+
+@router.get("/oauth/{provider}/start")
+def oauth_start(
+    provider: str,
+    next_path: str = Query(default="/dashboard", alias="next"),
+) -> RedirectResponse:
+    try:
+        config = oauth.get_provider(provider)
+    except oauth.OAuthError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from None
+
+    verifier, challenge = oauth.pkce_pair()
+    csrf_nonce = oauth.new_csrf_nonce()
+    state = oauth.create_state_token(
+        provider, oauth.safe_next_path(next_path), verifier, csrf_nonce
+    )
+    response = RedirectResponse(
+        url=oauth.build_authorize_url(config, state, challenge),
+        status_code=status.HTTP_302_FOUND,
+    )
+    response.set_cookie(
+        key=OAUTH_CSRF_COOKIE,
+        value=csrf_nonce,
+        max_age=settings.oauth_state_ttl_seconds,
+        path=OAUTH_COOKIE_PATH,
+        httponly=True,
+        samesite="lax",
+        secure=settings.backend_public_url.startswith("https://"),
+    )
+    return response
+
+
+@router.get("/oauth/{provider}/callback")
+async def oauth_callback(
+    provider: str,
+    code: str | None = None,
+    state: str | None = None,
+    error: str | None = None,
+    csrf_cookie: str | None = Cookie(default=None, alias=OAUTH_CSRF_COOKIE),
+    db: Session = Depends(get_db),
+) -> RedirectResponse:
+    if error:
+        log.info("OAuth callback from %s returned error: %s", provider, error)
+        return _frontend_error("Sign-in was cancelled.")
+
+    try:
+        config = oauth.get_provider(provider)
+    except oauth.OAuthError as exc:
+        return _frontend_error(str(exc))
+
+    if not code or not state:
+        return _frontend_error("Sign-in could not be completed. Please try again.")
+
+    try:
+        payload = oauth.read_state_token(state)
+        if payload.get("provider") != provider:
+            return _frontend_error("Sign-in could not be completed. Please try again.")
+        if not csrf_cookie or not secrets.compare_digest(str(payload.get("csrf", "")), csrf_cookie):
+            log.warning("OAuth callback for %s failed CSRF check", provider)
+            return _frontend_error("Sign-in could not be verified. Please try again.")
+
+        next_path = oauth.safe_next_path(payload.get("next"))
+        verifier = str(payload.get("verifier", ""))
+        if not verifier:
+            return _frontend_error("Sign-in could not be completed. Please try again.")
+
+        access_token = await oauth.fetch_access_token(config, code, verifier)
+        identity = await oauth.fetch_identity(config, access_token)
+        user = oauth.upsert_oauth_user(db, config, identity)
+    except oauth.OAuthError as exc:
+        log.info("OAuth callback for %s failed: %s", provider, exc)
+        return _frontend_error(str(exc))
+
+    exchange_code = oauth_codes.issue_code(user.id, next_path, settings.oauth_code_ttl_seconds)
+    response = RedirectResponse(
+        url=f"{oauth.frontend_callback_url()}?{urlencode({'code': exchange_code})}",
+        status_code=status.HTTP_302_FOUND,
+    )
+    response.delete_cookie(key=OAUTH_CSRF_COOKIE, path=OAUTH_COOKIE_PATH)
+    return response
+
+
+@router.post("/oauth/exchange", response_model=OAuthExchangeResult)
+def oauth_exchange(payload: OAuthExchange, db: Session = Depends(get_db)) -> OAuthExchangeResult:
+    entry = oauth_codes.consume_code(payload.code)
+    if entry is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Sign-in link expired. Please try again.",
+        )
+
+    user = db.get(User, entry.user_id)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Sign-in link expired")
+
+    tokens = _token_pair(user)
+    log.info("OAuth session established for user id=%d (%s)", user.id, user.auth_provider)
+    return OAuthExchangeResult(
+        access_token=tokens.access_token,
+        refresh_token=tokens.refresh_token,
+        expires_in=tokens.expires_in,
+        user=UserOut.model_validate(user),
+        next=oauth.safe_next_path(entry.next_path),
+    )

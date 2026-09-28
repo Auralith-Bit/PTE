@@ -1,5 +1,12 @@
 import { api } from './client';
-import type { TokenPair, User, UserLogin, UserRegister } from '@/types';
+import type {
+  OAuthExchangeResult,
+  OAuthProviders,
+  TokenPair,
+  User,
+  UserLogin,
+  UserRegister,
+} from '@/types';
 
 export const authApi = {
   login: (email: string, password: string) =>
@@ -14,4 +21,7 @@ export const authApi = {
       current_password: currentPassword,
       new_password: newPassword,
     }),
+  oauthProviders: () => api.get<OAuthProviders>('/auth/oauth/providers'),
+  exchangeOAuthCode: (code: string) =>
+    api.post<OAuthExchangeResult>('/auth/oauth/exchange', { code }),
 };
