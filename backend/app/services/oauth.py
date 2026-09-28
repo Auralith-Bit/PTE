@@ -220,7 +220,10 @@ def build_authorize_url(
 @dataclass(frozen=True)
 class ProviderIdentity:
     provider_user_id: str
-    email: str
+    # Apple only returns an email address on the very first authorization, so a
+    # known Apple user can come back with no email at all. Keying the account on
+    # provider_user_id lets that sign-in succeed; email is only needed to create one.
+    email: str | None
     full_name: str | None
     avatar_url: str | None
 
@@ -332,17 +335,17 @@ async def fetch_identity(
         subject = claims.get("sub")
         if not subject:
             raise OAuthError("Apple did not return an account id.")
+        # Apple returns the email and the name only on the first authorization for
+        # an app; every later sign-in carries the `sub` alone. Do not reject here
+        # for a missing email: upsert_oauth_user looks the account up by `sub` first
+        # and only needs an email when it has to create a new one.
         email = claims.get("email")
-        if not email:
-            # Apple only shares the email on the first authorization, so a missing
-            # one here only affects a user we have never seen before.
-            raise OAuthError("Apple did not share your email address, so we cannot sign you in.")
-        if not apple_service._email_is_verified(claims.get("email_verified", True)):
+        if email and not apple_service._email_is_verified(claims.get("email_verified", True)):
             raise OAuthError("Your email address is not verified. Verify it with Apple first.")
 
         return ProviderIdentity(
             provider_user_id=str(subject),
-            email=str(email).strip().lower(),
+            email=(str(email).strip().lower() if email else None),
             full_name=_apple_name(user_field),
             avatar_url=None,
         )
@@ -412,10 +415,21 @@ def upsert_oauth_user(db: Session, config: OAuthProviderConfig, identity: Provid
         log.info("OAuth sign-in: existing %s user id=%d", config.name, user.id)
         return user
 
-    existing = db.scalar(select(User).where(User.email == identity.email))
-    if existing is not None:
+    if identity.email:
+        existing = db.scalar(select(User).where(User.email == identity.email))
+        if existing is not None:
+            raise OAuthError(
+                f"An account with {identity.email} already exists. "
+                "Please sign in with your password."
+            )
+
+    if not identity.email:
+        # Apple withholds the email after the first authorization, so reaching here
+        # means this `sub` is not one we have stored and we have no way to create
+        # the account. Their original sign-in must not have completed on our side.
         raise OAuthError(
-            f"An account with {identity.email} already exists. Please sign in with your password."
+            "We could not find your previous Apple sign-in, and Apple no longer shares "
+            "your email address. Please sign up again."
         )
 
     user = User(

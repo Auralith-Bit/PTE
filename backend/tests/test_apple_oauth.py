@@ -482,6 +482,113 @@ def test_apple_callback_returns_to_existing_account(
     assert matches[0].provider_user_id == sub
 
 
+def test_returning_apple_user_can_sign_in_without_an_email_claim(
+    client, apple_enabled, apple_jwks, monkeypatch, db_session
+):
+    """Apple stops sending the email after the first authorization.
+
+    Apple documents that a sign-in returns the user's name and email only on the
+    first authorization for an app, and that the `sub` is the stable identifier
+    to key on. Every later sign-in therefore arrives with no email at all, so
+    requiring one would lock every returning Apple user out of their account.
+    """
+    email = f"apple-noemail-{uuid.uuid4().hex[:8]}@example.com"
+    sub = f"sub-{uuid.uuid4().hex[:6]}"
+
+    # First sign-in: Apple does share the email, so the account gets created.
+    params = _apple_start(client)
+    nonce = params["nonce"][0]
+    install_apple_network(
+        monkeypatch, apple_jwks, make_id_token(apple_jwks, nonce, sub=sub, email=email)
+    )
+    res = _apple_post_callback(client, params["state"][0], nonce)
+    code = parse_qs(urlparse(res.headers["location"]).query)["code"][0]
+    first = client.post("/api/v1/auth/oauth/exchange", json={"code": code}).json()
+    assert first["user"]["email"] == email
+
+    # Second sign-in: no email, no email_verified, no name -- only the `sub`.
+    params = _apple_start(client)
+    nonce = params["nonce"][0]
+    id_token = jwt.encode(
+        {
+            "iss": "https://appleid.apple.com",
+            "aud": SERVICES_ID,
+            "sub": sub,
+            "exp": int(time.time()) + 600,
+            "iat": int(time.time()),
+            "nonce": nonce,
+        },
+        apple_jwks["private_pem"],
+        algorithm="RS256",
+        headers={"kid": KID},
+    )
+    install_apple_network(monkeypatch, apple_jwks, id_token)
+    res = _apple_post_callback(client, params["state"][0], nonce)
+    assert res.status_code == 302
+    query = parse_qs(urlparse(res.headers["location"]).query)
+    assert "error" not in query, query
+
+    code = query["code"][0]
+    second = client.post("/api/v1/auth/oauth/exchange", json={"code": code}).json()
+    assert second["user"]["email"] == email
+    assert second["access_token"]
+
+    # Still exactly one account, and it kept its original email.
+    assert len(db_session.query(User).filter(User.email == email).all()) == 1
+
+
+def test_unknown_apple_user_without_an_email_claim_is_told_to_sign_up_again(
+    client, apple_enabled, apple_jwks, monkeypatch
+):
+    """No stored account and no email means we cannot create one.
+
+    This is what happens when a user's very first sign-in never reached our
+    server: Apple will not hand over the email a second time, so the honest
+    response is to ask them to sign up again rather than fail vaguely.
+    """
+    params = _apple_start(client)
+    nonce = params["nonce"][0]
+    id_token = jwt.encode(
+        {
+            "iss": "https://appleid.apple.com",
+            "aud": SERVICES_ID,
+            "sub": f"sub-{uuid.uuid4().hex[:6]}",
+            "exp": int(time.time()) + 600,
+            "iat": int(time.time()),
+            "nonce": nonce,
+        },
+        apple_jwks["private_pem"],
+        algorithm="RS256",
+        headers={"kid": KID},
+    )
+    install_apple_network(monkeypatch, apple_jwks, id_token)
+    res = _apple_post_callback(client, params["state"][0], nonce)
+
+    assert res.status_code == 302
+    query = parse_qs(urlparse(res.headers["location"]).query)
+    assert "code" not in query
+    assert "sign up again" in query["error"][0].lower()
+
+
+def test_apple_rejects_unverified_email_when_one_is_presented(
+    client, apple_enabled, apple_jwks, monkeypatch
+):
+    """A supplied but unverified email is still refused."""
+    params = _apple_start(client)
+    nonce = params["nonce"][0]
+    install_apple_network(
+        monkeypatch,
+        apple_jwks,
+        make_id_token(apple_jwks, nonce, email_verified="false"),
+    )
+    res = _apple_post_callback(client, params["state"][0], nonce)
+
+    assert res.status_code == 302
+    query = parse_qs(urlparse(res.headers["location"]).query)
+    assert "code" not in query
+    assert "not verified" in query["error"][0].lower()
+
+
 def test_apple_callback_refuses_to_take_over_password_account(
     client, apple_enabled, apple_jwks, monkeypatch
 ):
