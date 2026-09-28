@@ -24,6 +24,37 @@ function formatDate(iso: string | null): string {
   return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
+const SECTION_MOCKS = [
+  {
+    key: "speaking",
+    title: "Speaking",
+    description: "Test your speaking skills with real exam questions.",
+    href: "/practice/speaking",
+    icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4" />,
+  },
+  {
+    key: "writing",
+    title: "Writing",
+    description: "Test your writing skills with real exam questions.",
+    href: "/practice/writing",
+    icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />,
+  },
+  {
+    key: "listening",
+    title: "Listening",
+    description: "Test your listening skills with real exam questions.",
+    href: "/practice/listening",
+    icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 18v-6a9 9 0 0118 0v6M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z" />,
+  },
+  {
+    key: "reading",
+    title: "Reading",
+    description: "Test your reading skills with real exam questions.",
+    href: "/practice/reading",
+    icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />,
+  },
+];
+
 export function MockTestLanding() {
   const router = useRouter();
   const [tests, setTests] = useState<MockTest[]>([]);
@@ -164,6 +195,54 @@ export function MockTestLanding() {
                 </button>
               </div>
             ))}
+          </div>
+
+          <div className="mb-16">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Section -wise Mock</h2>
+            <div className="flex flex-col gap-6">
+              {SECTION_MOCKS.map((s) => (
+                <div
+                  key={s.key}
+                  className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6 bg-[#F4F2FD] border-2 border-[#D9D9D9] rounded-xl px-3 py-4 md:py-3"
+                >
+                  <div className="flex items-start gap-3 flex-1 min-w-0">
+                    <div className="w-10 h-10 rounded-full bg-[#CBC1FD] flex items-center justify-center flex-shrink-0">
+                      <svg className="w-5 h-5 text-[#3008F8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        {s.icon}
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-[17px] font-semibold text-gray-900 leading-tight">{s.title}</div>
+                      <div className="text-[15px] text-gray-900 mt-1">{s.description}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-10 md:mr-4">
+                    <div>
+                      <div className="font-bold text-gray-900 text-[17px] leading-tight">20</div>
+                      <div className="text-[15px] text-gray-500">Questions</div>
+                    </div>
+                    <div>
+                      <div className="font-bold text-gray-900 text-[17px] leading-tight">50 mins</div>
+                      <div className="text-[15px] text-gray-500">Duration</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-8 md:pr-6">
+                    <Link
+                      href={s.href}
+                      className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-5 py-4 text-[#3008F8] font-bold text-[17px] hover:bg-gray-50 transition-colors whitespace-nowrap"
+                    >
+                      Start Free Practice
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14m-6-6l6 6-6 6" />
+                      </svg>
+                    </Link>
+                    <span className="hidden md:inline text-gray-900 text-xl font-bold" aria-hidden="true">›</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div>
