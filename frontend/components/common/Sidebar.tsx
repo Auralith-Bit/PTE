@@ -172,7 +172,7 @@ export default function Sidebar() {
           Unlock unlimited practice, AI feedback and personalized insights.
         </p>
         <Link
-          href="/upgrade"
+          href="/courses#choose-learning-path"
           id="upgrade-premium-btn"
           className="block text-center bg-white/20 backdrop-blur-sm text-white font-bold text-[13px] rounded-xl py-2.5 hover:bg-white/30 transition-colors border border-white/30"
         >

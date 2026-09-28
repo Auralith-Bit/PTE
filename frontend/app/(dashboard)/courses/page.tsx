@@ -79,7 +79,7 @@ export default function CoursesPage() {
       </section>
 
       {/* 2. Choose Your Learning Path */}
-      <section className="py-20">
+      <section id="choose-learning-path" className="py-20 scroll-mt-[65px]">
         <div className="page-container">
         <h2 className="text-[2rem] font-extrabold text-gray-900 mb-12">Choose Your Learning Path</h2>
         

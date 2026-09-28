@@ -176,5 +176,5 @@ Step 7 — Verify
 - pytest green; uvicorn app.main:app --reload → Swagger at /docs, hit register/login with curl
 
 Blockers I need from you
-1. PostgreSQL password for the postgres user (or a DB/user/credentials you want me to use) — required to apply migrations.
+1. PostgreSQL password for the postgres user (or a DB/user/credentials you want me to use) — required to apply migrations. 
 2. Confirm interpretation: "we will start from AI work" — I read this as start with foundation/database first (AI scoring + payments later). Is that right, or do you want DB setup AND the AI scoring service built together in this pass?

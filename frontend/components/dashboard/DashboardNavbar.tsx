@@ -305,7 +305,7 @@ export default function DashboardNavbar() {
           <DashboardDrawerLink href="/settings" label="Settings" onClick={closeDrawer} />
 
           <Link
-            href="/upgrade"
+            href="/courses#choose-learning-path"
             onClick={closeDrawer}
             className="mt-3 block rounded-xl bg-gradient-to-br from-[#6C5CE7] to-[#4F46E5] px-4 py-2.5 text-center text-[14px] font-bold text-white shadow-sm transition-opacity hover:opacity-90"
           >
