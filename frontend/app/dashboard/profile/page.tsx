@@ -14,7 +14,6 @@ export default function ProfilePage() {
     ? new Date(user.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
     : '—';
 
-  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [pwError, setPwError] = useState('');
@@ -37,9 +36,8 @@ export default function ProfilePage() {
 
     setPwLoading(true);
     try {
-      await authApi.changePassword(currentPassword, newPassword);
+      await authApi.changePassword(newPassword);
       setPwSuccess('Password changed successfully');
-      setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err) {
@@ -90,16 +88,6 @@ export default function ProfilePage() {
       <div className="rounded-2xl p-6" style={{ border: '1px solid #D9D9D9' }}>
         <h2 className="text-[19px] font-extrabold text-black mb-4">Change Password</h2>
         <form onSubmit={handleChangePassword} className="flex flex-col gap-4">
-          <div>
-            <label className="text-[13px] font-semibold text-gray-600 mb-1 block">Current Password</label>
-            <input
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              required
-              className="w-full px-4 py-3 rounded-xl border border-[#D9D9D9] text-[14px] text-black outline-none focus:border-[#3008F8] transition-colors"
-            />
-          </div>
           <div>
             <label className="text-[13px] font-semibold text-gray-600 mb-1 block">New Password</label>
             <input

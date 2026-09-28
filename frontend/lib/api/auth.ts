@@ -16,9 +16,8 @@ export const authApi = {
   refresh: (refreshToken: string) =>
     api.post<TokenPair>('/auth/refresh', { refresh_token: refreshToken }),
   me: () => api.get<User>('/auth/me'),
-  changePassword: (currentPassword: string, newPassword: string) =>
+  changePassword: (newPassword: string) =>
     api.post<{ message: string }>('/auth/change-password', {
-      current_password: currentPassword,
       new_password: newPassword,
     }),
   oauthProviders: () => api.get<OAuthProviders>('/auth/oauth/providers'),
