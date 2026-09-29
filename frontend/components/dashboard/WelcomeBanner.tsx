@@ -10,7 +10,7 @@ interface WelcomeBannerProps {
 export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
   return (
     <div
-      className="relative rounded-2xl flex flex-col sm:flex-row sm:items-center overflow-hidden shadow-sm w-full min-h-[210px] sm:min-h-0 sm:h-[clamp(180px,14.3vw,290px)]"
+      className="relative rounded-2xl flex flex-col sm:flex-row sm:items-center overflow-hidden shadow-sm w-full min-h-[210px] lg:min-h-[250px]"
       style={{
         padding: 'clamp(2px, 0.15vw, 3px) clamp(12px, 1.12vw, 22px) 0 clamp(12px, 1.12vw, 22px)',
         gap: 'clamp(12px, 1.02vw, 20px)',
@@ -54,8 +54,12 @@ export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
         </div>
       </div>
 
-      {/* Illustration — hidden on phones, where the CTAs need the full width */}
-      <div className="hidden sm:flex shrink-0 self-end z-0 pointer-events-none h-full items-end">
+      {/* Illustration — only shown once the dashboard column is wide enough to
+          afford it. Below `xl` the sidebar leaves the banner too narrow, and a
+          315px `shrink-0` image squeezed the text to ~144px, forcing the CTAs
+          to wrap several times deep. A definite height keeps the art from
+          driving the banner's height now that the height is content-driven. */}
+      <div className="hidden xl:flex shrink-0 self-end z-0 pointer-events-none h-[228px] items-end">
         <Image
           src="/images/ChatGPT Image Aug 10, 2026, 03_34_56 PM 1.png"
           alt="Student studying"

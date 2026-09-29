@@ -70,7 +70,7 @@ export default function CoursesPage() {
           </div>
 
           {/* Right Content - Hero Image */}
-          <div className="w-full max-w-[694px] relative h-[326px] mt-10 lg:flex-shrink-0 lg:ml-[70px] overflow-visible">
+          <div className="w-full max-w-[694px] relative h-[326px] mt-10 lg:w-[52%] lg:min-w-0 lg:flex-shrink-0 lg:ml-[clamp(0px,3.5vw,70px)] overflow-visible">
             <Image src="/images/Frame 1472.png" alt="Student studying" fill className="object-contain" />
           </div>
 
@@ -261,7 +261,11 @@ export default function CoursesPage() {
       <section className="py-20">
         <div className="page-container">
         <div className="bg-white rounded-2xl border border-[#000000] overflow-hidden shadow-sm">
-          <table className="w-full text-center border-collapse">
+          {/* Four tiers plus a label column need more width than a phone has.
+              Scrolling the table sideways inside the card keeps every column
+              reachable; letting the card clip it hid two tiers completely. */}
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[620px] text-center border-collapse">
             <thead>
               <tr className="bg-gray-50 border-b border-[#000000]">
                 <th className="py-5 px-6 text-left font-extrabold text-black border-r border-[#000000] w-1/4 text-[16px] bg-[#D9D9D91A]">Features</th>
@@ -282,10 +286,12 @@ export default function CoursesPage() {
                 { name: 'Certificate of Completion', f: false, s: false, m: true },
               ].map((row, i) => (
                 <tr key={i} className="border-b border-[#000000] last:border-0 hover:bg-gray-50 transition-colors">
-                   <td className="py-4 px-6 text-left text-black border-r border-[#000000] flex items-center text-[16px] bg-[#D9D9D91A]">
-                      <svg className="w-5 h-5 text-gray-400 mr-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                      {row.name}
-                   </td>
+                   <td className="py-4 px-6 text-left text-black border-r border-[#000000] align-middle text-[16px] bg-[#D9D9D91A]">
+                     <div className="flex items-center">
+                       <svg className="w-5 h-5 text-gray-400 mr-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                       <span>{row.name}</span>
+                     </div>
+                    </td>
                    <td className="py-4 px-4 border-r border-[#000000] bg-[#00610E1A]">
                      {row.f ? <svg className="w-6 h-6 text-[#137333] mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg> : <svg className="w-6 h-6 text-red-400 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>}
                    </td>
@@ -299,6 +305,7 @@ export default function CoursesPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
         </div>
       </section>

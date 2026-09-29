@@ -75,7 +75,7 @@ function HeroSection() {
           {/* ── Right: Hero Image + Floating Cards ── */}
           {/* Fixed 684px at desktop; scales down and drops the decorative
               cards on phones so nothing overflows the viewport. */}
-          <div className="hidden sm:block w-full lg:w-[684px] lg:flex-shrink-0 relative h-[316px] overflow-visible">
+          <div className="hidden sm:block w-full lg:w-[52%] lg:min-w-0 lg:max-w-[684px] lg:flex-shrink-0 relative h-[316px] overflow-visible">
 
             {/* Dotted pattern decoration */}
             <div className="absolute right-0 top-8 w-48 h-48 hero-dots opacity-60 rounded-full" />
@@ -351,10 +351,10 @@ function MockTestSection() {
         <div className="w-full rounded-2xl overflow-hidden" style={{ boxShadow: '1px 1px 12px 0px #3008F833' }}>
         {/* Stacks on phones. The original `calc(36%-100px)` was invalid CSS
             (no spaces around the minus), so the browser dropped it entirely. */}
-        <div className="flex flex-col lg:flex-row h-auto lg:h-[301px] gap-[3px]">
+        <div className="flex flex-col lg:flex-row h-auto lg:min-h-[301px] gap-[3px]">
 
           {/* ── Left Panel: Dark Indigo ── */}
-          <div className="w-full lg:w-[calc(36%-100px)] lg:flex-shrink-0 bg-[#3008F8] p-[27px] flex flex-col justify-between">
+          <div className="w-full lg:w-[calc(36%_-_100px)] lg:flex-shrink-0 bg-[#3008F8] p-[27px] flex flex-col justify-between">
             <div>
               <h2 className="text-[25px] font-bold text-white mb-[27px] leading-none font-[family-name:var(--font-inter)]">
                 Mock Test Experience
@@ -391,8 +391,8 @@ function MockTestSection() {
             <div className="bg-gray-50 pt-[0px] pb-[13px] px-[13px] overflow-hidden">
 
               {/* Test Header */}
-              <div className="flex items-center pb-[7px]">
-                <div className="flex items-center gap-[7px]">
+              <div className="flex flex-wrap items-center pb-[7px]">
+                <div className="flex items-center gap-[7px] min-w-0">
                   <svg className="w-[20px] h-[20px] text-[#3008F8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                       d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -408,9 +408,9 @@ function MockTestSection() {
                     <span className="text-[17px] font-mono font-extrabold text-gray-900">01:20:35</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-[10px]">
-                  <span className="text-[18px] text-gray-900">Question of 11 of 20</span>
-                  <button className="text-gray-900 hover:text-gray-700 transition-colors">
+                <div className="flex items-center gap-[10px] min-w-0">
+                  <span className="text-[14px] sm:text-[18px] text-gray-900 truncate">Question of 11 of 20</span>
+                  <button className="text-gray-900 hover:text-gray-700 transition-colors shrink-0">
                     <svg className="w-[20px] h-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
