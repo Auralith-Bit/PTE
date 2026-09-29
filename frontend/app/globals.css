@@ -205,7 +205,7 @@ body {
   gap: 12px;
   align-items: stretch;  
   padding: 0;
-  height: 402px;
+  min-height: 402px;
 }
 .hero-copy { align-self: stretch; position: relative; padding-top: 0; display: flex; flex-direction: column; justify-content: space-between; }
 .breadcrumbs { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 600; line-height: 36px; }
@@ -231,7 +231,7 @@ body {
   margin-top: 14px;
 }
 
-.stats-card { width: 620px; height: 66px; min-height: 0; background: #fff; border: 1.5px solid #e6e6ee; border-radius: 10px; box-shadow: 0 8px 24px rgba(33,25,138,0.06); display: flex; align-items: center; padding: 5px; gap: 20px; }
+.stats-card { width: 100%; max-width: 620px; height: 66px; min-height: 0; background: #fff; border: 1.5px solid #e6e6ee; border-radius: 10px; box-shadow: 0 8px 24px rgba(33,25,138,0.06); display: flex; align-items: center; padding: 5px; gap: 20px; }
 .stat { min-width: 0; flex: 1; display: flex; align-items: center; gap: 10px; padding: 0 12px; }
 .stat + .stat { border-left: 1px solid #909090; }
 .stat-icon { width: 34px; height: 34px; background: #e4e0ff; border-radius: 50%; display: grid; place-items: center; flex: 0 0 auto; }
@@ -306,7 +306,7 @@ body {
 }
 @media (max-width: 767px) {
   .practice-hero { padding: 32px 0; }
-  .practice-hero .hero-grid { width: 100%; display: block; margin: 0; }
+  .practice-hero .hero-grid { width: 100%; display: block; margin: 0; min-height: 0; }
   .practice-hero h1 { margin: 20px 0 16px; font-size: 30px; line-height: 1.35; }
   .hero-copy p { font-size: 16px; line-height: 1.6; }
   .hero-image-wrap { margin-top: 28px; border-radius: 19px; max-height: 320px; justify-content: center; }
@@ -397,14 +397,11 @@ body {
   grid-template-columns: 1.2fr 0.9fr;
   gap: 12px;
   align-items: stretch;
-  height: 356px;
+  min-height: 356px;
 }
 .speaking-hero-copy { display: flex; flex-direction: column; justify-content: space-between; align-self: stretch; padding-top: 0; }
 .speaking-hero-copy h1 { margin: 0 0 0; font-size: 35px; font-weight: 800; line-height: 1.2; }
 .speaking-hero-copy p { margin: 0 0 10px; color: #46465a; font-size: 1.05rem; line-height: 1.7; font-weight: 500; max-width: 520px; }
-@media (min-width: 1280px) {
-  .speaking-hero-copy { min-height: 395px; }
-}
 
 .speaking-stats { display: flex; gap: 12px; flex-wrap: wrap; }
 .speaking-stat {
@@ -430,7 +427,7 @@ body {
 .speaking-floating-chat svg { width: 48px; height: 48px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 
 .ai-feedback-card {
-  position: absolute; left: -16%; top: 40%; z-index: 3;
+  position: absolute; left: 0; top: 40%; z-index: 3;
   background: #fff; border-radius: 14px; box-shadow: 0 16px 32px rgba(33,25,138,0.14);
   padding: 12px 14px; min-width: 160px;
 }
@@ -505,7 +502,7 @@ body {
 .ai-cta-copy p { margin: 0 0 0.6rem; color: #4f4f6c; font-size: 0.85rem; }
 .ai-cta-copy .practice-button { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
 @media (max-width: 1023px) {
-  .speaking-hero-grid { grid-template-columns: 1fr; }
+  .speaking-hero-grid { grid-template-columns: 1fr; min-height: 0; }
   .speaking-hero-visual { margin-top: 32px; }
   .speaking-types-layout { grid-template-columns: 1fr; }
   .speaking-types-grid { grid-template-columns: repeat(2, 1fr); }
@@ -814,8 +811,8 @@ body {
 .writing-breadcrumbs .current-crumb { color: var(--brand-blue); font-weight: 800; }
 
 .practice-hero-visual { display: flex; }
-.practice-feedback-card { min-width: 160px; padding: 12px 14px; top: 35%; left: -19%; }
-.listening-hero-visual .practice-feedback-card { top: 43%; left: -19%; }
+.practice-feedback-card { min-width: 160px; padding: 12px 14px; top: 35%; left: 0; }
+.listening-hero-visual .practice-feedback-card { top: 43%; left: 0; }
 .practice-feedback-card h4 { padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px solid #eee; font-size: 0.82rem; }
 .practice-feedback-card .ai-feedback-row { font-size: 0.8rem; padding: 3px 0; gap: 12px; }
 .listening-hero-visual .speaking-hero-image { transform: translateY(10px); }
@@ -902,7 +899,7 @@ body {
 }
 .reading-floating-doc svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-.reading-feedback-card { top: 40%; left: -19%; min-width: 160px; padding: 12px 14px; font-size: 0.8rem; }
+.reading-feedback-card { top: 40%; left: 0; min-width: 160px; padding: 12px 14px; font-size: 0.8rem; }
 .reading-feedback-card h4 {
   display: flex; align-items: center; gap: 6px; font-size: 0.82rem;
   padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px solid #eee;
