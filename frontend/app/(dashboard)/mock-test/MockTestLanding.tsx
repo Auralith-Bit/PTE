@@ -81,15 +81,11 @@ export function MockTestLanding() {
     refresh();
   }, [refresh]);
 
-  async function handleStart(id: number) {
+  function handleStart(id: number) {
     setStartingId(id);
-    try {
-      const start = await mockTestApi.start(id);
-      router.push(`/mock-test/take/${start.attempt_id}`);
-    } catch (err) {
-      setError(errorMessage(err));
-      setStartingId(null);
-    }
+    // The take route is /mock-test/take/[testId] and starts the attempt itself.
+    // Starting here too would create a duplicate attempt on every click.
+    router.push(`/mock-test/take/${id}`);
   }
 
   const completed = attempts.filter((a) => a.status === "completed");
