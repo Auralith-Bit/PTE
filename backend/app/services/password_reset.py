@@ -92,6 +92,12 @@ def create_reset(db: Session, email: str) -> bool:
 def complete_reset(db: Session, token: str, new_password: str) -> User:
     """Redeem a reset token and set the new password.
 
+    Redemption is a compare-and-swap: the token row is only claimed by the
+    UPDATE whose ``used_at IS NULL`` predicate matches, so of two concurrent
+    redemptions of the same link exactly one sees ``rowcount == 1``. Reading the
+    row and then writing it (the previous version) let both callers pass the
+    ``is_usable`` check, and the second password silently overwrote the first.
+
     Raises ValueError with a user-safe message when the token cannot be used.
     """
     invalid = ValueError("This reset link is invalid or has expired. Please request a new one.")
@@ -107,13 +113,27 @@ def complete_reset(db: Session, token: str, new_password: str) -> User:
     if user is None:
         raise invalid
 
+    # Claim the token before mutating the account. Row-level locking makes the
+    # second concurrent redemption block here, then find no usable row left.
+    claimed = db.execute(
+        update(PasswordResetToken)
+        .where(
+            PasswordResetToken.id == record.id,
+            PasswordResetToken.used_at.is_(None),
+        )
+        .values(used_at=now)
+        .execution_options(synchronize_session=False)
+    )
+    if claimed.rowcount != 1:
+        db.rollback()
+        raise invalid
+
     user.password_hash = hash_password(new_password)
     # An OAuth-only account becomes a password account once a password is set.
     if user.auth_provider != "password":
         user.auth_provider = "password"
     user.token_version += 1
 
-    record.used_at = now
     db.commit()
     db.refresh(user)
 

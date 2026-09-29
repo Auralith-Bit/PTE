@@ -4,7 +4,26 @@ from pydantic import BaseModel, ConfigDict
 
 # Keys inside `content` that must never be exposed to clients.
 # Correct answers are stored server-side; AI scoring compares at submit time.
-_ANSWER_KEYS = ("correct", "correct_answer", "answer", "answers", "order")
+#
+# `notes` is the model answer for speaking questions and is the only field the
+# scorers read as a reference (see app/services/speaking_scorer.py). It used to
+# ship to the browser, so anyone could read the expected answer out of the
+# network tab and score 10/10.
+#
+# `transcript` is deliberately NOT stripped: for listening questions it is the
+# study material the UI renders ("Audio / Transcript"), so removing it would
+# break the listening task. It is not treated as a secret for that reason.
+_ANSWER_KEYS = (
+    "correct",
+    "correct_answer",
+    "answer",
+    "answers",
+    "order",
+    "notes",
+    "reference",
+    "model_answer",
+    "sample_answer",
+)
 
 
 def _strip_answers(content: dict) -> dict:

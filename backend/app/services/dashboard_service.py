@@ -1,7 +1,7 @@
 import logging
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 
-from sqlalchemy import func, select
+from sqlalchemy import distinct, func, select
 from sqlalchemy.orm import Session
 
 from app.models.attempt import Attempt
@@ -18,8 +18,11 @@ def _count_by_category(db: Session, user_id: int) -> tuple[dict[str, int], dict[
         total[cat] = db.scalar(
             select(func.count()).select_from(Question).where(Question.category == cat)
         ) or 0
+        # Distinct questions, not attempts. A user who retries the same question
+        # has several Attempt rows for it, and counting those against the number
+        # of questions drove the percentages past 100%.
         done[cat] = db.scalar(
-            select(func.count())
+            select(func.count(distinct(Attempt.question_id)))
             .select_from(Attempt)
             .where(Attempt.user_id == user_id, Attempt.category == cat, Attempt.status == "completed")
         ) or 0
@@ -27,7 +30,7 @@ def _count_by_category(db: Session, user_id: int) -> tuple[dict[str, int], dict[
 
 
 def _section_pct(done: int, total: int) -> int:
-    return round((done / total) * 100) if total > 0 else 0
+    return min(round((done / total) * 100), 100) if total > 0 else 0
 
 
 def compute_dashboard_summary(db: Session, user_id: int) -> dict:
@@ -62,7 +65,7 @@ def compute_dashboard_summary(db: Session, user_id: int) -> dict:
         )
     ) or 0
 
-    practice_completed_pct = round((completed / total_questions) * 100)
+    practice_completed_pct = min(round((completed / total_questions) * 100), 100)
     practice_weekly_delta = completed_this_week - completed_prev_week
 
     if completed_prev_week > 0:
@@ -106,25 +109,30 @@ def compute_dashboard_summary(db: Session, user_id: int) -> dict:
 
     if attempt_dates:
         today = datetime.now(UTC).date()
-        streak_count = 0
+        # Normalise to plain dates once, most recent first.
+        active_days: list[date] = []
         for d in attempt_dates:
             dt = d if isinstance(d, datetime) else datetime.combine(d, datetime.min.time())
             if dt.tzinfo is None:
                 dt = dt.replace(tzinfo=UTC)
-            diff = (today - dt.date()).days
-            if diff == streak_count:
-                streak_count += 1
-            else:
-                break
-        streak_days = streak_count
+            active_days.append(dt.date())
+
+        # A streak stays alive until midnight, so practising yesterday still
+        # counts. The old loop demanded diff == 0 on the newest row, which
+        # showed a 0-day streak to anyone who had not practised yet today.
+        if (today - active_days[0]).days <= 1:
+            streak_count = 1
+            for day in active_days[1:]:
+                if (active_days[streak_count - 1] - day).days == 1:
+                    streak_count += 1
+                else:
+                    break
+            streak_days = streak_count
 
         week_start = today - timedelta(days=today.weekday())
-        for d in attempt_dates:
-            dt = d if isinstance(d, datetime) else datetime.combine(d, datetime.min.time())
-            if dt.tzinfo is None:
-                dt = dt.replace(tzinfo=UTC)
-            if dt.date() >= week_start:
-                streak_week[dt.date().weekday()] = True
+        for day in active_days:
+            if day >= week_start:
+                streak_week[day.weekday()] = True
 
     # Recent activity (last 5 completed attempts)
     recent_attempts = (

@@ -6,8 +6,19 @@ import jwt
 
 from app.core.config import settings
 
+BCRYPT_MAX_BYTES = 72
+
 
 def hash_password(password: str) -> str:
+    """Hash a password.
+
+    bcrypt refuses input over 72 bytes by raising, which surfaced as a 500.
+    Request schemas reject those lengths up front (see app/schemas/user.py); this
+    guard stops any future caller that bypasses them from raising a bare
+    ValueError deep inside the request.
+    """
+    if len(password.encode("utf-8")) > BCRYPT_MAX_BYTES:
+        raise ValueError(f"password must be at most {BCRYPT_MAX_BYTES} bytes when UTF-8 encoded")
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 

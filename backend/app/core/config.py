@@ -1,7 +1,15 @@
+import logging
 from functools import lru_cache
 
 from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+log = logging.getLogger("app.config")
+
+# Published in version control, so anybody can sign a token the backend accepts.
+# Never ship with it; see the validator below.
+DEFAULT_JWT_SECRET = "change-me-change-me-change-me-change-me"
+_PRODUCTION_ENVIRONMENTS = {"production", "prod"}
 
 
 class Settings(BaseSettings):
@@ -10,10 +18,13 @@ class Settings(BaseSettings):
     app_name: str = "PTE-AI Backend"
     app_version: str = "0.1.0"
     debug: bool = False
+    # "development" | "staging" | "production". Production fails fast on a
+    # missing or weak JWT secret instead of quietly running on the default.
+    environment: str = "development"
 
     database_url: str = "postgresql+psycopg2://postgres:postgres@localhost:5432/pte_ai"
 
-    jwt_secret_key: str = "change-me-change-me-change-me-change-me"
+    jwt_secret_key: str = DEFAULT_JWT_SECRET
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
     refresh_token_expire_days: int = 30
@@ -67,10 +78,19 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def _validate_secret(self) -> "Settings":
-        if self.jwt_secret_key == "change-me-change-me-change-me-change-me":
-            import logging
+        secret = self.jwt_secret_key
+        is_default = secret == DEFAULT_JWT_SECRET
+        is_production = self.environment.strip().lower() in _PRODUCTION_ENVIRONMENTS
 
-            log = logging.getLogger("app.config")
+        if is_production and (is_default or len(secret) < 32):
+            reason = "still the published default" if is_default else f"only {len(secret)} characters long"
+            raise ValueError(
+                f"JWT_SECRET_KEY is {reason}. Set a unique random value of at least 32 "
+                "characters in the environment — anyone holding the key can mint a "
+                "token for any user id."
+            )
+
+        if is_default:
             log.warning(
                 "JWT_SECRET_KEY is using the default value"
                 " — set a real secret in .env for production"
