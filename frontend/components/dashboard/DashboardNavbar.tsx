@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import MobileDrawer from '@/components/common/MobileDrawer';
+import SiteSearch from '@/components/common/SiteSearch';
 
 export default function DashboardNavbar() {
   const pathname = usePathname();
@@ -157,8 +158,11 @@ export default function DashboardNavbar() {
           ))}
         </div>
 
-        {/* Right: Bell + User */}
+        {/* Right: Search + Bell + User */}
         <div className="flex items-center gap-3 shrink-0">
+          {/* Search Bar — inline on desktop; the drawer offers a full-width field */}
+          <SiteSearch variant="inline" />
+
           {/* Notification Bell */}
           <button className="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-indigo-100 transition-colors group">
             <svg className="w-5 h-5 text-gray-500 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -239,6 +243,9 @@ export default function DashboardNavbar() {
 
       <MobileDrawer open={drawerOpen} onClose={closeDrawer} title="Menu">
         <nav className="flex flex-col p-4">
+          {/* Search — inline search is lg-only, so the drawer carries it below that */}
+          <SiteSearch variant="drawer" onNavigate={closeDrawer} />
+
           <div className="mb-3 flex items-center gap-2 border-b border-gray-100 pb-3">
             <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
               {initial}
