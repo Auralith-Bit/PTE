@@ -1016,8 +1016,11 @@ body {
   .ai-feedback-card,
   .practice-feedback-card,
   .reading-feedback-card {
-    position: static;
-    margin-top: 0.75rem;
-    max-width: 100%;
+    /* Must stay out of flow. As a static flex sibling it shares the row with
+       the hero image inside .speaking-hero-visual, and justify-content:center
+       then splits the overflow either side, pushing the image off the left
+       edge of the screen on phones. */
+    position: absolute;
+    max-width: calc(100% - 1rem);
   }
 }
