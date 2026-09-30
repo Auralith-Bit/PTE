@@ -53,12 +53,6 @@ const heroStats = [
   { value: "92%", label: "Student Improved", Icon: BarsUpIcon },
 ];
 
-const aiFeedbackRows = [
-  { label: "Listening", tag: "Good" },
-  { label: "Comprehension", tag: "Good" },
-  { label: "Summary", tag: "Good" },
-];
-
 const listeningTasks: { title: string; description: string; time: string; Icon: ComponentType; slug: string; comingSoon?: boolean }[] = [
   {
     title: "Summarize Spoken Test",
@@ -146,15 +140,6 @@ export default function ListeningPracticePage() {
               className="speaking-hero-image"
               priority
             />
-            <div className="ai-feedback-card practice-feedback-card">
-              <h4>AI Feedback</h4>
-              {aiFeedbackRows.map(({ label, tag }) => (
-                <div className="ai-feedback-row" key={label}>
-                  <span>{label}</span>
-                  <b className="tag-good">{tag}</b>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
         </div>

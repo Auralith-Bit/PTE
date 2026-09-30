@@ -53,26 +53,10 @@ function BulletListIcon() {
 function SearchIcon() {
   return <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" /><path d="M20 20l-5-5" /></svg>;
 }
-function SparkleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
-      <path d="M6 2l1 3 3 1-3 1-1 3-1-3-3-1 3-1z" />
-      <path d="M17 9l1.4 3.6L22 14l-3.6 1.4L17 19l-1.4-3.6L12 14l3.6-1.4z" />
-    </svg>
-  );
-}
-
 const heroStats = [
   { value: "3", label: "Question Types", Icon: BookIcon },
   { value: "1500+", label: "Practice Questions", Icon: DocFillIcon },
   { value: "95%", label: "Student Improved", Icon: TrendUpIcon },
-];
-
-const aiFeedbackRows = [
-  { label: "Accuracy", tag: "Good" },
-  { label: "Vocabulary", tag: "Good" },
-  { label: "Speed", tag: "Good" },
-  { label: "Coherence", tag: "Good" },
 ];
 
 const readingTypes: { title: string; description: string; Icon: ComponentType; slug: string; comingSoon?: boolean }[] = [
@@ -131,16 +115,6 @@ export default function ReadingPracticePage() {
               className="speaking-hero-image"
               priority
             />
-            <div className="ai-feedback-card reading-feedback-card">
-              <h4><SparkleIcon /> AI Reading Feedback</h4>
-              {aiFeedbackRows.map(({ label, tag }) => (
-                <div className="ai-feedback-row" key={label}>
-                  <span>{label}</span>
-                  <b className="tag-good">{tag}</b>
-                </div>
-              ))}
-            </div>
-
           </div>
         </div>
         </div>

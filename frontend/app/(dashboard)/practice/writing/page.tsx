@@ -52,14 +52,6 @@ const heroStats = [
   { value: "92%", label: "Student Improved", Icon: BarsUpIcon },
 ];
 
-const aiFeedbackRows = [
-  { label: "Content", tag: "Good" },
-  { label: "Structure", tag: "Good" },
-  { label: "Grammar", tag: "Good" },
-  { label: "Vocabulary", tag: "Good" },
-  { label: "Coherence", tag: "Good" },
-];
-
 const writingTasks = [
   {
     title: "Summarize Written Text",
@@ -128,15 +120,6 @@ export default function WritingPracticePage() {
               className="speaking-hero-image"
               priority
             />
-            <div className="ai-feedback-card practice-feedback-card">
-              <h4>AI Feedback</h4>
-              {aiFeedbackRows.map(({ label, tag }) => (
-                <div className="ai-feedback-row" key={label}>
-                  <span>{label}</span>
-                  <b className="tag-good">{tag}</b>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
         </div>

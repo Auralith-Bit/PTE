@@ -455,15 +455,6 @@ body {
 }
 .speaking-floating-chat svg { width: 48px; height: 48px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 
-.ai-feedback-card {
-  position: absolute; left: 0; top: 40%; z-index: 3;
-  background: #fff; border-radius: 14px; box-shadow: 0 16px 32px rgba(33,25,138,0.14);
-  padding: 12px 14px; min-width: 160px;
-}
-.ai-feedback-card h4 { margin: 0 0 6px; font-size: 0.82rem; font-weight: 800; padding-bottom: 6px; border-bottom: 1px solid #eee; }
-.ai-feedback-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 3px 0; font-size: 0.8rem; color: #333; font-weight: 600; }
-.tag-good { background: #d9f7e3; color: #1a8a4a; font-size: 0.7rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; }
-
 .audio-bar {
   position: absolute; bottom: 2%; left: 58%; transform: translateX(-50%);
   z-index: 3; display: flex; align-items: center; gap: 8px;
@@ -847,10 +838,6 @@ body {
 .writing-breadcrumbs .current-crumb { color: var(--brand-blue); font-weight: 800; }
 
 .practice-hero-visual { display: flex; }
-.practice-feedback-card { min-width: 160px; padding: 12px 14px; top: 35%; left: 0; }
-.listening-hero-visual .practice-feedback-card { top: 43%; left: 0; }
-.practice-feedback-card h4 { padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px solid #eee; font-size: 0.82rem; }
-.practice-feedback-card .ai-feedback-row { font-size: 0.8rem; padding: 3px 0; gap: 12px; }
 .listening-hero-visual .speaking-hero-image { transform: translateY(10px); }
 
 /* ── Writing task cards (Summarize Written Text / Essay) ── */
@@ -935,15 +922,6 @@ body {
 }
 .reading-floating-doc svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-.reading-feedback-card { top: 40%; left: 0; min-width: 160px; padding: 12px 14px; font-size: 0.8rem; }
-.reading-feedback-card h4 {
-  display: flex; align-items: center; gap: 6px; font-size: 0.82rem;
-  padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px solid #eee;
-}
-.reading-feedback-card h4 svg { width: 14px; height: 14px; color: var(--brand-blue); flex-shrink: 0; }
-.reading-feedback-card .ai-feedback-row { font-size: 0.8rem; gap: 12px; padding: 3px 0; }
-.reading-feedback-card .tag-good { font-size: 0.7rem; padding: 1px 8px; }
-
 .reading-book-stack {
   position: absolute; right: 4%; bottom: 8%; z-index: 3;
   display: flex; flex-direction: column; width: 130px;
@@ -1005,39 +983,8 @@ body {
   .listening-tasks-grid { grid-template-columns: 1fr; }
 }
 
-/* ==========================================================
-   FLOATING DECORATIVE CARDS
-   ----------------------------------------------------------
-   These are absolutely positioned inside a relative hero
-   visual. At desktop widths a negative `left` tucks them
-   over the edge of the artwork, which is the intended look.
-   Once the hero collapses to a single column there is no
-   artwork beside them, so the negative offset pushes the
-   card past the viewport edge and creates a horizontal
-   scrollbar. Anchor them inside the visual instead.
-   ========================================================== */
 @media (max-width: 1023px) {
-  .ai-feedback-card,
-  .practice-feedback-card,
-  .reading-feedback-card,
-  .listening-hero-visual .practice-feedback-card {
-    left: 0;
-    max-width: calc(100% - 1rem);
-  }
   /* The writing illustration is absolutely positioned in the
      top-right and collides with the copy once stacked. */
   .writing-task-illustration { display: none; }
-}
-
-@media (max-width: 480px) {
-  .ai-feedback-card,
-  .practice-feedback-card,
-  .reading-feedback-card {
-    /* Must stay out of flow. As a static flex sibling it shares the row with
-       the hero image inside .speaking-hero-visual, and justify-content:center
-       then splits the overflow either side, pushing the image off the left
-       edge of the screen on phones. */
-    position: absolute;
-    max-width: calc(100% - 1rem);
-  }
 }

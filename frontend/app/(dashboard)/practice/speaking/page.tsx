@@ -95,12 +95,6 @@ const heroStats = [
   { value: "92%", label: "Student Improved", Icon: StarIcon },
 ];
 
-const aiFeedbackRows = [
-  { label: "Pronunciation", tag: "Good" },
-  { label: "Fluency", tag: "Good" },
-  { label: "Content", tag: "Good" },
-];
-
 const speakingTypes = [
   ["Read Aloud", "Read the displayed text clearly and naturally to improve pronunciation and fluency.", WaveformIcon, "read-aloud"],
   ["Repeat Sentence", "Listen carefully and repeat the sentence exactly as you hear it to improve memory.", RepeatIcon, "repeat-sentence"],
@@ -159,15 +153,6 @@ export default function SpeakingPracticePage() {
               className="speaking-hero-image"
               priority
             />
-            <div className="ai-feedback-card">
-              <h4>AI Feedback</h4>
-              {aiFeedbackRows.map(({ label, tag }) => (
-                <div className="ai-feedback-row" key={label}>
-                  <span>{label}</span>
-                  <b className="tag-good">{tag}</b>
-                </div>
-              ))}
-            </div>
             <div className="audio-bar">
               <span className="audio-mic"><MicIcon /></span>
               <div className="audio-waveform">
