@@ -202,7 +202,7 @@ export default function WritingPracticePage() {
             <h3>Get AI Feedback On Your Writing</h3>
             <p>Submit your answer get instant AI feedback to improve your writing score</p>
           </div>
-          <Link href="/practice/writing" className="practice-button practice-cta-button">
+          <Link href="/practice/writing/summarize-written-text" className="practice-button practice-cta-button">
             Start Free Practicing Test <span aria-hidden="true">→</span>
           </Link>
           <div className="practice-cta-illustration">

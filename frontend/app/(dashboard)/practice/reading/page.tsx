@@ -63,7 +63,7 @@ function SparkleIcon() {
 }
 
 const heroStats = [
-  { value: "10", label: "Question Types", Icon: BookIcon },
+  { value: "3", label: "Question Types", Icon: BookIcon },
   { value: "1500+", label: "Practice Questions", Icon: DocFillIcon },
   { value: "95%", label: "Student Improved", Icon: TrendUpIcon },
 ];
@@ -75,15 +75,13 @@ const aiFeedbackRows = [
   { label: "Coherence", tag: "Good" },
 ];
 
-const readingTypes: { title: string; description: string; Icon: ComponentType; slug: string }[] = [
+const readingTypes: { title: string; description: string; Icon: ComponentType; slug: string; comingSoon?: boolean }[] = [
   { title: "Reading & Writing: Fill in the Blanks", description: "Fill in the missing words by selecting the most suitable options from the list.", Icon: EditSquareIcon, slug: "fill-in-the-blanks" },
   { title: "Re-order Paragraphs", description: "Arrange the text boxes into the correct logical order to form a meaningful passage.", Icon: SwapIcon, slug: "re-order-paragraphs" },
   { title: "Multiple Choice, Single Answer", description: "Read the passage and choose the single best answer from the options.", Icon: BulletListIcon, slug: "multiple-choice-single" },
-  { title: "Reading: Fill in the Blanks", description: "Fill in the missing words by selecting the most suitable options from the list.", Icon: LinesIcon, slug: "reading-fill-in-the-blanks" },
-  { title: "Multiple Choice, Multiple Answers", description: "Select all the correct answers from the list.", Icon: ChecklistIcon, slug: "multiple-choice-multiple-answers" },
-  { title: "Reading Overview Card", description: "Get an overview of your reading performance.", Icon: BookIcon, slug: "reading-overview" },
-  { title: "Summarize Written Text", description: "Read a passage and write a one-sentence summary.", Icon: EditSquareIcon, slug: "summarize-written-text" },
-  { title: "Highlight Correct Summary", description: "Choose the summary that best captures the passage.", Icon: SearchIcon, slug: "highlight-correct-summary" },
+  { title: "Reading: Fill in the Blanks", description: "Fill in the missing words by selecting the most suitable options from the list.", Icon: LinesIcon, slug: "reading-fill-in-the-blanks", comingSoon: true },
+  { title: "Multiple Choice, Multiple Answers", description: "Select all the correct answers from the list.", Icon: ChecklistIcon, slug: "multiple-choice-multiple-answers", comingSoon: true },
+  { title: "Highlight Correct Summary", description: "Choose the summary that best captures the passage.", Icon: SearchIcon, slug: "highlight-correct-summary", comingSoon: true },
 ];
 
 const overviewRows = [
@@ -153,15 +151,19 @@ export default function ReadingPracticePage() {
         <h2 className="section-title-center">Reading Question Types</h2>
         <div className="speaking-types-layout">
           <div className="speaking-types-grid">
-            {readingTypes.map(({ title, description, Icon, slug }, i) => (
+            {readingTypes.map(({ title, description, Icon, slug, comingSoon }, i) => (
               <article className="speaking-type-card" key={`${title}-${i}`}>
                 <span className="speaking-type-icon"><Icon /></span>
                 <h3>{title}</h3>
                 <p>{description}</p>
-                <span className="speaking-type-meta">15+ Solutions</span>
-                <Link className="outline-pill-button" href={`/practice/reading/${slug}`}>
-                  Practice <span aria-hidden="true">→</span>
-                </Link>
+                {!comingSoon && <span className="speaking-type-meta">15+ Solutions</span>}
+                {comingSoon ? (
+                  <span className="coming-soon-chip">Coming soon</span>
+                ) : (
+                  <Link className="outline-pill-button" href={`/practice/reading/${slug}`}>
+                    Practice <span aria-hidden="true">→</span>
+                  </Link>
+                )}
               </article>
             ))}
           </div>
@@ -192,7 +194,7 @@ export default function ReadingPracticePage() {
                 </div>
               ))}
             </div>
-            <Link href="/practice/reading" className="practice-button overview-cta">
+            <Link href="/mock-test" className="practice-button overview-cta">
               Start Full Test
             </Link>
           </aside>
@@ -209,7 +211,7 @@ export default function ReadingPracticePage() {
               Receive instant AI-powered feedback to improve your reading score,
               comprehension, vocabulary, and overall exam performance.
             </p>
-            <Link href="/practice/reading" className="practice-button">
+            <Link href="/practice/reading/fill-in-the-blanks" className="practice-button">
               Start Free Practicing Test <span aria-hidden="true">→</span>
             </Link>
           </div>

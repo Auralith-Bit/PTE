@@ -147,7 +147,7 @@ export default function PracticePage() {
         <div className="page-container">
         <div className="section-heading">
           <h2>Practice Options</h2>
-          <Link className="practice-button" href="/practice">
+          <Link className="practice-button" href="/practice/speaking/read-aloud">
             Practice Now →
           </Link>
         </div>
@@ -164,7 +164,7 @@ export default function PracticePage() {
               <div>
                 <h3>{title}</h3>
                 <p>{description}</p>
-                <Link className="text-link" href="/practice">
+                <Link className="text-link" href="/practice/speaking/read-aloud">
                   Start Practice →
                 </Link>
               </div>
@@ -249,7 +249,7 @@ export default function PracticePage() {
                 <p>Practice a little every day and see a big improvement in your speaking score.</p>
               </div>
             </div>
-            <Link href="/practice" className="practice-button">
+            <Link href="/practice/speaking/read-aloud" className="practice-button">
               Start Daily Practice →
             </Link>
           </div>

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ComponentType } from "react";
 
 const Chevron = () => <span className="chevron" aria-hidden="true">›</span>;
 
@@ -47,7 +48,7 @@ function HighlightIcon() {
 }
 
 const heroStats = [
-  { value: "5", label: "Question Types", Icon: DocTypeIcon },
+  { value: "3", label: "Question Types", Icon: DocTypeIcon },
   { value: "1200+", label: "Practice Questions", Icon: HeadphonesIcon },
   { value: "92%", label: "Student Improved", Icon: BarsUpIcon },
 ];
@@ -58,7 +59,7 @@ const aiFeedbackRows = [
   { label: "Summary", tag: "Good" },
 ];
 
-const listeningTasks = [
+const listeningTasks: { title: string; description: string; time: string; Icon: ComponentType; slug: string; comingSoon?: boolean }[] = [
   {
     title: "Summarize Spoken Test",
     description: "Listen to a short audio and write a summary in one sentence.",
@@ -72,6 +73,7 @@ const listeningTasks = [
     time: "Average Time 10 mins",
     Icon: MultiCheckIcon,
     slug: "multiple-choice-multiple-answers",
+    comingSoon: true,
   },
   {
     title: "Multiple Choice Single Answer",
@@ -93,6 +95,7 @@ const listeningTasks = [
     time: "Average Time 10 mins",
     Icon: HighlightIcon,
     slug: "highlight-correct-summary",
+    comingSoon: true,
   },
 ];
 
@@ -161,15 +164,19 @@ export default function ListeningPracticePage() {
         <div className="page-container">
         <h2 className="section-title-center">Listening Question Types</h2>
         <div className="listening-tasks-grid">
-          {listeningTasks.map(({ title, description, time, Icon, slug }) => (
+          {listeningTasks.map(({ title, description, time, Icon, slug, comingSoon }) => (
             <article className="listening-task-card" key={title}>
               <span className="listening-task-icon"><Icon /></span>
               <h3>{title}</h3>
               <p>{description}</p>
-              <span className="listening-task-time"><ClockIcon /> {time}</span>
-              <Link href={`/practice/listening/${slug}`} className="practice-button">
-                Practice <span aria-hidden="true">→</span>
-              </Link>
+              {!comingSoon && <span className="listening-task-time"><ClockIcon /> {time}</span>}
+              {comingSoon ? (
+                <span className="coming-soon-chip">Coming soon</span>
+              ) : (
+                <Link href={`/practice/listening/${slug}`} className="practice-button">
+                  Practice <span aria-hidden="true">→</span>
+                </Link>
+              )}
             </article>
           ))}
         </div>
@@ -201,7 +208,7 @@ export default function ListeningPracticePage() {
             <h3>Get AI Feedback On Your Listening</h3>
             <p>Get instant AI feedback on your performance and identify your weak areas to improve faster.</p>
           </div>
-          <Link href="/practice/listening" className="practice-button practice-cta-button">
+          <Link href="/practice/listening/summarize-spoken-test" className="practice-button practice-cta-button">
             Start Free Practicing Test <span aria-hidden="true">→</span>
           </Link>
           <div className="practice-cta-illustration">

@@ -90,7 +90,7 @@ function RobotIcon() {
 }
 
 const heroStats = [
-  { value: "7", label: "Question Types", Icon: MicIcon },
+  { value: "8", label: "Question Types", Icon: MicIcon },
   { value: "1200+", label: "Practice Questions", Icon: DocIcon },
   { value: "92%", label: "Student Improved", Icon: StarIcon },
 ];
@@ -229,7 +229,7 @@ export default function SpeakingPracticePage() {
                 </div>
               ))}
             </div>
-            <Link href="/practice/speaking" className="practice-button overview-cta">
+            <Link href="/mock-test" className="practice-button overview-cta">
               Start Full Test
             </Link>
           </aside>
@@ -243,7 +243,7 @@ export default function SpeakingPracticePage() {
           <div className="ai-cta-copy">
             <h3>Get AI Feedback On Your Speaking</h3>
             <p>Receive instant AI-powered feedback to improve your speaking score.</p>
-            <Link href="/practice/speaking" className="practice-button">
+            <Link href="/practice/speaking/read-aloud" className="practice-button">
               Start Free Practicing Test <span aria-hidden="true">→</span>
             </Link>
           </div>

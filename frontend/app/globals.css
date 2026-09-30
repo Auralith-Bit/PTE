@@ -490,6 +490,13 @@ body {
   border-radius: 8px; padding: 0.35rem 0.75rem; font-weight: 700; font-size: 0.8rem;
   text-decoration: none; margin-top: 0.25rem;
 }
+.coming-soon-chip {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  border: 1px dashed #c9c9d6; color: #8a8aa3; background: #f7f7fb;
+  border-radius: 8px; padding: 0.35rem 0.75rem; font-weight: 700; font-size: 0.8rem;
+  margin-top: 0.25rem; white-space: nowrap;
+}
+.listening-task-card .coming-soon-chip { padding: 0.4rem 0.85rem; margin-top: 0.5rem; }
 
 .speaking-overview-card {
   background: #fff; border: 1px solid #e6e6ee; border-radius: 14px;
