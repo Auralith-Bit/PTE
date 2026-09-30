@@ -192,10 +192,20 @@ body {
 .practice-page { min-height: 100vh; background: #fff; }
 
 /* ── Hero: rebuilt sizing so it fits one viewport like the Figma design ── */
+/* The hero fills the viewport on shorter screens, but on tall viewports an
+   uncapped calc(100vh - 65px) left 380-480px of empty background below the
+   content, so the artwork looked tiny inside the section. Cap it and centre
+   the content in whatever height is left over. */
+.practice-hero,
+.speaking-hero {
+  min-height: min(calc(100vh - 65px), 560px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 .practice-hero {
   background: rgba(246, 244, 253, 1);
   padding: 28px 0 32px;
-  min-height: calc(100vh - 65px);
 }
 .practice-hero .hero-grid {
   width: 100%;
@@ -410,7 +420,7 @@ body {
    ══════════════════════════════════════════════ */
 
 /* ── Hero ── */
-.speaking-hero { background: rgba(246, 244, 253, 1); padding: 28px 0 32px; min-height: calc(100vh - 65px); }
+.speaking-hero { background: rgba(246, 244, 253, 1); padding: 28px 0 32px; }
 .speaking-hero-grid {
   display: grid;
   grid-template-columns: 1.2fr 0.9fr;
@@ -1023,8 +1033,11 @@ body {
   .ai-feedback-card,
   .practice-feedback-card,
   .reading-feedback-card {
-    position: static;
-    margin-top: 0.75rem;
-    max-width: 100%;
+    /* Must stay out of flow. As a static flex sibling it shares the row with
+       the hero image inside .speaking-hero-visual, and justify-content:center
+       then splits the overflow either side, pushing the image off the left
+       edge of the screen on phones. */
+    position: absolute;
+    max-width: calc(100% - 1rem);
   }
 }
