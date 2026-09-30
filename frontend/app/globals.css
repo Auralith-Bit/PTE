@@ -227,7 +227,7 @@ body {
   display: block;
   width: 95%;
   height: 95%;
-  object-fit: cover;
+  object-fit: contain;
   margin-top: 14px;
 }
 
@@ -314,6 +314,14 @@ body {
   .practice-hero .hero-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
   .practice-hero h1 { margin-top: 8px; }
   .question-grid { grid-template-columns: repeat(3, minmax(200px, 1fr)); }
+}
+/* Collapse the practice hero to one column at the same breakpoint as
+   .speaking-hero-grid (1023px). Staying 1fr 1fr down to 767px squeezed the
+   hero image into a narrow, row-height-stretched column, which cropped the
+   photo. */
+@media (max-width: 1023px) {
+  .practice-hero .hero-grid { grid-template-columns: 1fr; min-height: 0; }
+  .practice-hero .hero-image-wrap { margin-top: 32px; }
 }
 @media (max-width: 767px) {
   .practice-hero { padding: 32px 0; }
