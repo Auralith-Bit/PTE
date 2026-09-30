@@ -3,9 +3,10 @@
 interface OverallProgressProps {
   progressPct: number;
   targetScore: number;
+  hasActivity: boolean;
 }
 
-export default function OverallProgress({ progressPct, targetScore }: OverallProgressProps) {
+export default function OverallProgress({ progressPct, targetScore, hasActivity }: OverallProgressProps) {
   const r = 52;
   const circumference = 2 * Math.PI * r;
   const offset = circumference - (progressPct / 100) * circumference;
@@ -43,7 +44,9 @@ export default function OverallProgress({ progressPct, targetScore }: OverallPro
             <p className="text-[22px] font-extrabold text-indigo-600">{targetScore}+</p>
           </div>
           <p className="text-[12px] text-gray-500 leading-snug">
-            You&apos;re doing great! Keep it up and achieve your target score.
+            {hasActivity
+              ? "You're doing great! Keep it up and achieve your target score."
+              : 'Complete your first practice question to start tracking your progress.'}
           </p>
         </div>
       </div>

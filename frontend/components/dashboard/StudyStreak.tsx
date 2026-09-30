@@ -5,9 +5,10 @@ const DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 interface StudyStreakProps {
   streakDays: number;
   streakWeek: boolean[]; // 7 booleans Mon-Sun
+  hasActivity: boolean;
 }
 
-export default function StudyStreak({ streakDays, streakWeek }: StudyStreakProps) {
+export default function StudyStreak({ streakDays, streakWeek, hasActivity }: StudyStreakProps) {
   return (
     <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
       <div className="flex items-center justify-between mb-1">
@@ -18,7 +19,9 @@ export default function StudyStreak({ streakDays, streakWeek }: StudyStreakProps
         <span className="text-[14px] font-extrabold text-orange-500">{streakDays} Days</span>
       </div>
 
-      <p className="text-[12px] text-gray-400 mb-3 font-medium">Awesome! Keep your streak going.</p>
+      <p className="text-[12px] text-gray-400 mb-3 font-medium">
+        {hasActivity ? 'Awesome! Keep your streak going.' : 'Practice today to start your first streak.'}
+      </p>
 
       <div className="flex items-center gap-2 justify-between">
         {DAYS.map((day, i) => {

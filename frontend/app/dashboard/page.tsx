@@ -36,6 +36,12 @@ export default function DashboardPage() {
 
   const firstName = user?.full_name?.split(' ')[0] ?? user?.email?.split('@')[0] ?? 'there';
 
+  // The only exact "has this user ever completed anything" signal.
+  // progressPct rounds to 0 for people who have done some work, and
+  // streakDays reads 0 for anyone who has not practiced today or
+  // yesterday, so neither can be used to detect a brand-new account.
+  const hasActivity = (summary?.questions_solved ?? 0) > 0;
+
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
@@ -82,6 +88,7 @@ export default function DashboardPage() {
             questionsWeeklyDelta={summary.questions_solved_weekly_delta}
             mockTestsTaken={summary.mock_tests_taken}
             mockTestsWeeklyDelta={summary.mock_tests_weekly_delta}
+            hasActivity={hasActivity}
           />
         ) : null}
 
@@ -123,6 +130,7 @@ export default function DashboardPage() {
             <OverallProgress
               progressPct={summary.overall_progress_pct}
               targetScore={summary.target_score}
+              hasActivity={hasActivity}
             />
             <TodayGoal
               description={summary.goal_description}
@@ -132,6 +140,7 @@ export default function DashboardPage() {
             <StudyStreak
               streakDays={summary.streak_days}
               streakWeek={summary.streak_week}
+              hasActivity={hasActivity}
             />
             <RecentMockTest
               name={summary.recent_mock_name}
