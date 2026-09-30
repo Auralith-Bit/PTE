@@ -101,7 +101,7 @@ export default function PracticePage() {
           <div className="hero-grid">
             <div className="hero-copy">
             <div className="breadcrumbs">
-              <Link href="/">Home</Link><Chevron /><span>Practice</span><Chevron />
+              <Link href="/dashboard">Dashboard</Link><Chevron /><span>Practice</span>
             </div>
             <h1>Practice <em>Smarter</em><br />and <em>Achieve</em><br />Higher Scores</h1>
             <p>Build confidence, improve accuracy, and master every PTE<br /> question type through targeted practice.</p>

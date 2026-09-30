@@ -112,7 +112,7 @@ export default function ListeningPracticePage() {
         <div className="speaking-hero-grid">
           <div className="speaking-hero-copy">
             <div className="breadcrumbs">
-              <Link href="/practice">Practice</Link><Chevron /><span>Listening</span><Chevron />
+              <Link href="/practice">Practice</Link><Chevron /><span>Listening</span>
             </div>
             <h1>Listening Practice</h1>
             <p>

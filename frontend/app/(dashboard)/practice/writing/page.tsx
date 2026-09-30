@@ -97,7 +97,7 @@ export default function WritingPracticePage() {
         <div className="speaking-hero-grid">
           <div className="speaking-hero-copy">
             <div className="breadcrumbs">
-              <Link href="/practice">Practice</Link><Chevron /><span>Writing</span><Chevron />
+              <Link href="/practice">Practice</Link><Chevron /><span>Writing</span>
             </div>
             <h1>Writing Practice</h1>
             <p>

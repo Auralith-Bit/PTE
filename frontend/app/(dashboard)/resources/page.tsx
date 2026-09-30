@@ -10,7 +10,7 @@ export default function ResourcesPage() {
       <section className="bg-[#F5F3FF] overflow-hidden">
         <div className="page-container">
           <div className="breadcrumbs max-w-2xl pt-7">
-            <Link href="/">Home</Link><Chevron /><span>Resources</span><Chevron />
+            <Link href="/dashboard">Dashboard</Link><Chevron /><span>Resources</span>
           </div>
           <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-12 min-h-0 lg:min-h-[486px]">
           {/* Left Content */}

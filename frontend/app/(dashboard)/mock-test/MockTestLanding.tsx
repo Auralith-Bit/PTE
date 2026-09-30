@@ -96,7 +96,7 @@ export function MockTestLanding() {
       <section className="bg-[#F5F3FF] overflow-hidden">
         <div className="page-container">
           <div className="breadcrumbs w-full lg:w-[44%] pt-7">
-            <Link href="/">Home</Link><Chevron /><span>Mock Test</span><Chevron />
+            <Link href="/dashboard">Dashboard</Link><Chevron /><span>Mock Test</span>
           </div>
           <div className="flex flex-col lg:flex-row lg:items-start min-h-0 lg:min-h-[486px]">
             <div className="w-full lg:w-[44%] pt-9 pb-10 lg:pb-14 lg:pr-6 lg:flex-shrink-0 min-w-0">
