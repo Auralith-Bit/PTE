@@ -45,6 +45,12 @@ export default function RecentActivity({ activities }: RecentActivityProps) {
     <div className="bg-white rounded-2xl p-5 shadow-sm" style={{ border: '2px solid #D9D9D9' }}>
       <h2 className="text-[21px] font-extrabold text-black mb-4">Recent Activity</h2>
       <div className="flex flex-col gap-0">
+        {activities.length === 0 && (
+          <div className="py-8 px-2 text-center">
+            <p className="text-[14px] font-bold text-gray-700">No activity yet</p>
+            <p className="mt-1 text-[13px] text-gray-400">Completed practice will show up here.</p>
+          </div>
+        )}
         {activities.map((activity, i) => (
           <div
             key={i}
