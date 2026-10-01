@@ -26,15 +26,12 @@ export default function CoursesPage() {
 
             {/* CTA Buttons */}
             <div className="flex items-center gap-4 mb-10">
-              <button className="flex items-center gap-2 bg-[#3008F8] text-white px-6 py-3 rounded-lg font-semibold text-sm hover:bg-[#2506c4] transition-all duration-200 shadow-md">
+              <Link href="#choose-learning-path" className="flex items-center gap-2 bg-[#3008F8] text-white px-6 py-3 rounded-lg font-semibold text-sm hover:bg-[#2506c4] transition-all duration-200 shadow-md">
                 Explore Courses
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                 </svg>
-              </button>
-              <button className="px-6 py-3 text-[16px] font-semibold text-[#3008F8] bg-white border-2 border-[#D9D9D9] rounded-lg hover:border-[#3008F8] transition-all duration-200">
-                Take Placement Quiz
-              </button>
+              </Link>
             </div>
 
             {/* Stats Row */}
@@ -115,12 +112,10 @@ export default function CoursesPage() {
                   <div className="leading-tight">Lessons<br/><span className="font-extrabold text-[#137333]">40+</span></div>
                </div>
             </div>
-            <div className="flex items-center justify-between">
-               <div className="text-lg font-extrabold text-black">NRP 1,000</div>
-                <button className="bg-[#137333] text-white font-bold py-2 px-5 rounded-lg text-sm hover:bg-[#0f5c28] transition-colors">
-                  View Courses
-                </button>
-            </div>
+             <div className="flex items-center justify-between learning-path-price">
+                <div className="text-lg font-extrabold text-black">NRP 1,000</div>
+                <span className="coming-soon-chip">Coming soon</span>
+             </div>
           </div>
 
           {/* Intermediate Card */}
@@ -154,12 +149,10 @@ export default function CoursesPage() {
                   <div className="leading-tight">Lessons<br/><span className="font-extrabold text-[#3B28CC]">60+</span></div>
                </div>
             </div>
-            <div className="flex items-center justify-between">
-               <div className="text-lg font-extrabold text-black">NRP 1,500</div>
-                <button className="bg-[#3B28CC] text-white font-bold py-2 px-5 rounded-lg text-sm hover:bg-[#2d1fa3] transition-colors">
-                  View Courses
-                </button>
-            </div>
+             <div className="flex items-center justify-between learning-path-price">
+                <div className="text-lg font-extrabold text-black">NRP 1,500</div>
+                <span className="coming-soon-chip">Coming soon</span>
+             </div>
           </div>
 
           {/* Advanced Card */}
@@ -482,10 +475,10 @@ export default function CoursesPage() {
                </div>
             </div>
             
-            <button className="bg-[#3008F8] hover:bg-[#2506C6] text-white font-bold py-4 px-8 rounded-xl z-10 whitespace-nowrap shadow-[0_8px_30px_rgba(48,8,248,0.3)] transition-transform hover:-translate-y-1 flex items-center">
+            <Link href="#choose-learning-path" className="bg-[#3008F8] hover:bg-[#2506C6] text-white font-bold py-4 px-8 rounded-xl z-10 whitespace-nowrap shadow-[0_8px_30px_rgba(48,8,248,0.3)] transition-transform hover:-translate-y-1 flex items-center">
                Find My Perfect Course
                <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-            </button>
+            </Link>
          </div>
         </div>
       </section>
