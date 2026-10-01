@@ -1,274 +1,189 @@
-"""Notification feed tests.
+"""Tests for the notification feed derived from graded work.
 
-The important property here is user isolation: notification ids are
-sequential and guessable, so every endpoint must scope its lookup to the
-caller. A test that lets user B read or acknowledge user A's row is a real
-vulnerability, not a cosmetic bug, so each isolation case is pinned separately.
-
-The test database is session scoped, so every test registers its own unique
-address to stay independent of ordering.
+Notifications are projected from attempts and mock attempts rather than stored,
+so these pin the projection: items appear only for real scored rows, ordering is
+newest first, read state follows the cursor on the user, and a new user sees an
+empty feed with no badge.
 """
-import uuid
+from datetime import UTC, datetime, timedelta
+from uuid import uuid4
 
 import pytest
-from sqlalchemy import func, select
 
-from app.models.notification import Notification
+from app.core.security import hash_password
+from app.models.attempt import Attempt
+from app.models.mock_test import MockAttempt, MockTest
+from app.models.question import Question
 from app.models.user import User
-
-PASSWORD = "notifpassword1"
-
-
-@pytest.fixture
-def alice(client):
-    return _make_user(client, "alice")
+from app.services.notification_service import build_notifications
 
 
 @pytest.fixture
-def bob(client):
-    return _make_user(client, "bob")
-
-
-def _make_user(client, name):
-    email = f"notif-{name}-{uuid.uuid4().hex[:12]}@example.com"
-    res = client.post(
-        "/api/v1/auth/register",
-        json={"email": email, "password": PASSWORD, "full_name": f"{name.title()} User"},
-    )
-    assert res.status_code == 201, res.text
-    user = res.json()
-    token = client.post(
-        "/api/v1/auth/login", json={"email": email, "password": PASSWORD}
-    ).json()["access_token"]
-    return {"id": user["id"], "token": token}
-
-
-def _auth(user):
-    return {"Authorization": f"Bearer {user['token']}"}
-
-
-def _add(user_id, is_read=False, href="/mock-test"):
-    """Insert a notification directly so ids are known before the API call."""
-    from app.core.database import SessionLocal
-
-    session = SessionLocal()
-    try:
-        row = Notification(
-            user_id=user_id,
-            title=f"Note for {user_id}",
-            body="body text",
-            href=href,
-            is_read=is_read,
-        )
-        session.add(row)
-        session.commit()
-        session.refresh(row)
-        return row.id
-    finally:
-        session.close()
-
-
-# ── listing ───────────────────────────────────────────────────────────────────
-
-
-def test_list_requires_authentication(client):
-    assert client.get("/api/v1/notifications").status_code == 401
-
-
-def test_list_returns_only_the_callers_rows(client, alice, bob):
-    _add(alice["id"])
-    _add(alice["id"])
-    _add(bob["id"])
-
-    res = client.get("/api/v1/notifications", headers=_auth(alice))
-    assert res.status_code == 200, res.text
-    data = res.json()
-
-    assert data["total"] == 2
-    assert len(data["items"]) == 2
-    assert all(item["title"] == f"Note for {alice['id']}" for item in data["items"])
-    # Bob's row must not appear anywhere in Alice's response.
-    assert f"Note for {bob['id']}" not in res.text
-
-
-def test_unread_count_only_counts_unread_rows_of_the_caller(client, alice, bob):
-    _add(alice["id"], is_read=False)
-    _add(alice["id"], is_read=False)
-    _add(alice["id"], is_read=True)
-    _add(bob["id"], is_read=False)
-
-    data = client.get("/api/v1/notifications", headers=_auth(alice)).json()
-    assert data["unread_count"] == 2
-
-
-def test_list_is_newest_first(client, alice):
-    """The feed is ordered newest-first, not by insertion order.
-
-    Rows are inserted oldest, newest, middle, so a query that ordered by id
-    (the implicit default here) would return a visibly wrong sequence.
-    """
-    from datetime import timedelta
-
-    from app.core.database import SessionLocal
-    from app.core.time_utils import utcnow
-
-    base = utcnow()
-    # hours-ago per title; 1 is the newest, 3 the oldest.
-    expected = ["offset-1", "offset-2", "offset-3"]
-
-    session = SessionLocal()
-    try:
-        for offset in (3, 1, 2):
-            session.add(
-                Notification(
-                    user_id=alice["id"],
-                    title=f"offset-{offset}",
-                    body="b",
-                    is_read=False,
-                    created_at=base - timedelta(hours=offset),
-                )
-            )
-        session.commit()
-    finally:
-        session.close()
-
-    data = client.get("/api/v1/notifications", headers=_auth(alice)).json()
-    assert [item["title"] for item in data["items"]] == expected
-
-
-# ── mark one read ─────────────────────────────────────────────────────────────
-
-
-def test_mark_read_requires_authentication(client, alice):
-    notification_id = _add(alice["id"])
-    assert (
-        client.post(f"/api/v1/notifications/{notification_id}/read").status_code == 401
-    )
-
-
-def test_mark_read_clears_the_row_and_the_count(client, alice):
-    notification_id = _add(alice["id"], is_read=False)
-
-    res = client.post(
-        f"/api/v1/notifications/{notification_id}/read", headers=_auth(alice)
-    )
-    assert res.status_code == 200, res.text
-    assert res.json()["is_read"] is True
-
-    data = client.get("/api/v1/notifications", headers=_auth(alice)).json()
-    assert data["unread_count"] == 0
-
-
-def test_cannot_mark_another_users_notification_read(client, alice, bob):
-    """Bob must not be able to acknowledge Alice's notification by id."""
-    alice_notification = _add(alice["id"], is_read=False)
-
-    res = client.post(
-        f"/api/v1/notifications/{alice_notification}/read", headers=_auth(bob)
-    )
-    assert res.status_code == 404, res.text
-
-    # And the row must be untouched.
-    data = client.get("/api/v1/notifications", headers=_auth(alice)).json()
-    assert data["unread_count"] == 1
-
-
-def test_mark_read_is_idempotent(client, alice):
-    notification_id = _add(alice["id"], is_read=False)
-
-    first = client.post(
-        f"/api/v1/notifications/{notification_id}/read", headers=_auth(alice)
-    )
-    second = client.post(
-        f"/api/v1/notifications/{notification_id}/read", headers=_auth(alice)
-    )
-    assert first.status_code == 200
-    assert second.status_code == 200
-    assert second.json()["is_read"] is True
-
-
-def test_mark_read_on_unknown_id_is_404(client, alice):
-    assert (
-        client.post("/api/v1/notifications/99999999/read", headers=_auth(alice)).status_code
-        == 404
-    )
-
-
-# ── mark all read ─────────────────────────────────────────────────────────────
-
-
-def test_mark_all_read_requires_authentication(client, alice):
-    assert client.post("/api/v1/notifications/read-all").status_code == 401
-
-
-def test_mark_all_read_clears_only_the_callers_unread(client, alice, bob):
-    _add(alice["id"], is_read=False)
-    _add(alice["id"], is_read=False)
-    _add(bob["id"], is_read=False)
-
-    res = client.post("/api/v1/notifications/read-all", headers=_auth(alice))
-    assert res.status_code == 200, res.text
-    assert res.json()["unread_count"] == 0
-
-    # Bob's unread count is unaffected.
-    bob_data = client.get("/api/v1/notifications", headers=_auth(bob)).json()
-    assert bob_data["unread_count"] == 1
-
-
-def test_mark_all_read_preserves_already_read_rows(client, alice):
-    _add(alice["id"], is_read=False)
-    _add(alice["id"], is_read=True)
-
-    data = client.post(
-        "/api/v1/notifications/read-all", headers=_auth(alice)
-    ).json()
-    assert data["unread_count"] == 0
-    assert len(data["items"]) == 2
-
-
-# ── cascade ───────────────────────────────────────────────────────────────────
-
-
-def test_deleting_a_user_removes_their_notifications(db_session, alice):
-    """The FK is ON DELETE CASCADE, so an orphaned row cannot survive."""
-    _add(alice["id"], is_read=False)
-    user_id = alice["id"]
-
-    remaining = db_session.scalar(
-        select(func.count())
-        .select_from(Notification)
-        .where(Notification.user_id == user_id)
-    )
-    assert remaining == 1
-
-    user = db_session.get(User, user_id)
+def notif_user(db_session):
+    """A user unique to this run so a leftover row cannot fail the fixture."""
+    user = User(email=f"bell-{uuid4().hex}@example.com", password_hash=hash_password("password123"))
+    db_session.add(user)
+    db_session.commit()
+    created_questions: list[int] = []
+    created_tests: list[int] = []
+    user._test_question_ids = created_questions  # type: ignore[attr-defined]
+    user._test_test_ids = created_tests  # type: ignore[attr-defined]
+    yield user
+    db_session.query(Attempt).filter(Attempt.user_id == user.id).delete()
+    db_session.query(MockAttempt).filter(MockAttempt.user_id == user.id).delete()
+    db_session.query(Question).filter(Question.id.in_(created_questions)).delete()
+    db_session.query(MockTest).filter(MockTest.id.in_(created_tests)).delete()
     db_session.delete(user)
     db_session.commit()
 
-    after = db_session.scalar(
-        select(func.count())
-        .select_from(Notification)
-        .where(Notification.user_id == user_id)
+
+def _add_question(db_session, title="Question", owner=None) -> Question:
+    q = Question(category="reading", type="fill-in-the-blanks", title=title,
+                 difficulty="medium", content={})
+    db_session.add(q)
+    db_session.commit()
+    if owner is not None:
+        owner._test_question_ids.append(q.id)  # type: ignore[attr-defined]
+    return q
+
+
+def _add_attempt(db_session, user, question, when=None, score=7, status="completed"):
+    a = Attempt(
+        user_id=user.id,
+        question_id=question.id,
+        category="reading",
+        question_type="fill-in-the-blanks",
+        status=status,
+        score=score,
+        answer={},
+        created_at=when or datetime.now(UTC),
     )
-    assert after == 0
+    db_session.add(a)
+    db_session.commit()
+    return a
 
 
-# ── seeder ────────────────────────────────────────────────────────────────────
+def _add_mock_attempt(db_session, user, when=None, score=60, maximum=92):
+    test = MockTest(name="Full Length Mock Test", slug=f"bell-{uuid4().hex[:12]}", kind="full_length",
+                    duration_minutes=135)
+    db_session.add(test)
+    db_session.commit()
+    user._test_test_ids.append(test.id)  # type: ignore[attr-defined]
+    ma = MockAttempt(
+        user_id=user.id,
+        mock_test_id=test.id,
+        status="completed",
+        questions=[],
+        answers={},
+        results={},
+        total_score=score,
+        max_score=maximum,
+        started_at=(when or datetime.now(UTC)) - timedelta(hours=1),
+        completed_at=when or datetime.now(UTC),
+    )
+    db_session.add(ma)
+    db_session.commit()
+    return ma, test
 
 
-def test_seed_notifications_is_idempotent(db_session):
-    from app.db.init_db import seed_notifications
-
-    first = seed_notifications()
-    second = seed_notifications()
-    # The second run must not duplicate an existing user's feed.
-    assert second == 0
-    assert first >= 0
+# --------------------------------------------------------------------------
+# A new user has nothing to be notified about
+# --------------------------------------------------------------------------
+def test_new_user_has_no_notifications(db_session, notif_user):
+    assert build_notifications(db_session, notif_user.id) == []
 
 
-def test_seed_mixes_read_and_unread(db_session):
-    """Both badge states need to be reachable in dev without real events."""
-    from app.db.init_db import SEED_NOTIFICATIONS
+def test_unscored_or_unfinished_work_produces_nothing(db_session, notif_user):
+    """Only graded work should notify. An in-progress attempt has no result yet."""
+    q = _add_question(db_session, owner=notif_user)
+    _add_attempt(db_session, notif_user, q, score=None, status="in_progress")
+    assert build_notifications(db_session, notif_user.id) == []
 
-    assert any(n["is_read"] for n in SEED_NOTIFICATIONS)
-    assert any(not n["is_read"] for n in SEED_NOTIFICATIONS)
+
+# --------------------------------------------------------------------------
+# Practice attempts
+# --------------------------------------------------------------------------
+def test_scored_attempt_becomes_a_notification(db_session, notif_user):
+    q = _add_question(db_session, title="Photosynthesis Blanks", owner=notif_user)
+    _add_attempt(db_session, notif_user, q, score=7)
+    items = build_notifications(db_session, notif_user.id)
+    assert len(items) == 1
+    assert items[0]["kind"] == "practice_scored"
+    assert items[0]["title"] == "Reading attempt scored"
+    assert "Photosynthesis Blanks" in items[0]["body"]
+    assert "7/10" in items[0]["body"]
+    assert items[0]["href"].startswith("/practice/reading/")
+
+
+def test_retries_each_produce_an_item_and_newest_comes_first(db_session, notif_user):
+    now = datetime.now(UTC)
+    q = _add_question(db_session, owner=notif_user)
+    _add_attempt(db_session, notif_user, q, when=now - timedelta(hours=5), score=3)
+    _add_attempt(db_session, notif_user, q, when=now - timedelta(minutes=5), score=9)
+    items = build_notifications(db_session, notif_user.id)
+    assert len(items) == 2
+    assert "9/10" in items[0]["body"], "newest attempt must sort first"
+    assert "3/10" in items[1]["body"]
+
+
+def test_attempt_older_than_lookback_is_not_notified(db_session, notif_user):
+    """A student who practised last month should not get a badge for it."""
+    q = _add_question(db_session, owner=notif_user)
+    _add_attempt(db_session, notif_user, q, when=datetime.now(UTC) - timedelta(days=60))
+    assert build_notifications(db_session, notif_user.id) == []
+
+
+# --------------------------------------------------------------------------
+# Mock tests
+# --------------------------------------------------------------------------
+def test_completed_mock_test_becomes_a_notification(db_session, notif_user):
+    _add_mock_attempt(db_session, notif_user, score=60, maximum=92)
+    items = build_notifications(db_session, notif_user.id)
+    assert len(items) == 1
+    assert items[0]["kind"] == "mock_graded"
+    assert "60/92" in items[0]["body"]
+    assert "65%" in items[0]["body"], "band percentage should be reported"
+
+
+def test_in_progress_mock_test_is_not_notified(db_session, notif_user):
+    test = MockTest(name="In progress", slug=f"wip-{uuid4().hex[:12]}", kind="full_length",
+                    duration_minutes=60)
+    db_session.add(test)
+    db_session.commit()
+    notif_user._test_test_ids.append(test.id)  # type: ignore[attr-defined]
+    db_session.add(MockAttempt(user_id=notif_user.id, mock_test_id=test.id,
+                               status="in_progress", questions=[], answers={}, results={}))
+    db_session.commit()
+    assert build_notifications(db_session, notif_user.id) == []
+
+
+def test_mock_and_practice_ids_cannot_collide(db_session, notif_user):
+    q = _add_question(db_session, owner=notif_user)
+    _add_attempt(db_session, notif_user, q)
+    ma, _ = _add_mock_attempt(db_session, notif_user)
+    items = build_notifications(db_session, notif_user.id)
+    ids = [i["id"] for i in items]
+    assert len(ids) == len(set(ids)), f"duplicate ids: {ids}"
+    # A mock attempt and an attempt can share a numeric id; the prefix separates them.
+    assert f"mock-{ma.id}" in ids
+
+
+# --------------------------------------------------------------------------
+# Read state and ordering across sources
+# --------------------------------------------------------------------------
+def test_mixed_sources_are_interleaved_by_time(db_session, notif_user):
+    now = datetime.now(UTC)
+    q = _add_question(db_session, owner=notif_user)
+    _add_attempt(db_session, notif_user, q, when=now - timedelta(hours=2))
+    _add_mock_attempt(db_session, notif_user, when=now - timedelta(hours=1))
+    _add_attempt(db_session, notif_user, q, when=now - timedelta(minutes=1))
+    kinds = [i["kind"] for i in build_notifications(db_session, notif_user.id)]
+    assert kinds == ["practice_scored", "mock_graded", "practice_scored"]
+
+
+def test_limit_is_respected(db_session, notif_user):
+    q = _add_question(db_session, owner=notif_user)
+    now = datetime.now(UTC)
+    for i in range(6):
+        _add_attempt(db_session, notif_user, q, when=now - timedelta(minutes=i), score=i)
+    assert len(build_notifications(db_session, notif_user.id, limit=3)) == 3

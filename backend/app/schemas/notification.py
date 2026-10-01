@@ -1,23 +1,17 @@
-from datetime import datetime
-
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, Field
 
 
-class NotificationOut(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int
+class NotificationItem(BaseModel):
+    id: str
+    kind: str
     title: str
     body: str
-    # NULL when the notification is informational and has no destination, in
-    # which case the frontend must render it without a link.
-    href: str | None
-    is_read: bool
-    created_at: datetime
+    time: str
+    created_at: str
+    read: bool
+    href: str | None = None
 
 
-class NotificationList(BaseModel):
-    items: list[NotificationOut]
-    # Returned alongside the page so the bell badge needs no second request.
-    unread_count: int
-    total: int
+class NotificationListOut(BaseModel):
+    items: list[NotificationItem]
+    unread_count: int = Field(ge=0)

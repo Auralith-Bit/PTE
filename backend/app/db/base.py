@@ -7,7 +7,6 @@ class Base(DeclarativeBase):
 
 import app.models.attempt  # noqa: E402  (registers Attempt so autogenerate sees it)
 import app.models.mock_test  # noqa: E402  (registers MockTest/MockAttempt so autogenerate sees it)
-import app.models.notification  # noqa: E402  (registers Notification)
 import app.models.password_reset_token  # noqa: E402  (registers PasswordResetToken)
 import app.models.question  # noqa: E402  (registers Question so autogenerate sees it)
 import app.models.user  # noqa: E402,F401  (registers User so autogenerate sees it)

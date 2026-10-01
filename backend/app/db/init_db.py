@@ -5,9 +5,7 @@ from sqlalchemy import func, select
 from app.core.database import SessionLocal
 from app.db.seed_data import build_seed_questions
 from app.models.mock_test import MockTest
-from app.models.notification import Notification
 from app.models.question import Question
-from app.models.user import User
 
 
 def seed_questions() -> int:
@@ -127,72 +125,6 @@ def seed_mock_tests() -> int:
         return inserted
 
 
-SEED_NOTIFICATIONS = [
-    {
-        "title": "Welcome to PTE Prep",
-        "body": "Pick a learning path to get started. You can change it at any time.",
-        "href": "/courses#choose-learning-path",
-        "is_read": False,
-    },
-    {
-        "title": "New mock test available",
-        "body": "A full-length mock test is ready. Sit it under real exam conditions.",
-        "href": "/mock-test",
-        "is_read": False,
-    },
-    {
-        "title": "Your study plan",
-        "body": "Review your personalised study schedule mapped to your exam date.",
-        "href": "/resources",
-        "is_read": False,
-    },
-    {
-        "title": "Practice speaking daily",
-        "body": "Short daily speaking sessions build fluency faster than long ones.",
-        "href": "/practice/speaking",
-        "is_read": True,
-    },
-    {
-        "title": "Tip: use the full 20 seconds",
-        "body": "The recording window does not close early. Use the whole allocation "
-        "for Summarize Spoken Test items.",
-        "href": "/practice/listening",
-        "is_read": True,
-    },
-]
-
-
-def seed_notifications() -> int:
-    """Give every user a starter notification feed if they have none.
-
-    Idempotent: a user who already has rows is left alone, so re-running never
-    duplicates their feed. The mix of read and unread rows is deliberate, so
-    the bell badge, the unread highlight, and the "nothing new" state are all
-    reachable in development without waiting on real events.
-
-    Returns the number of notifications inserted.
-    """
-    inserted = 0
-    with SessionLocal() as db:
-        user_ids = db.scalars(select(User.id).order_by(User.id)).all()
-        for user_id in user_ids:
-            existing = (
-                db.scalar(
-                    select(func.count())
-                    .select_from(Notification)
-                    .where(Notification.user_id == user_id)
-                )
-                or 0
-            )
-            if existing > 0:
-                continue
-            for n in SEED_NOTIFICATIONS:
-                db.add(Notification(user_id=user_id, **n))
-                inserted += 1
-        db.commit()
-        return inserted
-
-
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "add-missing":
         count = add_missing_question_types()
@@ -200,14 +132,7 @@ if __name__ == "__main__":
     elif len(sys.argv) > 1 and sys.argv[1] == "mock-tests":
         count = seed_mock_tests()
         print(f"Inserted {count} mock tests.")
-    elif len(sys.argv) > 1 and sys.argv[1] == "notifications":
-        count = seed_notifications()
-        print(f"Inserted {count} notifications.")
     else:
         inserted = seed_questions()
         mock_inserted = seed_mock_tests()
-        notif_inserted = seed_notifications()
-        print(
-            f"Inserted {inserted} questions, {mock_inserted} mock tests "
-            f"and {notif_inserted} notifications."
-        )
+        print(f"Inserted {inserted} questions and {mock_inserted} mock tests.")

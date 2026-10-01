@@ -202,3 +202,21 @@ export interface DashboardSummary {
   recent_activity: ActivityItem[];
 }
 
+export type NotificationKind = 'practice_scored' | 'mock_graded';
+
+export interface NotificationItem {
+  id: string;
+  kind: NotificationKind;
+  title: string;
+  body: string;
+  time: string;
+  created_at: string;
+  read: boolean;
+  href: string | null;
+}
+
+export interface NotificationList {
+  items: NotificationItem[];
+  unread_count: number;
+}
+

@@ -164,7 +164,7 @@ export default function DashboardNavbar() {
           {/* Search Bar — inline on desktop; the drawer offers a full-width field */}
           <SiteSearch variant="inline" />
 
-          {/* Notification Bell */}
+          {/* Notification Bell — items derived server-side from graded work */}
           <NotificationBell />
 
           {/* User Menu */}
@@ -238,6 +238,12 @@ export default function DashboardNavbar() {
         <nav className="flex flex-col p-4">
           {/* Search — inline search is lg-only, so the drawer carries it below that */}
           <SiteSearch variant="drawer" onNavigate={closeDrawer} />
+
+          {/* Notifications — the top bar bell is cramped at phone widths, so the
+              drawer carries a full-width entry with its own unread count. */}
+          <div className="mb-3">
+            <NotificationBell onNavigate={closeDrawer} />
+          </div>
 
           <div className="mb-3 flex items-center gap-2 border-b border-gray-100 pb-3">
             <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shrink-0">

@@ -34,6 +34,13 @@ class User(Base):
     # (important for password reset, where the point is to cut off an attacker).
     token_version: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
+    # Notifications are derived from attempts and mock attempts instead of being
+    # stored, so read state is a single cursor: anything created after this
+    # timestamp is unread. NULL means the user has never opened the feed.
+    notifications_read_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
     @property
     def is_password_account(self) -> bool:
         return self.auth_provider == PASSWORD_PROVIDER and self.password_hash is not None
