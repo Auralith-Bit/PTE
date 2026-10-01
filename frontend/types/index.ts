@@ -160,6 +160,22 @@ export interface ActivityItem {
   time: string;
 }
 
+export interface Notification {
+  id: number;
+  title: string;
+  body: string;
+  /** Null when the notification has no destination and must render as plain text. */
+  href: string | null;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface NotificationList {
+  items: Notification[];
+  unread_count: number;
+  total: number;
+}
+
 export interface DashboardSummary {
   practice_completed_pct: number;
   practice_completed_weekly_delta: number;
