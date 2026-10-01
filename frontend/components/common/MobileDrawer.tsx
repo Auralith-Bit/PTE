@@ -22,9 +22,24 @@ export default function MobileDrawer({
   title: string;
   children: React.ReactNode;
 }) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
+
+  // Toggle `inert` imperatively rather than as a prop.
+  //
+  // React 19 promoted `inert` to a real boolean DOM prop, but this app is on
+  // React 18, where passing a boolean warns because `inert` is not in the known
+  // attribute list. The attribute itself is supported by every browser we
+  // target, so setting it directly keeps the behaviour without the warning
+  // (and stays correct if the app later moves to React 19).
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+    if (open) el.removeAttribute('inert');
+    else el.setAttribute('inert', '');
+  }, [open]);
 
   // Escape to close.
   useEffect(() => {
@@ -111,7 +126,7 @@ export default function MobileDrawer({
   }, [open]);
 
   return (
-    <div className="lg:hidden" aria-hidden={!open} inert={!open}>
+    <div ref={wrapperRef} className="lg:hidden" aria-hidden={!open}>
       {/* Backdrop */}
       <div
         onClick={onClose}
