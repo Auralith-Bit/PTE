@@ -1,7 +1,7 @@
 import logging
 from datetime import UTC, date, datetime, timedelta
 
-from sqlalchemy import distinct, func, select
+from sqlalchemy import distinct, func, literal_column, select
 from sqlalchemy.orm import Session
 
 from app.models.attempt import Attempt
@@ -9,6 +9,10 @@ from app.models.mock_test import MockAttempt, MockTest
 from app.models.question import Question
 
 log = logging.getLogger("app.dashboard")
+
+# Rendered as a quoted literal rather than a bind parameter so Postgres resolves
+# timezone() to its text overload. See _utc_day.
+_UTC = literal_column("'UTC'")
 
 
 def _count_by_category(db: Session, user_id: int) -> tuple[dict[str, int], dict[str, int]]:
@@ -33,10 +37,29 @@ def _section_pct(done: int, total: int) -> int:
     return min(round((done / total) * 100), 100) if total > 0 else 0
 
 
+def _utc_day(value):
+    """Truncate a timestamptz column to a calendar day in UTC.
+
+    Plain ``date_trunc('day', ts)`` truncates in the *session* timezone while
+    the streak comparison below works in UTC, so on a database set to
+    Asia/Katmandu (UTC+05:45) one dashboard response carried two different
+    definitions of "today" and attempts in the first 5h45m of the UTC day
+    landed on the previous local day.
+
+    ``timezone('UTC', ts)`` (``ts AT TIME ZONE 'UTC'``) runs first, so the
+    value date_trunc sees is a zone-less ``timestamp`` and the session
+    timezone cannot apply. Passing the zone to date_trunc directly does not
+    work: Postgres cannot resolve the overload when the zone is a bind
+    parameter. The zone is a literal for the same reason, otherwise it is
+    ambiguous between the text and interval overloads of timezone().
+    """
+    return func.date_trunc("day", func.timezone(_UTC, value))
+
+
 def compute_dashboard_summary(db: Session, user_id: int) -> dict:
     now = func.now()
     seven_days_ago = now - timedelta(days=7)
-    today_start = func.date_trunc("day", now)
+    today_start = _utc_day(now)
 
     total_by_cat, done_by_cat = _count_by_category(db, user_id)
     total_questions = sum(total_by_cat.values()) or 1
@@ -100,10 +123,10 @@ def compute_dashboard_summary(db: Session, user_id: int) -> dict:
     streak_week = [False] * 7
 
     attempt_dates = db.execute(
-        select(func.date_trunc("day", Attempt.created_at).label("day"))
+        select(_utc_day(Attempt.created_at).label("day"))
         .where(Attempt.user_id == user_id, Attempt.status == "completed")
-        .group_by(func.date_trunc("day", Attempt.created_at))
-        .order_by(func.date_trunc("day", Attempt.created_at).desc())
+        .group_by(_utc_day(Attempt.created_at))
+        .order_by(_utc_day(Attempt.created_at).desc())
         .limit(30)
     ).scalars().all()
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import {
@@ -40,6 +40,8 @@ export default function MockTestTakePage() {
   const [startError, setStartError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [remaining, setRemaining] = useState<number | null>(null);
+  const [timeUp, setTimeUp] = useState(false);
+  const submittingRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -64,11 +66,21 @@ export default function MockTestTakePage() {
     };
   }, [testId]);
 
+  // The deadline is derived from a wall-clock deadline rather than decremented
+  // once per tick, so a throttled background tab still expires on real time
+  // instead of being handed extra minutes.
   useEffect(() => {
-    if (remaining === null || remaining <= 0) return;
-    const timer = setInterval(() => setRemaining((r) => (r === null || r <= 0 ? r : r - 1)), 1000);
+    if (attempt === null) return;
+    const deadline = Date.now() + attempt.duration_minutes * 60 * 1000;
+    const tick = () => {
+      const secs = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+      setRemaining(secs);
+      if (secs === 0) setTimeUp(true);
+    };
+    tick();
+    const timer = setInterval(tick, 1000);
     return () => clearInterval(timer);
-  }, [remaining]);
+  }, [attempt]);
 
   const questions: MockQuestion[] = useMemo(() => attempt?.questions ?? [], [attempt]);
   const total = questions.length;
@@ -81,7 +93,10 @@ export default function MockTestTakePage() {
 
   async function finish() {
     if (!attempt) return;
-    if (submitting) return;
+    // Guarded by a ref as well as state: the expiry effect and the submit button
+    // can both fire in one tick, and a state-guarded check would let both through.
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setSubmitting(true);
     const payload: Record<string, Record<string, unknown>> = {};
     for (const q of attempt.questions) {
@@ -92,15 +107,36 @@ export default function MockTestTakePage() {
       await mockTestApi.submit(attempt.attempt_id, payload);
       router.push(`/mock-test/result/${attempt.attempt_id}`);
     } catch (err) {
+      submittingRef.current = false;
       setSubmitting(false);
       setStartError(errorMessage(err));
     }
   }
 
+  // Reaching 00:00 hands the paper in. The countdown used to park at zero and
+  // leave every question interactive for the rest of the session. finish is read
+  // through a ref so this fires on expiry alone rather than on every keystroke.
+  const finishRef = useRef(finish);
+  finishRef.current = finish;
+  useEffect(() => {
+    if (timeUp) void finishRef.current();
+  }, [timeUp]);
+
   if (loading) {
     return (
       <div className="task-page">
         <div className="task-coming-soon"><h1>Starting mock test…</h1><p>Preparing your questions.</p></div>
+      </div>
+    );
+  }
+
+  if (timeUp && attempt && !startError) {
+    return (
+      <div className="task-page">
+        <div className="task-coming-soon">
+          <h1>Time&apos;s up</h1>
+          <p>Your answers are being submitted.</p>
+        </div>
       </div>
     );
   }

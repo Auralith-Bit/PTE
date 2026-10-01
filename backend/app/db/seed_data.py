@@ -199,12 +199,16 @@ READING_FILL_BLANKS = {
 
 READING_REORDER_PARAGRAPHS = {
     "paragraphs": [
-        "Charles Darwin spent five years aboard the HMS Beagle, collecting specimens and recording observations.",
-        "During the voyage, he was particularly struck by the variety of finches on the Galapagos Islands.",
         "These observations led him to develop his theory of natural selection.",
         "His work, published in 1859 as On the Origin of Species, transformed the biological sciences.",
+        "Charles Darwin spent five years aboard the HMS Beagle, collecting specimens and recording observations.",
+        "During the voyage, he was particularly struck by the variety of finches on the Galapagos Islands.",
     ],
-    "order": [0, 1, 2, 3],
+    # The narrative runs Beagle voyage -> finches -> theory -> publication, which
+    # against the scrambled "paragraphs" above is [2, 3, 0, 1]. The client seeds
+    # its own state with the identity permutation, so a stored order of [0,1,2,3]
+    # meant an untouched submit scored a full 10/10 with no input at all.
+    "order": [2, 3, 0, 1],
 }
 
 READING_MULTIPLE_CHOICE = [

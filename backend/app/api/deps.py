@@ -27,7 +27,16 @@ def get_current_user(
     except jwt.PyJWTError:
         raise _credentials_error from None
 
-    user = db.get(User, int(payload["sub"]))
+    # A correctly signed token can still carry a non-numeric or missing "sub"
+    # (a caller minting their own token, or a key reused across services). int()
+    # raises outside the decode handler, which turned a bad token into a 500 and
+    # a stack trace instead of a 401.
+    try:
+        user_id = int(payload["sub"])
+    except (KeyError, TypeError, ValueError):
+        raise _credentials_error from None
+
+    user = db.get(User, user_id)
     if user is None:
         raise _credentials_error
     # A password reset or change bumps token_version, which retires every token
