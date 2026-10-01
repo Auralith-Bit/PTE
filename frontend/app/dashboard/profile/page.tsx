@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { authApi } from '@/lib/api/auth';
+import { EyeClosedIcon, EyeOpenIcon } from '@/components/common/PasswordIcons';
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -19,6 +20,8 @@ export default function ProfilePage() {
   const [pwError, setPwError] = useState('');
   const [pwSuccess, setPwSuccess] = useState('');
   const [pwLoading, setPwLoading] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   async function handleChangePassword(e: React.FormEvent) {
     e.preventDefault();
@@ -40,6 +43,8 @@ export default function ProfilePage() {
       setPwSuccess('Password changed successfully');
       setNewPassword('');
       setConfirmPassword('');
+      setShowNewPassword(false);
+      setShowConfirmPassword(false);
     } catch (err) {
       setPwError(err instanceof Error ? err.message : 'Failed to change password');
     } finally {
@@ -90,23 +95,47 @@ export default function ProfilePage() {
         <form onSubmit={handleChangePassword} className="flex flex-col gap-4">
           <div>
             <label className="text-[13px] font-semibold text-gray-600 mb-1 block">New Password</label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
-              className="w-full px-4 py-3 rounded-xl border border-[#D9D9D9] text-[14px] text-black outline-none focus:border-[#3008F8] transition-colors"
-            />
+            <div className="relative">
+              <input
+                type={showNewPassword ? 'text' : 'password'}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+                autoComplete="new-password"
+                className="w-full px-4 py-3 pr-12 rounded-xl border border-[#D9D9D9] text-[14px] text-black outline-none focus:border-[#3008F8] transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowNewPassword((p) => !p)}
+                aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+                aria-pressed={showNewPassword}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                {showNewPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}
+              </button>
+            </div>
           </div>
           <div>
             <label className="text-[13px] font-semibold text-gray-600 mb-1 block">Confirm New Password</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              className="w-full px-4 py-3 rounded-xl border border-[#D9D9D9] text-[14px] text-black outline-none focus:border-[#3008F8] transition-colors"
-            />
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                autoComplete="new-password"
+                className="w-full px-4 py-3 pr-12 rounded-xl border border-[#D9D9D9] text-[14px] text-black outline-none focus:border-[#3008F8] transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((p) => !p)}
+                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                aria-pressed={showConfirmPassword}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                {showConfirmPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}
+              </button>
+            </div>
           </div>
 
           {pwError && (
