@@ -41,7 +41,7 @@ function CircularProgress({ pct, color }: { pct: number; color: string }) {
 function SectionCard({ title, description, percentage, href, icon, color }: SectionCardProps) {
   return (
     <div className="bg-white rounded-2xl p-5 flex flex-col gap-3 flex-1 min-w-0 hover:shadow-md transition-shadow">
-      <div className="flex items-start gap-3">
+      <div className="flex flex-col items-center gap-3 text-center">
         <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-[#3008F8]" style={{ border: '1px solid #3008F8', backgroundColor: 'rgba(48, 8, 248, 0.08)' }}>
           {icon}
         </div>
