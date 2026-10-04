@@ -13,6 +13,12 @@ from pydantic import BaseModel, ConfigDict
 # `transcript` is deliberately NOT stripped: for listening questions it is the
 # study material the UI renders ("Audio / Transcript"), so removing it would
 # break the listening task. It is not treated as a secret for that reason.
+#
+# `key_points` is the aspect list the summarising items are scored against. It
+# is the answer key in substance, so it is stripped for the same reason `notes`
+# is: a student who could read it would know exactly which aspects to hit.
+# `transcript` stays visible, which is why the summarising scorers also reject a
+# verbatim paste rather than trusting the client not to send one.
 _ANSWER_KEYS = (
     "correct",
     "correct_answer",
@@ -20,6 +26,7 @@ _ANSWER_KEYS = (
     "answers",
     "order",
     "notes",
+    "key_points",
     "reference",
     "model_answer",
     "sample_answer",

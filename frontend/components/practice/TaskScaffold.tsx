@@ -329,6 +329,7 @@ function TextTask({
   instruction,
   placeholder,
   isListening,
+  wordTarget,
   onAnswered,
 }: {
   category: ScaffoldCategory;
@@ -336,10 +337,23 @@ function TextTask({
   instruction: string;
   placeholder: string;
   isListening?: boolean;
+  wordTarget?: { min: number; ideal: number };
   onAnswered: () => void;
 }) {
   const [value, setValue] = useState("");
   const submitApi = useSubmit();
+
+  // Real PTE scores Form on word-count bands (50-70 is full marks, under 40 or
+  // over 100 scores zero), so the band is worth showing while typing rather than
+  // only in the result feedback.
+  const wordCount = value.trim() ? value.trim().split(/\s+/).length : 0;
+  const wordBand = !wordTarget || wordCount === 0
+    ? null
+    : wordCount >= wordTarget.min && wordCount <= wordTarget.ideal
+      ? { tone: "good" as const, text: `${wordCount} words` }
+      : wordCount >= 40 && wordCount <= 100
+        ? { tone: "warn" as const, text: `${wordCount} words - aim for ${wordTarget.min}-${wordTarget.ideal}` }
+        : { tone: "bad" as const, text: `${wordCount} words - Form scores zero outside 40-100` };
 
   function handleSubmit() {
     if (!value.trim()) return;
@@ -357,7 +371,11 @@ function TextTask({
     <div className="task-text-submit">
       {isListening ? (
         <>
-          <h3 className="task-block-label">Audio / Transcript</h3>
+          {/* The instruction is rendered for listening tasks too. It was
+              previously dropped in favour of the "Audio / Transcript" heading,
+              so the word-count requirement never reached the student -- which
+              for this item is worth marks on its own. */}
+          <h3 className="task-block-label">{instruction}</h3>
           <div className="task-audio-box">
             <button type="button" className="task-mic-button" aria-label="Play audio">
               <SpeakerIcon />
@@ -385,6 +403,9 @@ function TextTask({
         placeholder={placeholder}
         rows={isListening ? 6 : 8}
       />
+      {wordBand && (
+        <p className={`task-word-count task-word-count--${wordBand.tone}`}>{wordBand.text}</p>
+      )}
       <SubmitError message={submitApi.error} />
       {submitApi.result ? (
         <ResultCard result={submitApi.result} />
@@ -654,9 +675,10 @@ function QuestionView({
       <TextTask
         category={category}
         question={question}
-        instruction="Write a one-sentence summary of what you hear"
+        instruction="Listen, then summarise what you hear in 50-70 words"
         placeholder="Write your summary here…"
         isListening
+        wordTarget={{ min: 50, ideal: 70 }}
         onAnswered={onAnswered}
       />
     );

@@ -125,10 +125,48 @@ def seed_mock_tests() -> int:
         return inserted
 
 
+def backfill_summary_key_points() -> int:
+    """Attach `key_points` to summarising questions seeded before it existed.
+
+    The summarising scorers read an aspect list to award the Content trait. Rows
+    created before that field was introduced have only a transcript, and without
+    this they fall back to scoring on length alone, which is not what the item
+    is meant to test.
+
+    Idempotent and additive: matched on the recording title, it only ever adds
+    `key_points`, and it leaves rows that already carry the field untouched. It
+    never rewrites a transcript or touches user attempts. Returns rows updated.
+    """
+    from app.db.seed_data import SUMMARY_KEY_POINTS
+
+    updated = 0
+    with SessionLocal() as db:
+        rows = db.execute(
+            select(Question).where(
+                Question.type.in_(("summarize-spoken-test", "retell-lecture"))
+            )
+        ).scalars().all()
+        for row in rows:
+            content = dict(row.content or {})
+            if content.get("key_points"):
+                continue
+            points = SUMMARY_KEY_POINTS.get(content.get("title", ""))
+            if not points:
+                continue
+            content["key_points"] = points
+            row.content = content
+            updated += 1
+        db.commit()
+    return updated
+
+
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "add-missing":
         count = add_missing_question_types()
         print(f"Inserted {count} missing questions.")
+    elif len(sys.argv) > 1 and sys.argv[1] == "backfill-key-points":
+        count = backfill_summary_key_points()
+        print(f"Backfilled key_points on {count} questions.")
     elif len(sys.argv) > 1 and sys.argv[1] == "mock-tests":
         count = seed_mock_tests()
         print(f"Inserted {count} mock tests.")

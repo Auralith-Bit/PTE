@@ -1235,3 +1235,11 @@ body {
   .mock-result-row-copy { flex-basis: 100%; order: 3; }
   .mock-result-band-note { display: block; margin: 0.4rem 0 0; }
 }
+
+/* ── Summarising tasks: live word-count band ── */
+/* Real PTE scores Form on length alone (50-70 full, under 40 or over 100 zero),
+   so the student sees the band while typing instead of only in the result. */
+.task-word-count { margin: 0.5rem 0 0.75rem; font-size: 0.85rem; font-weight: 700; }
+.task-word-count--good { color: #1a8a4a; }
+.task-word-count--warn { color: #b26a00; }
+.task-word-count--bad  { color: #c0392b; }

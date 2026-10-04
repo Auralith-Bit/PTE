@@ -245,6 +245,73 @@ LISTENING_SUMMARIZE = [
     },
 ]
 
+# Aspects each summarising recording is actually about, used to score Content.
+# Ordered: the first entry is the recording's main claim, and missing it scores
+# Content 0 regardless of how many minor points a response hits. Phrased as
+# short claim-shaped phrases so a paraphrase can still cover them, since
+# `_aspect_covered` allows a paraphrase to match on distinctive words alone.
+#
+# Stripped from client responses (see _ANSWER_KEYS in app/schemas/practice.py):
+# this is the answer key in substance, and a student who could read it would
+# know precisely which points to hit.
+SUMMARY_KEY_POINTS = {
+    "Sleep and Memory": [
+        "sleep is critical for memory consolidation",
+        "during deep sleep the brain replays the day's experiences, strengthening neural connections and discarding irrelevant information",
+        "students should keep a consistent sleep routine before examinations",
+    ],
+    "Urban Green Spaces": [
+        "urban green spaces such as parks and community gardens benefit city residents",
+        "they improve air quality and reduce the urban heat island effect",
+        "they offer space for recreation and social interaction",
+        "planners treat green space as essential infrastructure rather than an optional luxury",
+    ],
+    "The Benefits of Reading": [
+        "reading improves vocabulary, concentration and empathy",
+        "it exposes readers to different perspectives and develops critical thinking",
+        "even thirty minutes of daily reading improves academic performance and wellbeing",
+    ],
+    "Renewable Energy Adoption": [
+        "the cost of renewable energy has fallen dramatically",
+        "solar and wind are now among the cheapest sources of electricity in many regions",
+        "governments offer incentives and businesses invest in storage to overcome intermittent supply",
+    ],
+    "The Rise of Remote Work": [
+        "remote work has changed how companies operate and how employees balance professional life",
+        "it offers flexibility and saves commuting time",
+        "it can blur the boundary between work and home",
+        "many organizations are adopting hybrid models",
+    ],
+    "Ocean Pollution": [
+        "plastic waste entering the oceans has reached alarming levels",
+        "microplastics have been found in marine animals, drinking water and human tissue",
+        "solutions include reducing plastic production, improving waste management and developing biodegradable alternatives",
+    ],
+    "Artificial Intelligence in Healthcare": [
+        "artificial intelligence is transforming healthcare",
+        "it improves diagnosis, personalises treatment and streamlines administrative tasks",
+        "algorithms analyse medical images faster than humans and identify patterns",
+        "patient privacy and algorithmic bias remain important concerns",
+    ],
+    "The Importance of Exercise": [
+        "regular physical activity reduces the risk of chronic diseases such as heart disease, diabetes and obesity",
+        "it also improves mental health by reducing stress and anxiety",
+        "health experts recommend at least 150 minutes of moderate exercise per week",
+    ],
+    "Space Exploration": [
+        "space exploration has led to countless innovations that benefit daily life",
+        "examples include satellite communication and advanced materials",
+        "it inspires young people to pursue careers in science and engineering",
+        "supporters argue the knowledge gained justifies the high cost of missions",
+    ],
+    "The Gig Economy": [
+        "the gig economy gives workers flexibility to choose when and how much they work",
+        "it brings uncertainty about income and benefits",
+        "many gig workers lack job security, health insurance and retirement plans",
+        "policymakers are debating how to regulate these new forms of employment",
+    ],
+}
+
 LISTENING_MULTIPLE_CHOICE = [
     {
         "title": "Company Announcement",
@@ -323,7 +390,11 @@ def build_seed_questions() -> list[dict]:
                 "category": "speaking",
                 "type": "summarize-spoken-test",
                 "difficulty": "medium",
-                "content": {"title": item["title"], "transcript": item["transcript"]},
+                "content": {
+                    "title": item["title"],
+                    "transcript": item["transcript"],
+                    "key_points": SUMMARY_KEY_POINTS.get(item["title"], []),
+                },
             }
         )
     for item in SPEAKING_RESPOND_SITUATIONS:
@@ -407,7 +478,11 @@ def build_seed_questions() -> list[dict]:
                 "category": "listening",
                 "type": "summarize-spoken-test",
                 "difficulty": "medium",
-                "content": {"title": item["title"], "transcript": item["transcript"]},
+                "content": {
+                    "title": item["title"],
+                    "transcript": item["transcript"],
+                    "key_points": SUMMARY_KEY_POINTS.get(item["title"], []),
+                },
             }
         )
     for item in LISTENING_MULTIPLE_CHOICE:

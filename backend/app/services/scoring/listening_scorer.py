@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from app.services.scoring.base import ScoreResult, score_keyword_match
+from app.services.scoring.summary_scorer import score_summary
 
 
 def _score_multiple_choice(submitted, correct: list) -> ScoreResult:
@@ -35,10 +36,11 @@ def score_listening(
         return _score_blanks(answer.get("answers", {}), content.get("correct", {}))
     if question_type == "summarize-spoken-test":
         transcript = content.get("transcript", "")
-        # Prefer a real model answer when one exists so scoring keys off content
-        # the browser never receives. Older rows carry only a transcript, so fall
-        # back to it but still reject a verbatim paste via `visible_source`.
-        reference = content.get("notes") or transcript
         text = (answer.get("response") or answer.get("text") or "").strip()
-        return score_keyword_match(text, reference, max_score=10, visible_source=transcript)
+        return score_summary(
+            text,
+            key_points=content.get("key_points") or [],
+            transcript=transcript,
+            max_score=10,
+        )
     return ScoreResult(0, 10, "Unsupported question type")
