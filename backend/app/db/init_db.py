@@ -1,6 +1,6 @@
 import sys
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 
 from app.core.database import SessionLocal
 from app.db.seed_data import build_seed_questions
@@ -160,6 +160,37 @@ def backfill_summary_key_points() -> int:
     return updated
 
 
+def recategorize_summarize_spoken_test() -> int:
+    """Move Summarize Spoken Test rows from `speaking` to `listening`.
+
+    In PTE Academic, Summarize Spoken Test is a Part 3 Listening item that scores
+    Listening and Writing. Ten recordings had been seeded under `speaking`,
+    which put them in the speaking bank and left the listening bank without them.
+    It also meant the Speaking section mock composed 80 questions including an
+    item that does not belong to the section.
+
+    Rows are updated in place, never deleted or duplicated. Every one of them is
+    referenced by a MockAttempt snapshot, and `score_submission` re-reads the
+    live Question row when scoring a submission, so removing a row would break
+    scoring for attempts already recorded. Attempt snapshots keep the category
+    they were served with, so historic results still show these under Speaking.
+
+    Idempotent: only rows whose category is still `speaking` are touched.
+    Returns the number of rows updated.
+    """
+    with SessionLocal() as db:
+        result = db.execute(
+            update(Question)
+            .where(
+                Question.type == "summarize-spoken-test",
+                Question.category == "speaking",
+            )
+            .values(category="listening")
+        )
+        db.commit()
+        return result.rowcount or 0
+
+
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "add-missing":
         count = add_missing_question_types()
@@ -167,6 +198,9 @@ if __name__ == "__main__":
     elif len(sys.argv) > 1 and sys.argv[1] == "backfill-key-points":
         count = backfill_summary_key_points()
         print(f"Backfilled key_points on {count} questions.")
+    elif len(sys.argv) > 1 and sys.argv[1] == "recategorize-sst":
+        moved = recategorize_summarize_spoken_test()
+        print(f"Recategorized {moved} summarize-spoken-test questions to listening.")
     elif len(sys.argv) > 1 and sys.argv[1] == "mock-tests":
         count = seed_mock_tests()
         print(f"Inserted {count} mock tests.")

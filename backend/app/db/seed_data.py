@@ -87,7 +87,12 @@ SPEAKING_SHORT_QUESTIONS = [
     {"question": "What is the capital of Japan?", "answer": "Tokyo"},
 ]
 
-SPEAKING_SUMMARIZE = [
+# Summarize Spoken Test is a *Listening* item in PTE Academic -- Part 3, scoring
+# Listening and Writing. It was seeded under "speaking", which put 10 recordings
+# in the speaking bank and none of them where the section actually sits. Named
+# for its real section; `recategorize_summarize_spoken_test` in init_db.py
+# moves rows that were already seeded under the wrong category.
+LISTENING_SUMMARIZE = [
     {
         "title": "Sleep and Memory",
         "transcript": "Recent studies suggest that sleep plays a critical role in memory consolidation. During deep sleep, the brain replays the day's experiences, strengthening important neural connections and discarding irrelevant information. Researchers recommend that students prioritise consistent, high-quality sleep, especially before examinations.",
@@ -234,17 +239,6 @@ READING_MULTIPLE_CHOICE = [
     },
 ]
 
-LISTENING_SUMMARIZE = [
-    {
-        "title": "Sleep and Memory",
-        "transcript": "Recent studies suggest that sleep plays a critical role in memory consolidation. During deep sleep, the brain replays the day's experiences, strengthening important neural connections and discarding irrelevant information. Researchers recommend that students prioritise consistent, high-quality sleep, especially before examinations.",
-    },
-    {
-        "title": "Urban Green Spaces",
-        "transcript": "Urban green spaces such as parks and community gardens provide measurable benefits to city residents. They improve air quality, reduce the urban heat island effect, and offer spaces for recreation and social interaction. Planners increasingly treat green space as essential infrastructure rather than an optional luxury.",
-    },
-]
-
 # Aspects each summarising recording is actually about, used to score Content.
 # Ordered: the first entry is the recording's main claim, and missing it scores
 # Content 0 regardless of how many minor points a response hits. Phrased as
@@ -382,19 +376,6 @@ def build_seed_questions() -> list[dict]:
                 "type": "answer-short-question",
                 "difficulty": "easy",
                 "content": {"question": sq["question"], "answer": sq["answer"]},
-            }
-        )
-    for item in SPEAKING_SUMMARIZE:
-        questions.append(
-            {
-                "category": "speaking",
-                "type": "summarize-spoken-test",
-                "difficulty": "medium",
-                "content": {
-                    "title": item["title"],
-                    "transcript": item["transcript"],
-                    "key_points": SUMMARY_KEY_POINTS.get(item["title"], []),
-                },
             }
         )
     for item in SPEAKING_RESPOND_SITUATIONS:

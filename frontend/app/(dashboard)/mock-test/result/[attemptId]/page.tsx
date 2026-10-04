@@ -21,6 +21,10 @@ import type { MockAttemptResult, MockPerQuestion } from "@/types";
  * rather than disappearing.
  */
 const PTE_ORDER: Record<string, string[]> = {
+  // Summarize Spoken Test is a Part 3 Listening item, so it belongs here and not
+  // under speaking. Attempts recorded before that was corrected still carry it in
+  // their speaking snapshot; a type missing from a section's list falls to the
+  // end of that section rather than disappearing.
   listening: ["summarize-spoken-test", "fill-in-the-blanks", "multiple-choice-single"],
   reading: ["fill-in-the-blanks", "re-order-paragraphs", "multiple-choice-single"],
   speaking: [
@@ -30,7 +34,6 @@ const PTE_ORDER: Record<string, string[]> = {
     "describe-image",
     "retell-lecture",
     "answer-short-question",
-    "summarize-spoken-test",
     "response-to-a-situation",
   ],
   writing: ["summarize-written-text", "essay"],

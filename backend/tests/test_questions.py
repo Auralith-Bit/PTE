@@ -9,11 +9,15 @@ def _assert_no_answers(content: dict) -> None:
 
 
 class TestSpeakingQuestions:
+    # Summarize Spoken Test is a Part 3 Listening item, so it is not counted
+    # here: speaking carries seven task types at ten questions each.
+    SPEAKING_TOTAL = 70
+
     def test_list_all_speaking_questions(self, client):
         res = client.get("/api/v1/speaking/questions")
         assert res.status_code == 200
         data = res.json()
-        assert data["total"] == 80
+        assert data["total"] == self.SPEAKING_TOTAL
         assert len(data["items"]) == 20
         assert all(q["category"] == "speaking" for q in data["items"])
 
@@ -32,7 +36,6 @@ class TestSpeakingQuestions:
     @pytest.mark.parametrize(
         "task_type",
         [
-            "summarize-spoken-test",
             "response-to-a-situation",
             "personal-introduction",
         ],
@@ -47,6 +50,26 @@ class TestSpeakingQuestions:
         for q in data["items"]:
             _assert_no_answers(q["content"])
 
+    def test_summarize_spoken_test_is_not_a_speaking_item(self, client):
+        """It belongs to Part 3 Listening, not the speaking bank."""
+        res = client.get(
+            "/api/v1/speaking/questions", params={"type": "summarize-spoken-test"}
+        )
+        assert res.status_code == 200
+        assert res.json()["total"] == 0
+
+    def test_summarize_spoken_test_is_in_listening(self, client):
+        res = client.get(
+            "/api/v1/listening/questions",
+            params={"type": "summarize-spoken-test", "limit": 100},
+        )
+        assert res.status_code == 200
+        data = res.json()
+        assert data["total"] == 10
+        assert all(q["category"] == "listening" for q in data["items"])
+        for q in data["items"]:
+            _assert_no_answers(q["content"])
+
     def test_filter_by_difficulty(self, client):
         res = client.get("/api/v1/speaking/questions", params={"difficulty": "hard"})
         assert res.status_code == 200
@@ -56,7 +79,7 @@ class TestSpeakingQuestions:
         res = client.get("/api/v1/speaking/questions", params={"limit": 5, "offset": 5})
         data = res.json()
         assert len(data["items"]) == 5
-        assert data["total"] == 80
+        assert data["total"] == self.SPEAKING_TOTAL
 
     def test_random_returns_distinct(self, client):
         res1 = client.get("/api/v1/speaking/questions", params={"random": True, "limit": 3})
@@ -91,7 +114,9 @@ class TestSpeakingQuestions:
 class TestOtherCategories:
     @pytest.mark.parametrize(
         "category,expected_total",
-        [("writing", 4), ("reading", 4), ("listening", 4)],
+        # Listening carries the ten Summarize Spoken Test recordings alongside
+        # one fill-in-the-blanks and one multiple-choice item.
+        [("writing", 4), ("reading", 4), ("listening", 12)],
     )
     def test_list_category(self, client, category, expected_total):
         res = client.get(f"/api/v1/{category}/questions", params={"limit": 100})
