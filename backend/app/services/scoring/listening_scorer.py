@@ -34,7 +34,11 @@ def score_listening(
     if question_type == "fill-in-the-blanks":
         return _score_blanks(answer.get("answers", {}), content.get("correct", {}))
     if question_type == "summarize-spoken-test":
-        reference = content.get("transcript", "")
+        transcript = content.get("transcript", "")
+        # Prefer a real model answer when one exists so scoring keys off content
+        # the browser never receives. Older rows carry only a transcript, so fall
+        # back to it but still reject a verbatim paste via `visible_source`.
+        reference = content.get("notes") or transcript
         text = (answer.get("response") or answer.get("text") or "").strip()
-        return score_keyword_match(text, reference, max_score=10)
+        return score_keyword_match(text, reference, max_score=10, visible_source=transcript)
     return ScoreResult(0, 10, "Unsupported question type")

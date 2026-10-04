@@ -22,8 +22,11 @@ def score_speaking(question_type: str, content: dict, answer: dict) -> ScoreResu
         return score_keyword_match(text, expected, max_score=10)
 
     if question_type in ("retell-lecture", "summarize-spoken-test"):
-        reference = content.get("notes", "") or content.get("transcript", "")
-        return score_keyword_match(text, reference, max_score=10)
+        transcript = content.get("transcript", "")
+        # Same shape as the listening summary: a model answer is preferred, and a
+        # verbatim paste of the visible transcript is rejected either way.
+        reference = content.get("notes", "") or transcript
+        return score_keyword_match(text, reference, max_score=10, visible_source=transcript)
 
     # Open-ended: completion-based, full score if decodable content provided
     if question_type in ("describe-image", "response-to-a-situation", "personal-introduction"):
