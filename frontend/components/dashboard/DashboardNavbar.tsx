@@ -85,7 +85,7 @@ export default function DashboardNavbar() {
         </Link>
 
         {/* Center Nav Links — desktop only, the drawer handles small screens */}
-        <div className="hidden lg:flex items-center gap-1">
+        <div className="hidden lg:flex items-center gap-1 min-w-0 overflow-hidden">
           {/* Dashboard link */}
           <Link
             href="/dashboard"
@@ -159,8 +159,10 @@ export default function DashboardNavbar() {
           ))}
         </div>
 
-        {/* Right: Search + Bell + User */}
-        <div className="flex items-center gap-3 shrink-0">
+{/* Right: Search + Bell + User. `min-w-0` lets the group shrink as
+              width is lost; `shrink-0` on the items themselves keeps each
+              control from being squashed into an unusable target. */}
+          <div className="flex items-center gap-3 min-w-0 shrink-0">
           {/* Search Bar — inline on desktop; the drawer offers a full-width field */}
           <SiteSearch variant="inline" />
 
@@ -178,7 +180,12 @@ export default function DashboardNavbar() {
               <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
                 {initial}
               </div>
-              <span className="hidden sm:inline max-w-[120px] truncate text-[14px] font-semibold text-gray-700">{firstName}</span>
+              {/* Name only when the bar genuinely has room. This cluster is
+                  `shrink-0`, so showing the name at `sm` (640px) forced the bar
+                  ~48px wider than the viewport between lg (1024px) and ~1070px,
+                  where the centre nav is visible but the name plus search plus
+                  bell no longer fit. The avatar and chevron stay at every width. */}
+              <span className="hidden min-[1180px]:inline max-w-[120px] truncate text-[14px] font-semibold text-gray-700">{firstName}</span>
               <svg
                 className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`}
                 fill="none" stroke="currentColor" viewBox="0 0 24 24"
