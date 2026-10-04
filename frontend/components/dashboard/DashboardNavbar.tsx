@@ -84,8 +84,14 @@ export default function DashboardNavbar() {
           </span>
         </Link>
 
-        {/* Center Nav Links — desktop only, the drawer handles small screens */}
-        <div className="hidden lg:flex items-center gap-1 min-w-0 overflow-hidden">
+        {/* Center Nav Links — desktop only, the drawer handles small screens.
+            `overflow-x-clip` (not `overflow-hidden`) absorbs the width deficit
+            the `shrink-0` right cluster cannot, but only on the x axis: the
+            Practice menu is `absolute top-full` and hangs below this row, so
+            clipping both axes painted it at zero height. `clip` pairs with a
+            `visible` cross axis without forcing it to `auto`, so the menu
+            escapes downward and the row still cannot widen the page. */}
+        <div className="hidden lg:flex items-center gap-1 min-w-0 overflow-x-clip">
           {/* Dashboard link */}
           <Link
             href="/dashboard"
