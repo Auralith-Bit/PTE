@@ -202,17 +202,17 @@ export default function CoursesPage() {
         <div className="page-container">
           <div className="flex items-center justify-between mb-10">
             <h2 className="text-3xl font-extrabold text-gray-900">Skill-Based Courses</h2>
-            <Link href="#" className="text-[#3B28CC] font-bold flex items-center hover:underline">
+            <Link href="/practice" className="text-[#3B28CC] font-bold flex items-center hover:underline">
               View All Skills <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
             </Link>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { title: 'Speaking Mastery', icon: 'M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z', evalText: 'AI Speaking Evaluation' },
-              { title: 'Writing Excellence', icon: 'M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z', evalText: 'AI Writing Evaluation', text2: 'Model Answers & Templates' },
-              { title: 'Listening Mastery', icon: 'M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3', evalText: 'Audio Practice Exercises' },
-              { title: 'Reading Mastery', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', evalText: 'AI Speaking Evaluation' },
+              { title: 'Speaking Mastery', href: '/practice/speaking', icon: 'M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z', evalText: 'AI Speaking Evaluation' },
+              { title: 'Writing Excellence', href: '/practice/writing', icon: 'M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z', evalText: 'AI Writing Evaluation', text2: 'Model Answers & Templates' },
+              { title: 'Listening Mastery', href: '/practice/listening', icon: 'M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3', evalText: 'Audio Practice Exercises' },
+              { title: 'Reading Mastery', href: '/practice/reading', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', evalText: 'AI Speaking Evaluation' },
             ].map((skill, idx) => (
               <div key={idx} className="bg-[#F6F6F6] rounded-2xl border border-[#000000] p-6 flex flex-col shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center mb-6">
@@ -241,7 +241,7 @@ export default function CoursesPage() {
                     Progress Tracking
                   </li>
                 </ul>
-                <Link href="#" className="text-[#3008F8] font-bold text-sm flex items-center hover:underline">
+                <Link href={skill.href} className="text-[#3008F8] font-bold text-sm flex items-center hover:underline">
                   Start Learning <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                 </Link>
               </div>
