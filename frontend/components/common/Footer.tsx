@@ -31,8 +31,8 @@ const footerColumns: Record<string, LinkItem[]> = {
   Support: [
     { label: 'Help Center', icon: '/images/Vector (5).png' },
     { label: 'FAQ', icon: '/images/Vector (6).png' },
-    { label: 'Privacy Policy', icon: '/images/Vector (7).png' },
-    { label: 'Terms of Services', icon: '/images/Vector (4).png' },
+    { label: 'Privacy Policy', href: '/privacy', icon: '/images/Vector (7).png' },
+    { label: 'Terms of Services', href: '/terms', icon: '/images/Vector (4).png' },
     { label: 'Contact Us', icon: '/images/Vector (4).png' },
   ],
 };
