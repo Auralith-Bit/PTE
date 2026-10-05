@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-const Chevron = () => <span className="chevron" aria-hidden="true">›</span>;
+const Chevron = () => <span className="chevron" aria-hidden="true">Ã¢â‚¬Âº</span>;
 
 export default function ResourcesPage() {
   return (
@@ -128,19 +128,19 @@ export default function ResourcesPage() {
         <div className="page-container">
         <div className="flex items-center justify-between mb-10">
           <h2 className="text-3xl font-extrabold text-black">Popular Resources</h2>
-          <Link href="#" className="border border-gray-200 text-[#3B28CC] font-bold py-2.5 px-6 rounded-lg flex items-center hover:bg-gray-50 transition-colors shadow-sm text-sm">
+          <Link href="/practice" className="border border-gray-200 text-[#3B28CC] font-bold py-2.5 px-6 rounded-lg flex items-center hover:bg-gray-50 transition-colors shadow-sm text-sm">
             Practice Now <svg className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
           </Link>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
-            { title: 'Reading Practice', desc: 'In depth guides to understand all PTE modules.', resCount: '5 Articles', btn: 'Read Now', bg: 'bg-[#A7F3D0]', iconColor: 'text-[#065F46]', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' },
-            { title: 'Vocabulary Practice', desc: 'Essential vocabulary to improve your skills.', resCount: '100+ Words', btn: 'Learn', bg: 'bg-[#6EE7B7]', iconColor: 'text-[#047857]', icon: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z' },
-            { title: 'Read Aloud Practice', desc: 'Practice with read aloud and improve your pronunciation.', resCount: '5 Voice', btn: 'Read', bg: 'bg-[#FBCFE8]', iconColor: 'text-[#BE185D]', icon: 'M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z' },
-            { title: 'Answer Question Practice', desc: 'High-scoring guides and understand all PTE modules.', resCount: '5 Articles', btn: 'Read Now', bg: 'bg-[#FDE68A]', iconColor: 'text-[#B45309]', icon: 'M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
-            { title: 'Mock Test Practice', desc: 'Mock Test Practice and understand all PTE modules.', resCount: '5 Articles', btn: 'Read Now', bg: 'bg-[#FECACA]', iconColor: 'text-[#B91C1C]', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
-            { title: 'Listening Audio Practice', desc: 'Practice learning with native English audio files.', resCount: '5 Audio', btn: 'Listen', bg: 'bg-[#BAE6FD]', iconColor: 'text-[#0369A1]', icon: 'M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z' },
+            { title: 'Reading Practice', desc: 'In depth guides to understand all PTE modules.', resCount: '5 Articles', btn: 'Read Now', href: '/practice/reading', bg: 'bg-[#A7F3D0]', iconColor: 'text-[#065F46]', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' },
+            { title: 'Vocabulary Practice', desc: 'Essential vocabulary to improve your skills.', resCount: '100+ Words', btn: 'Learn', href: '/practice/reading', bg: 'bg-[#6EE7B7]', iconColor: 'text-[#047857]', icon: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z' },
+            { title: 'Read Aloud Practice', desc: 'Practice with read aloud and improve your pronunciation.', resCount: '5 Voice', btn: 'Read', href: '/practice/speaking/read-aloud', bg: 'bg-[#FBCFE8]', iconColor: 'text-[#BE185D]', icon: 'M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z' },
+            { title: 'Answer Question Practice', desc: 'High-scoring guides and understand all PTE modules.', resCount: '5 Articles', btn: 'Read Now', href: '/practice/speaking/answer-short-question', bg: 'bg-[#FDE68A]', iconColor: 'text-[#B45309]', icon: 'M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+            { title: 'Mock Test Practice', desc: 'Mock Test Practice and understand all PTE modules.', resCount: '5 Articles', btn: 'Read Now', href: '/mock-test', bg: 'bg-[#FECACA]', iconColor: 'text-[#B91C1C]', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
+            { title: 'Listening Audio Practice', desc: 'Practice learning with native English audio files.', resCount: '5 Audio', btn: 'Listen', href: '/practice/listening', bg: 'bg-[#BAE6FD]', iconColor: 'text-[#0369A1]', icon: 'M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z' },
           ].map((item, idx) => (
             <div key={idx} className="bg-white rounded-2xl border-2 border-[#D9D9D9] p-6 flex flex-col shadow-sm hover:shadow-md transition-shadow">
                <div className="flex items-start mb-6">
@@ -157,9 +157,9 @@ export default function ResourcesPage() {
                      <svg className="w-4 h-4 mr-2 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                      {item.resCount}
                   </div>
-                  <button className="border border-gray-200 text-[#3B28CC] font-bold py-1.5 px-4 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                  <Link href={item.href} className="border border-gray-200 text-[#3B28CC] font-bold py-1.5 px-4 rounded-lg hover:bg-gray-50 transition-colors text-sm">
                      {item.btn}
-                  </button>
+                  </Link>
                 </div>
              </div>
           ))}
