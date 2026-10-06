@@ -78,7 +78,7 @@ export default function LoginPage() {
   const [passwordReset, setPasswordReset] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated) router.replace('/dashboard');
+    if (isAuthenticated) router.replace(requestedNextPath());
   }, [isAuthenticated, router]);
 
   // Read the flag without useSearchParams so this page keeps its current shape.

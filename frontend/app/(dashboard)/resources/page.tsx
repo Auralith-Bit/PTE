@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-const Chevron = () => <span className="chevron" aria-hidden="true">Ã¢â‚¬Âº</span>;
+const Chevron = () => <span className="chevron" aria-hidden="true">›</span>;
 
 export default function ResourcesPage() {
   return (

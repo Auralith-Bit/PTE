@@ -452,7 +452,7 @@ function ReadAloudTask({ questions }: { questions: Question[] }) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isRecording]);
+  }, [isRecording, currentIndex]);
 
   function handleMicClick() {
     if (isRecording) {
@@ -628,7 +628,7 @@ function RepeatSentenceTask({ questions }: { questions: Question[] }) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isRecording]);
+  }, [isRecording, currentIndex]);
 
   function handleMicClick() {
     if (isRecording) {
@@ -819,7 +819,7 @@ function DescribeImageTask({ questions }: { questions: Question[] }) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isRecording]);
+  }, [isRecording, currentIndex]);
 
   function handleMicClick() {
     if (isRecording) {
@@ -933,9 +933,11 @@ function DescribeImageTask({ questions }: { questions: Question[] }) {
                     userSelect: "none",
                   }}
                 >
-                  <img
+                  <Image
                     src={currentImage.image}
                     alt="Image to describe"
+                    width={800}
+                    height={600}
                     style={{
                       width: "80%",
                       height: "80%",
@@ -957,9 +959,11 @@ function DescribeImageTask({ questions }: { questions: Question[] }) {
                     position: "relative",
                   }}
                 >
-                  <img
+                  <Image
                     src={currentImage.image}
                     alt="Image to describe"
+                    width={800}
+                    height={600}
                     style={{
                       width: "80%",
                       height: "80%",
@@ -999,9 +1003,11 @@ function DescribeImageTask({ questions }: { questions: Question[] }) {
                       userSelect: "none",
                     }}
                   >
-                    <img
+                    <Image
                       src={currentImage.image}
                       alt="Image to describe"
+                      width={800}
+                      height={600}
                       style={{
                         width: "85%",
                         height: "85%",
@@ -1023,9 +1029,11 @@ function DescribeImageTask({ questions }: { questions: Question[] }) {
                     position: "relative",
                   }}
                 >
-                  <img
+                  <Image
                     src={currentImage.image}
                     alt="Image to describe"
+                    width={800}
+                    height={600}
                     style={{
                       width: "100%",
                       height: "100%",
@@ -1125,7 +1133,7 @@ function RetellLectureTask({ questions }: { questions: Question[] }) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isRecording]);
+  }, [isRecording, currentIndex]);
 
   function handleMicClick() {
     if (isRecording) {
@@ -1319,7 +1327,7 @@ function AnswerShortQuestionTask({ questions }: { questions: Question[] }) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isRecording]);
+  }, [isRecording, currentIndex]);
 
   function handleMicClick() {
     if (isRecording) {
@@ -1488,7 +1496,7 @@ function SummarizeSpokenTestTask({ questions }: { questions: Question[] }) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isRecording]);
+  }, [isRecording, currentIndex]);
 
   function handleMicClick() {
     if (isRecording) {
@@ -1668,7 +1676,7 @@ function ResponseToSituationTask({ questions }: { questions: Question[] }) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isRecording]);
+  }, [isRecording, currentIndex]);
 
   function handleMicClick() {
     if (isRecording) {
@@ -1812,7 +1820,7 @@ function PersonalIntroductionTask({ questions }: { questions: Question[] }) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isRecording]);
+  }, [isRecording, currentIndex]);
 
   function handleMicClick() {
     if (isRecording) {

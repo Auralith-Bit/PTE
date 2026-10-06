@@ -2,9 +2,23 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { errorMessage } from '@/lib/api/client';
 import { notificationApi } from '@/lib/api/notification';
+import { questionsApi, type QuestionCategory } from '@/lib/api/questions';
 import type { NotificationItem } from '@/types';
+
+/**
+ * Practice links are built server-side as `/practice/{category}/{question_id}`,
+ * but the practice route takes a task slug (`read-aloud`, `essay`, …). Resolve
+ * the id to its question type before navigating; a failure degrades to the
+ * category landing page instead of an error state.
+ */
+function parsePracticeHref(href: string): { category: QuestionCategory; questionId: number } | null {
+  const match = /^\/practice\/(speaking|writing|reading|listening)\/(\d+)$/.exec(href);
+  if (!match) return null;
+  return { category: match[1] as QuestionCategory, questionId: Number(match[2]) };
+}
 
 /**
  * Notification bell and its dropdown.
@@ -17,6 +31,7 @@ import type { NotificationItem } from '@/types';
  * opening it marks everything read so the badge does not get stuck.
  */
 export default function NotificationBell({ onNavigate }: { onNavigate?: () => void }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [unread, setUnread] = useState(0);
@@ -80,6 +95,22 @@ export default function NotificationBell({ onNavigate }: { onNavigate?: () => vo
   function handleNavigate() {
     setOpen(false);
     onNavigate?.();
+  }
+
+  async function handleItemClick(href: string) {
+    handleNavigate();
+    const target = parsePracticeHref(href);
+    if (!target) {
+      router.push(href);
+      return;
+    }
+    const fallback = `/practice/${target.category}`;
+    try {
+      const question = await questionsApi.get(target.category, target.questionId);
+      router.push(`/practice/${target.category}/${question.type}`);
+    } catch {
+      router.push(fallback);
+    }
   }
 
   return (
@@ -162,7 +193,10 @@ export default function NotificationBell({ onNavigate }: { onNavigate?: () => vo
                     {n.href ? (
                       <Link
                         href={n.href}
-                        onClick={handleNavigate}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          void handleItemClick(n.href as string);
+                        }}
                         className="block px-4 py-2.5 hover:bg-indigo-50 transition-colors"
                       >
                         {inner}

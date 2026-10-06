@@ -86,7 +86,10 @@ async function request<T>(path: string, init: RequestInit = {}, retryOnAuth = tr
     if (refreshed) return request<T>(path, init, false);
     clearTokens();
     if (typeof window !== 'undefined') {
-      window.location.assign('/login');
+      const next = encodeURIComponent(
+        window.location.pathname + window.location.search,
+      );
+      window.location.assign(`/login?next=${next}`);
     }
   }
 
