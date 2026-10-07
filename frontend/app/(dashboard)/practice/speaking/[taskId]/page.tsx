@@ -74,6 +74,91 @@ function useTaskSubmit() {
   return { ...state, submit, reset };
 }
 
+// The audio-only tasks never capture a transcript, so they submit a completion
+// marker instead. That creates the Attempt row the dashboard's "Practice by
+// Section" percentage is built from, without inventing an answer to score.
+type RecordSubmitState = {
+  submitting: boolean;
+  submitted: boolean;
+  error: string | null;
+  submit: (question: Question, durationSeconds: number) => Promise<void>;
+  reset: () => void;
+};
+
+function useRecordSubmit(): RecordSubmitState {
+  const [state, setState] = useState<{ submitting: boolean; submitted: boolean; error: string | null }>({
+    submitting: false,
+    submitted: false,
+    error: null,
+  });
+  const submittedIdsRef = useRef<Set<number>>(new Set());
+
+  async function submit(question: Question, durationSeconds: number): Promise<void> {
+    // The id set (not the state) is the dedupe: the timer's auto-stop runs
+    // inside a state updater, which React may invoke twice in StrictMode.
+    if (state.submitting || submittedIdsRef.current.has(question.id)) return;
+    submittedIdsRef.current.add(question.id);
+    setState({ submitting: true, submitted: false, error: null });
+    try {
+      await questionsApi.submit("speaking", {
+        question_id: question.id,
+        answer: {
+          recorded: true,
+          duration_seconds: Math.max(0, Math.round(durationSeconds)),
+        },
+      });
+      setState({ submitting: false, submitted: true, error: null });
+    } catch (err) {
+      submittedIdsRef.current.delete(question.id);
+      setState({ submitting: false, submitted: false, error: errorMessage(err) });
+    }
+  }
+
+  function reset() {
+    setState({ submitting: false, submitted: false, error: null });
+  }
+
+  return { ...state, submit, reset };
+}
+
+function RecordStatusPill({ hasRecorded, record }: { hasRecorded: boolean; record: RecordSubmitState }) {
+  const label = !hasRecorded
+    ? "Not Recorded"
+    : record.submitting
+      ? "Submitting…"
+      : record.error
+        ? "Not Saved"
+        : record.submitted
+          ? "Submitted"
+          : "Recorded";
+  const modifier = record.submitting
+    ? " submitting"
+    : record.error
+      ? ""
+      : hasRecorded
+        ? " recorded"
+        : "";
+  return <span className={`task-status-pill${modifier}`}>{label}</span>;
+}
+
+function RecordSubmitError({
+  record,
+  onRetry,
+}: {
+  record: RecordSubmitState;
+  onRetry: () => void;
+}) {
+  if (!record.error) return null;
+  return (
+    <p className="task-submit-error task-record-error">
+      <span className="task-submit-error-icon">⚠</span> {record.error}
+      <button type="button" className="task-submit-retry-btn" onClick={onRetry}>
+        Retry save
+      </button>
+    </p>
+  );
+}
+
 // ══════════════════════════════════════════════
 // Icons
 // ══════════════════════════════════════════════
@@ -797,6 +882,11 @@ function DescribeImageTask({ questions }: { questions: Question[] }) {
   const startX = useRef(0);
   const startObjectPosition = useRef(0);
   const [objectPositionX, setObjectPositionX] = useState(0);
+  const recordSubmit = useRecordSubmit();
+  // The timer effect reads the latest submit function without listing it as a
+  // dependency, so restarting the interval every render is avoided.
+  const recordSubmitRef = useRef(recordSubmit);
+  recordSubmitRef.current = recordSubmit;
 
   useEffect(() => {
     if (isRecording) {
@@ -806,6 +896,7 @@ function DescribeImageTask({ questions }: { questions: Question[] }) {
             setIsRecording(false);
             setHasRecorded(true);
             setRecordedSet((p) => new Set(p).add(currentIndex));
+            recordSubmitRef.current.submit(questions[currentIndex], DESCRIBE_TIME_LIMIT);
             return DESCRIBE_TIME_LIMIT;
           }
           return prev + 1;
@@ -815,13 +906,14 @@ function DescribeImageTask({ questions }: { questions: Question[] }) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isRecording, currentIndex]);
+  }, [isRecording, currentIndex, questions]);
 
   function handleMicClick() {
     if (isRecording) {
       setIsRecording(false);
       setHasRecorded(true);
       setRecordedSet((prev) => new Set(prev).add(currentIndex));
+      recordSubmit.submit(questions[currentIndex], elapsedSeconds);
     } else {
       setElapsedSeconds(0);
       setHasRecorded(false);
@@ -834,6 +926,7 @@ function DescribeImageTask({ questions }: { questions: Question[] }) {
     setElapsedSeconds(0);
     setHasRecorded(false);
     setObjectPositionX(0);
+    recordSubmit.reset();
   }
 
   function goToPrevious() {
@@ -1043,9 +1136,7 @@ function DescribeImageTask({ questions }: { questions: Question[] }) {
 
           <div className="task-recording-row">
             <h3 className="task-block-label">Your Recording</h3>
-            <span className={`task-status-pill${hasRecorded ? " recorded" : ""}`}>
-              {hasRecorded ? "Recorded" : "Not Recorded"}
-            </span>
+            <RecordStatusPill hasRecorded={hasRecorded} record={recordSubmit} />
           </div>
           <div className="task-recording-box">
             <button
@@ -1064,6 +1155,10 @@ function DescribeImageTask({ questions }: { questions: Question[] }) {
               <ClockIcon /> {formatTime(elapsedSeconds)} / {formatTime(DESCRIBE_TIME_LIMIT)}
             </div>
           </div>
+          <RecordSubmitError
+            record={recordSubmit}
+            onRetry={() => recordSubmit.submit(questions[currentIndex], elapsedSeconds)}
+          />
           <TaskFooterNav current={currentIndex + 1} total={DESCRIBE_TOTAL} onPrevious={goToPrevious} onNext={goToNext} />
         </section>
         <TaskInfoPanels
@@ -1111,6 +1206,11 @@ function RetellLectureTask({ questions }: { questions: Question[] }) {
   const [showQuestion, setShowQuestion] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const recordSubmit = useRecordSubmit();
+  // The timer effect reads the latest submit function without listing it as a
+  // dependency, so restarting the interval every render is avoided.
+  const recordSubmitRef = useRef(recordSubmit);
+  recordSubmitRef.current = recordSubmit;
 
   useEffect(() => {
     if (isRecording) {
@@ -1120,6 +1220,7 @@ function RetellLectureTask({ questions }: { questions: Question[] }) {
             setIsRecording(false);
             setHasRecorded(true);
             setRecordedSet((p) => new Set(p).add(currentIndex));
+            recordSubmitRef.current.submit(questions[currentIndex], RETELL_TIME_LIMIT);
             return RETELL_TIME_LIMIT;
           }
           return prev + 1;
@@ -1129,13 +1230,14 @@ function RetellLectureTask({ questions }: { questions: Question[] }) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isRecording, currentIndex]);
+  }, [isRecording, currentIndex, questions]);
 
   function handleMicClick() {
     if (isRecording) {
       setIsRecording(false);
       setHasRecorded(true);
       setRecordedSet((prev) => new Set(prev).add(currentIndex));
+      recordSubmit.submit(questions[currentIndex], elapsedSeconds);
     } else {
       setElapsedSeconds(0);
       setHasRecorded(false);
@@ -1155,6 +1257,7 @@ function RetellLectureTask({ questions }: { questions: Question[] }) {
     setHasRecorded(false);
     setShowQuestion(false);
     setIsPlaying(false);
+    recordSubmit.reset();
   }
 
   function goToPrevious() {
@@ -1241,9 +1344,7 @@ function RetellLectureTask({ questions }: { questions: Question[] }) {
 
           <div className="task-recording-row">
             <h3 className="task-block-label">Your Recording</h3>
-            <span className={`task-status-pill${hasRecorded ? " recorded" : ""}`}>
-              {hasRecorded ? "Recorded" : "Not Recorded"}
-            </span>
+            <RecordStatusPill hasRecorded={hasRecorded} record={recordSubmit} />
           </div>
           <div className="task-recording-box">
             <button
@@ -1262,6 +1363,10 @@ function RetellLectureTask({ questions }: { questions: Question[] }) {
               <ClockIcon /> {formatTime(elapsedSeconds)} / {formatTime(RETELL_TIME_LIMIT)}
             </div>
           </div>
+          <RecordSubmitError
+            record={recordSubmit}
+            onRetry={() => recordSubmit.submit(questions[currentIndex], elapsedSeconds)}
+          />
           <TaskFooterNav current={currentIndex + 1} total={RETELL_TOTAL} onPrevious={goToPrevious} onNext={goToNext} />
         </section>
         <TaskInfoPanels
@@ -1654,6 +1759,11 @@ function ResponseToSituationTask({ questions }: { questions: Question[] }) {
   const [hasRecorded, setHasRecorded] = useState(false);
   const [recordedSet, setRecordedSet] = useState<Set<number>>(new Set());
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const recordSubmit = useRecordSubmit();
+  // The timer effect reads the latest submit function without listing it as a
+  // dependency, so restarting the interval every render is avoided.
+  const recordSubmitRef = useRef(recordSubmit);
+  recordSubmitRef.current = recordSubmit;
 
   useEffect(() => {
     if (isRecording) {
@@ -1663,6 +1773,7 @@ function ResponseToSituationTask({ questions }: { questions: Question[] }) {
             setIsRecording(false);
             setHasRecorded(true);
             setRecordedSet((p) => new Set(p).add(currentIndex));
+            recordSubmitRef.current.submit(questions[currentIndex], SITUATION_TIME_LIMIT);
             return SITUATION_TIME_LIMIT;
           }
           return prev + 1;
@@ -1672,13 +1783,14 @@ function ResponseToSituationTask({ questions }: { questions: Question[] }) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isRecording, currentIndex]);
+  }, [isRecording, currentIndex, questions]);
 
   function handleMicClick() {
     if (isRecording) {
       setIsRecording(false);
       setHasRecorded(true);
       setRecordedSet((prev) => new Set(prev).add(currentIndex));
+      recordSubmit.submit(questions[currentIndex], elapsedSeconds);
     } else {
       setElapsedSeconds(0);
       setHasRecorded(false);
@@ -1690,6 +1802,7 @@ function ResponseToSituationTask({ questions }: { questions: Question[] }) {
     setIsRecording(false);
     setElapsedSeconds(0);
     setHasRecorded(false);
+    recordSubmit.reset();
   }
 
   function goToPrevious() {
@@ -1736,9 +1849,7 @@ function ResponseToSituationTask({ questions }: { questions: Question[] }) {
 
           <div className="task-recording-row">
             <h3 className="task-block-label">Your Recording</h3>
-            <span className={`task-status-pill${hasRecorded ? " recorded" : ""}`}>
-              {hasRecorded ? "Recorded" : "Not Recorded"}
-            </span>
+            <RecordStatusPill hasRecorded={hasRecorded} record={recordSubmit} />
           </div>
           <div className="task-recording-box">
             <button
@@ -1757,6 +1868,10 @@ function ResponseToSituationTask({ questions }: { questions: Question[] }) {
               <ClockIcon /> {formatTime(elapsedSeconds)} / {formatTime(SITUATION_TIME_LIMIT)}
             </div>
           </div>
+          <RecordSubmitError
+            record={recordSubmit}
+            onRetry={() => recordSubmit.submit(questions[currentIndex], elapsedSeconds)}
+          />
           <TaskFooterNav current={currentIndex + 1} total={SITUATION_TOTAL} onPrevious={goToPrevious} onNext={goToNext} />
         </section>
         <TaskInfoPanels
@@ -1798,6 +1913,11 @@ function PersonalIntroductionTask({ questions }: { questions: Question[] }) {
   const [hasRecorded, setHasRecorded] = useState(false);
   const [recordedSet, setRecordedSet] = useState<Set<number>>(new Set());
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const recordSubmit = useRecordSubmit();
+  // The timer effect reads the latest submit function without listing it as a
+  // dependency, so restarting the interval every render is avoided.
+  const recordSubmitRef = useRef(recordSubmit);
+  recordSubmitRef.current = recordSubmit;
 
   useEffect(() => {
     if (isRecording) {
@@ -1807,6 +1927,7 @@ function PersonalIntroductionTask({ questions }: { questions: Question[] }) {
             setIsRecording(false);
             setHasRecorded(true);
             setRecordedSet((p) => new Set(p).add(currentIndex));
+            recordSubmitRef.current.submit(questions[currentIndex], INTRO_TIME_LIMIT);
             return INTRO_TIME_LIMIT;
           }
           return prev + 1;
@@ -1816,13 +1937,14 @@ function PersonalIntroductionTask({ questions }: { questions: Question[] }) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isRecording, currentIndex]);
+  }, [isRecording, currentIndex, questions]);
 
   function handleMicClick() {
     if (isRecording) {
       setIsRecording(false);
       setHasRecorded(true);
       setRecordedSet((prev) => new Set(prev).add(currentIndex));
+      recordSubmit.submit(questions[currentIndex], elapsedSeconds);
     } else {
       setElapsedSeconds(0);
       setHasRecorded(false);
@@ -1834,6 +1956,7 @@ function PersonalIntroductionTask({ questions }: { questions: Question[] }) {
     setIsRecording(false);
     setElapsedSeconds(0);
     setHasRecorded(false);
+    recordSubmit.reset();
   }
 
   function goToPrevious() {
@@ -1878,9 +2001,7 @@ function PersonalIntroductionTask({ questions }: { questions: Question[] }) {
 
           <div className="task-recording-row">
             <h3 className="task-block-label">Your Recording</h3>
-            <span className={`task-status-pill${hasRecorded ? " recorded" : ""}`}>
-              {hasRecorded ? "Recorded" : "Not Recorded"}
-            </span>
+            <RecordStatusPill hasRecorded={hasRecorded} record={recordSubmit} />
           </div>
           <div className="task-recording-box">
             <button
@@ -1899,6 +2020,10 @@ function PersonalIntroductionTask({ questions }: { questions: Question[] }) {
               <ClockIcon /> {formatTime(elapsedSeconds)} / {formatTime(INTRO_TIME_LIMIT)}
             </div>
           </div>
+          <RecordSubmitError
+            record={recordSubmit}
+            onRetry={() => recordSubmit.submit(questions[currentIndex], elapsedSeconds)}
+          />
           <TaskFooterNav current={currentIndex + 1} total={INTRO_TOTAL} onPrevious={goToPrevious} onNext={goToNext} />
         </section>
         <TaskInfoPanels

@@ -650,6 +650,14 @@ body {
   padding: 0.35rem 0.9rem; border-radius: 999px;
 }
 .task-status-pill.recorded { background: #d9f7e3; color: #1a8a4a; }
+.task-status-pill.submitting { background: #eef0ff; color: var(--brand-blue); }
+.task-record-error { margin: -0.75rem 0 1.25rem; }
+.task-submit-retry-btn {
+  margin-left: auto; padding: 0.2rem 0.8rem; border-radius: 999px;
+  border: 1.5px solid currentColor; background: transparent; color: inherit;
+  font: inherit; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+}
+.task-submit-retry-btn:hover { opacity: 0.75; }
 .task-recording-box {
   background: #f4f2fd; border-radius: 14px; padding: 2rem 1.5rem;
   display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;

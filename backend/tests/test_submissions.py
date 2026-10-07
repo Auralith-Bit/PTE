@@ -138,3 +138,74 @@ def test_dashboard_updates_after_submit(client, auth_headers):
     assert body["questions_solved"] >= 1
     assert isinstance(body["recent_activity"], list)
     assert len(body["recent_activity"]) >= 1
+
+
+# Types whose practice UI only records audio, so it submits a completion marker
+# instead of a transcript. They must still create the Attempt rows the
+# dashboard's "Practice by Section" percentage counts.
+RECORD_ONLY_TYPES = (
+    "describe-image",
+    "retell-lecture",
+    "response-to-a-situation",
+    "personal-introduction",
+)
+
+
+@pytest.mark.parametrize("qtype", RECORD_ONLY_TYPES)
+def test_record_marker_submit_scores_on_completion(client, auth_headers, qtype):
+    q = _find_question("speaking", qtype)
+    res = client.post(
+        "/api/v1/speaking/submit",
+        json={"question_id": q["id"], "answer": {"recorded": True, "duration_seconds": 30}},
+        headers=auth_headers,
+    )
+    assert res.status_code == 200
+    body = res.json()
+    assert body["score"] == 10
+    assert body["max_score"] == 10
+    assert body["attempt_id"] > 0
+
+
+def test_record_marker_short_take_scores_partial(client, auth_headers):
+    q = _find_question("speaking", "describe-image")
+    res = client.post(
+        "/api/v1/speaking/submit",
+        json={"question_id": q["id"], "answer": {"recorded": True, "duration_seconds": 3}},
+        headers=auth_headers,
+    )
+    assert res.status_code == 200
+    body = res.json()
+    assert 0 <= body["score"] < 10
+
+
+def test_open_ended_without_text_or_marker_scores_zero(client, auth_headers):
+    q = _find_question("speaking", "personal-introduction")
+    res = client.post(
+        "/api/v1/speaking/submit",
+        json={"question_id": q["id"], "answer": {}},
+        headers=auth_headers,
+    )
+    assert res.status_code == 200
+    assert res.json()["score"] == 0
+
+
+def test_dashboard_counts_record_only_speaking_types(client, auth_headers, db_session):
+    from app.models.question import Question
+    from app.services import dashboard_service
+
+    for qtype in RECORD_ONLY_TYPES:
+        q = _find_question("speaking", qtype)
+        res = client.post(
+            "/api/v1/speaking/submit",
+            json={"question_id": q["id"], "answer": {"recorded": True, "duration_seconds": 30}},
+            headers=auth_headers,
+        )
+        assert res.status_code == 200
+
+    total = (
+        db_session.query(Question).filter(Question.category == "speaking").count()
+    )
+    summary = client.get("/api/v1/dashboard/summary", headers=auth_headers).json()
+    expected_floor = dashboard_service._section_pct(len(RECORD_ONLY_TYPES), total)
+    assert summary["speaking_pct"] >= expected_floor
+    assert summary["questions_solved"] >= len(RECORD_ONLY_TYPES)

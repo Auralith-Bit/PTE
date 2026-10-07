@@ -5,6 +5,22 @@ import re
 from app.services.scoring.base import ScoreResult, score_exact_match, score_keyword_match
 from app.services.scoring.summary_scorer import score_summary
 
+# Tasks that capture audio in the browser send only a completion marker, since
+# no transcript exists. Recording at least this many seconds earns full credit,
+# mirroring the 30-word rule the typed path uses below.
+_RECORDED_FULL_CREDIT_SECONDS = 10
+
+
+def _recorded_score(answer: dict) -> ScoreResult:
+    """Completion credit for tasks whose only answer is 'the user recorded'."""
+    raw = answer.get("duration_seconds") or 0
+    try:
+        duration = max(0, int(float(raw)))
+    except (TypeError, ValueError):
+        duration = 0
+    score = 10 if duration >= _RECORDED_FULL_CREDIT_SECONDS else min(8, duration)
+    return ScoreResult(score, 10, f"Response recorded ({duration}s)")
+
 
 def score_speaking(question_type: str, content: dict, answer: dict) -> ScoreResult:
     """Score a speaking attempt using deterministic local heuristics.
@@ -25,6 +41,8 @@ def score_speaking(question_type: str, content: dict, answer: dict) -> ScoreResu
         return score_keyword_match(text, expected, max_score=10)
 
     if question_type in ("retell-lecture", "summarize-spoken-test"):
+        if not text and answer.get("recorded"):
+            return _recorded_score(answer)
         transcript = content.get("transcript", "")
         text = (answer.get("response") or answer.get("text") or "").strip()
         # `key_points` is the item's aspect list. `notes` is the older
@@ -40,6 +58,8 @@ def score_speaking(question_type: str, content: dict, answer: dict) -> ScoreResu
     # Open-ended: completion-based, full score if decodable content provided
     if question_type in ("describe-image", "response-to-a-situation", "personal-introduction"):
         if not text:
+            if answer.get("recorded"):
+                return _recorded_score(answer)
             return ScoreResult(0, 10, "No response provided")
         word_count = len(text.split())
         if word_count >= 30:
