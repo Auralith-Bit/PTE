@@ -124,7 +124,9 @@ def change_password(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"This account signs in with {user.auth_provider.title()} and has no password to change.",
         )
-    if payload.current_password is not None and not verify_password(payload.current_password, user.password_hash):
+    if payload.current_password is not None and not verify_password(
+        payload.current_password, user.password_hash
+    ):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Current password is incorrect")
     if verify_password(payload.new_password, user.password_hash):
         raise HTTPException(

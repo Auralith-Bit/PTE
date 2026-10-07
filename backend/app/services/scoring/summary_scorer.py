@@ -182,7 +182,7 @@ def _one_edit_from(token: str, words: set[str]) -> bool:
     for candidate in words:
         if len(candidate) != len(token) or len(candidate) < 7:
             continue
-        diffs = sum(1 for a, b in zip(candidate, token) if a != b)
+        diffs = sum(1 for a, b in zip(candidate, token, strict=True) if a != b)
         if diffs == 1:
             return True
         if diffs == 2 and candidate[1:-1] == token[1:-1] and candidate[0] == token[-1] \
@@ -219,7 +219,6 @@ def score_summary(
             "Summarise it in your own words.",
         )
 
-    sub_words = _content_words(text)
     content, content_note = _score_content(text, key_points or [])
     form, form_note = _score_form(text)
     grammar, grammar_note = _score_grammar(text)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from app.services.scoring.base import ScoreResult, score_keyword_match
+from app.services.scoring.base import ScoreResult
 from app.services.scoring.summary_scorer import score_summary
 
 

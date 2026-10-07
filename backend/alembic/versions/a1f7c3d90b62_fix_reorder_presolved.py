@@ -13,16 +13,17 @@ Revises: c3d8e1f70a45
 Create Date: 2026-09-30 00:00:00.000000
 
 """
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 import sqlalchemy as sa
+
 from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = 'a1f7c3d90b62'
-down_revision: Union[str, Sequence[str], None] = 'c3d8e1f70a45'
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | Sequence[str] | None = 'c3d8e1f70a45'
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 # Darwin voyage -> finches -> theory -> publication, re-indexed against the
 # scrambled display order below.
