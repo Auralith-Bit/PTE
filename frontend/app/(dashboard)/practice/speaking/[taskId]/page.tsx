@@ -254,7 +254,6 @@ function TaskInfoPanels({
   recordedSet: Set<number>;
   onNavigate: (index: number) => void;
 }) {
-  const [showAll, setShowAll] = useState(false);
   return (
     <aside className="task-side-right">
       <div className="task-info-card">
@@ -282,7 +281,7 @@ function TaskInfoPanels({
       <div className="task-info-card">
         <h3 className="task-info-title"><InfoIcon /> Question Progress</h3>
         <div className="task-progress-grid">
-          {(showAll ? Array.from({ length: totalQuestions }, (_, i) => i) : Array.from({ length: Math.min(10, totalQuestions) }, (_, i) => i)).map((i) => (
+          {Array.from({ length: totalQuestions }, (_, i) => i).map((i) => (
             <button
               key={i}
               type="button"
@@ -294,9 +293,6 @@ function TaskInfoPanels({
             </button>
           ))}
         </div>
-        <button type="button" className="task-progress-view-all" onClick={() => setShowAll((v) => !v)}>
-          {showAll ? "Show Less" : `View All ${totalQuestions} Questions`}
-        </button>
       </div>
     </aside>
   );
