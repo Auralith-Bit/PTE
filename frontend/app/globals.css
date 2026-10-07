@@ -695,13 +695,14 @@ body {
 .task-bullet-icon svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ── Question Progress grid ── */
-.task-progress-grid { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-bottom: 0.75rem; justify-content: center; }
+.task-progress-grid { display: grid; grid-template-columns: repeat(3, 36px); gap: 0.55rem; margin-bottom: 0.75rem; justify-content: center; }
 .task-progress-box {
   width: 36px; height: 36px; border-radius: 6px; border: 1.5px solid #d0d3e8;
   background: #fff; color: #55556b; font-size: 0.85rem; font-weight: 600;
   display: grid; place-items: center; cursor: pointer; transition: all 0.15s ease;
 }
 .task-progress-box:hover { border-color: var(--brand-blue); color: var(--brand-blue); }
+.task-progress-box:nth-child(3n+1):last-child { grid-column: 2; }
 .task-progress-box.active {
   background: var(--brand-blue); color: #fff; border-color: var(--brand-blue);
 }
