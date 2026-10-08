@@ -720,6 +720,10 @@ body {
 .task-progress-box.recorded.active {
   background: var(--brand-blue); color: #fff; border-color: var(--brand-blue);
 }
+/* Mock tests lay out 4 per row (fits the 230px rail); practice keeps 3. */
+.task-progress-grid--mock { grid-template-columns: repeat(4, 36px); }
+.task-progress-grid--mock .task-progress-box:nth-child(3n+1):last-child { grid-column: auto; }
+.task-progress-grid--mock .task-progress-box:nth-child(4n+1):last-child { grid-column: 2; }
 .task-progress-view-all {
   display: block; margin: 0 auto; padding: 0.45rem 1rem; font-size: 0.82rem; font-weight: 600;
   color: var(--brand-blue); background: transparent; border: 1.5px solid var(--brand-blue);

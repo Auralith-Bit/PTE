@@ -213,7 +213,7 @@ export default function MockTestTakePage() {
         <aside className="task-side-right">
           <div className="task-info-card">
             <h3 className="task-info-title">Question Progress</h3>
-            <div className="task-progress-grid">
+            <div className="task-progress-grid task-progress-grid--mock">
               {questions.map((_, i) => (
                 <button
                   key={i}
